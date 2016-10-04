@@ -5,16 +5,15 @@ namespace TowerGame {
 	namespace Enemy {
 
     	public enum EnemyState {
-    		Unitialized = 4,
+    		Unitialized = 0,
     		InTransit = 1,
     		Dead = 2,
     		AtTarget = 3,
-    		Default = 0
     	}
 
 		public abstract class Enemy : AttackableEntity {
         	[HideInInspector]
-        	public static string ENEMY_TAG = "enemy";
+        	public static string ENEMY_TAG = "Enemy";
 
             public float UpdateInterval;
            
@@ -30,15 +29,16 @@ namespace TowerGame {
 
         	public float PrimaryAttackDamage;
         	public float PrimaryAttackRange;
+            public float PrimaryAttackCooldown;
+            private float LastPrimaryAttackTime;
         	
-            protected EnemyState State;
+            public EnemyState State;
             protected AttackableEntity Target;
 
         	public Enemy() {
-        		CurrentHealth = MaxHealth;
-
-        		State = EnemyState.Unitialized;
-        	}
+                CurrentHealth = MaxHealth;
+                State = EnemyState.Unitialized;
+            }
 
             public void Start()
             {
@@ -46,6 +46,7 @@ namespace TowerGame {
             }
 
             public void SetTarget(AttackableEntity target) {
+
         		NavMeshAgent agent = GetComponent<NavMeshAgent>();
         		agent.destination = target.transform.position; 
         		agent.Resume();
@@ -82,7 +83,10 @@ namespace TowerGame {
                             CheckInRangeOfTarget();
                             break;
                         case EnemyState.AtTarget:
-                            AttackTarget();
+                            if (Time.fixedTime > LastPrimaryAttackTime + PrimaryAttackCooldown)
+                            {
+                                AttackTarget();
+                            }
                             break;
                         default:
                             break;
@@ -94,7 +98,7 @@ namespace TowerGame {
             }
 
         	private void CheckInRangeOfTarget() {
-        		if ((this.transform.position - Target.transform.position).magnitude < PrimaryAttackRange) {
+        		if (Vector3.Distance(this.transform.position, Target.transform.position) < PrimaryAttackRange) {
         			NavMeshAgent agent = GetComponent<NavMeshAgent>();
         			agent.Stop();
 
@@ -104,6 +108,7 @@ namespace TowerGame {
 
         	protected virtual void AttackTarget() {
                 Target.ReceiveDamage(PrimaryAttackDamage);
+                LastPrimaryAttackTime = Time.fixedTime;
         	}
 
         	protected abstract void HandleDamage ();

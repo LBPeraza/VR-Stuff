@@ -13,11 +13,12 @@ public class Holdable : MonoBehaviour {
 		this.transform.tag = "Holdable";
 	}
 
-	public virtual void PickUp (GameObject hand) {
+	public virtual void PickUp (GameObject hand, GameObject otherHand) {
 		Transform handTransform = hand.transform;
 		if (!isHeld && Vector3.Distance(handTransform.position, transform.position) < grabThreshold) {
 			holder = hand;
 			isHeld = true;
+            this.GetComponent<Rigidbody>().isKinematic = true;
 			this.transform.position = handTransform.position;
 			this.transform.rotation = handTransform.rotation;
 			this.transform.SetParent (holder.transform);
@@ -28,9 +29,10 @@ public class Holdable : MonoBehaviour {
 		this.transform.SetParent (null);
 		holder = null;
 		isHeld = false;
-	}
+        this.GetComponent<Rigidbody>().isKinematic = false;
+    }
 
-	public bool IsHeld () {
+    public bool IsHeld () {
 		return isHeld;
 	}
 }

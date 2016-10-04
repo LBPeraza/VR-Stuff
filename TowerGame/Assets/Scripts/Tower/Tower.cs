@@ -11,7 +11,7 @@ namespace TowerGame
             public float MaxHealth;
             public float CurrentHealth;
 
-            public Tower()
+            public void Start()
             {
                 CurrentHealth = MaxHealth;
             }

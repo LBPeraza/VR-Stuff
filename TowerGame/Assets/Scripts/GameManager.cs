@@ -13,6 +13,7 @@ namespace TowerGame
 
         private int TotalEnemiesSpawned = 0;
         private int LastSpawnPointIndex = 0;
+        private float LastEnemySpawnTime;
 
         // Use this for initialization
         void Start()
@@ -25,18 +26,24 @@ namespace TowerGame
         {
             if (Tower.CurrentHealth <= 0)
             {
-                Debug.Log("Game over.");
+                //Debug.Log("Game over.");
             }
 
-            if (TotalEnemiesSpawned < TotalNumEnemies)
+            if (TotalEnemiesSpawned < TotalNumEnemies && LastEnemySpawnTime + EnemySpawnInterval < Time.fixedTime)
             {
-                int nextSpawnIndex = (LastSpawnPointIndex + 1) % EnemySpawns.Length;
-                if (EnemySpawns.Length > 0)
-                {
-                    TowerGame.Enemy.Enemy enemy = (TowerGame.Enemy.Enemy) Instantiate(Enemy, 
-                        EnemySpawns[nextSpawnIndex].position, Quaternion.identity);
-                    enemy.SetTarget(Tower);
-                }
+                SpawnEnemy();
+            }
+        }
+
+        private void SpawnEnemy()
+        {
+            int nextSpawnIndex = (LastSpawnPointIndex + 1) % EnemySpawns.Length;
+            if (EnemySpawns.Length > 0)
+            {
+                TowerGame.Enemy.Enemy enemy = (TowerGame.Enemy.Enemy)Instantiate(Enemy,
+                    EnemySpawns[nextSpawnIndex].position, Quaternion.identity);
+                enemy.SetTarget(Tower);
+                LastEnemySpawnTime = Time.fixedTime;
             }
         }
     }

@@ -7,8 +7,8 @@ public class Slingshot : Holdable {
 
 	public float aimThreshold = 1.0f;
 
-	public void PickUp (GameObject yokeHand, GameObject slingHand) {
-		base.PickUp (yokeHand);
+	public override void PickUp (GameObject yokeHand, GameObject slingHand) {
+		base.PickUp (yokeHand, slingHand);
 		this.slingHand = slingHand;
 	}
 
