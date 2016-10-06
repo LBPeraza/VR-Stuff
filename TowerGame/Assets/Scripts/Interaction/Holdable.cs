@@ -20,15 +20,15 @@ namespace TowerGame
                 this.transform.tag = "Holdable";
             }
 
-            public virtual void PickUp(GameObject hand, GameObject otherHand)
+            public virtual void PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
             {
-                Transform handTransform = hand.transform;
-                if (!isHeld && Vector3.Distance(handTransform.position, transform.position) < grabThreshold)
+                GameObject holdingHand = leftHandIsPickingUp ? leftHand : rightHand;
+                Transform holdingHandTransform = holdingHand.transform;
+                if (!isHeld && Vector3.Distance(holdingHandTransform.position, transform.position) < grabThreshold)
                 {
-                    holder = hand;
                     isHeld = true;
                     this.GetComponent<Rigidbody>().isKinematic = true;
-                    this.transform.SetParent(holder.transform);
+                    this.transform.SetParent(holdingHand.transform);
 
                     if (HeldTransform != null)
                     {
@@ -42,12 +42,17 @@ namespace TowerGame
                 }
             }
 
-            public void PutDown()
+            /// <summary>
+            /// Puts down the item.
+            /// </summary>
+            /// <param name="velocity"> The velocity with which the item is being dropped. </param>
+            public void PutDown(Vector3 velocity)
             {
                 this.transform.SetParent(null);
                 holder = null;
                 isHeld = false;
                 this.GetComponent<Rigidbody>().isKinematic = false;
+                this.GetComponent<Rigidbody>().AddForce(velocity, ForceMode.VelocityChange);
             }
 
             public bool IsHeld()

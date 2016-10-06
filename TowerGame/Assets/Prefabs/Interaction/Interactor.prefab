@@ -106,9 +106,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507a680aba5e1554d899f7a84f0685f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsLeftHand: 0
   HoldCooldown: 1
-  PutDownFloorDistanceThreshold: 2.62
-  PickUpPolicy: 0
+  DropCooldown: 0
+  PutDownFloorDistanceThreshold: 0.6
+  PickUpPolicy: 1
   PutDownPolicy: 0
 --- !u!135 &135000012488545200
 SphereCollider:

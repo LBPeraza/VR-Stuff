@@ -19,10 +19,10 @@ namespace TowerGame
                 sling = this.transform.Find("sling").gameObject;
             }
 
-            public override void PickUp(GameObject yokeHand, GameObject slingHand)
+            public override void PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
             {
-                base.PickUp(yokeHand, slingHand);
-                this.slingHand = slingHand;
+                base.PickUp(leftHand, rightHand, leftHandIsPickingUp);
+                this.slingHand = leftHandIsPickingUp ? leftHand : rightHand;
             }
 
             void StartShot()

@@ -20,6 +20,8 @@ namespace TowerGame
 
         public class Interactor : MonoBehaviour
         {
+            public bool IsLeftHand;
+
             public float HoldCooldown;
             public float DropCooldown;
             public float PutDownFloorDistanceThreshold;
@@ -36,7 +38,9 @@ namespace TowerGame
             protected float lastHeldTime;
             protected float lastTimeFarFromGround;
 
-            private bool triggerDown;
+            private float triggerDownMemory = 0.4f;
+            private float lastTriggerDownTime;
+            private Vector3 lastPosition;
 
             void Start()
             {
@@ -44,11 +48,12 @@ namespace TowerGame
                 {
                     leftHandInteractor = this.gameObject;
                     rightHandInteractor = GameObject.Find("Controller (right)/Interactor");
-                    
+                    IsLeftHand = true;
                 } else
                 {
                     rightHandInteractor = this.gameObject;
                     leftHandInteractor = GameObject.Find("Controller (left)/Interactor");
+                    IsLeftHand = false;
                 }
 
                 if (leftHandInteractor == null || rightHandInteractor == null)
@@ -83,16 +88,10 @@ namespace TowerGame
 
             void OnCollisionEnter(Collision collision)
             {
-                if (trackedObject != null || CheckTrackedObjectOnParent())
-                {
-                    triggerDown = SteamVR_Controller.Input((int)trackedObject.index)
-                        .GetPressDown(SteamVR_Controller.ButtonMask.Trigger);
-                }
-
                 if (heldItem == null &&
                     collision.gameObject.tag == "Holdable" &&
                     Time.fixedTime > lastHeldTime + HoldCooldown &&
-                    ShouldPickUpItem(PickUpPolicy, triggerDown))
+                    ShouldPickUpItem(PickUpPolicy, lastTriggerDownTime))
                 {
                     Holdable item = collision.gameObject.GetComponent<Holdable>();
                     if (item == null)
@@ -101,7 +100,7 @@ namespace TowerGame
                     }
                     else
                     {
-                        item.PickUp(this.leftHandInteractor, this.rightHandInteractor);
+                        item.PickUp(this.leftHandInteractor, this.rightHandInteractor, IsLeftHand);
                         heldItem = item;
                         lastHeldTime = Time.fixedTime;
                     }
@@ -114,34 +113,41 @@ namespace TowerGame
                 {
                     // Store trigger down so that we can use this in the OnCollisionEnter function to
                     // implement "pick up with trigger" policy.
-                    triggerDown = SteamVR_Controller.Input((int)trackedObject.index)
-                        .GetPressDown(SteamVR_Controller.ButtonMask.Trigger);
+                    if (SteamVR_Controller.Input((int)trackedObject.index)
+                        .GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
+                    {
+                        lastTriggerDownTime = Time.fixedTime;
+                    }
 
                     if (heldItem != null &&
                         Time.fixedTime > lastHeldTime + DropCooldown &&
-                        ShouldPutDownItem(PutDownPolicy, this.transform, this.room.transform))
+                        ShouldPutDownItem(PutDownPolicy, this.transform, this.room.transform, 
+                        lastTriggerDownTime))
                     {
-                        heldItem.PutDown();
+                        Vector3 velocity = (transform.position - lastPosition) / Time.deltaTime;
+                        heldItem.PutDown(velocity);
                         heldItem = null;
                         lastHeldTime = Time.fixedTime;
                     }
                 }
+
+                lastPosition = transform.position;
             }
 
             /// <summary>
             /// Implements the decision policy on how to pick up items.
             /// </summary>
             /// <param name="policy"> The pick-up policy to implement.</param>
-            /// <param name="triggerDown"> Whether the trigger was recently depressed. </param>
+            /// <param name="lastTriggerDownTime"> When the last time a trigger pull was detected. </param>
             /// <returns> Whether the item should be picked up. </returns>
-            protected bool ShouldPickUpItem(PickUpPolicy policy, bool triggerDown)
+            protected bool ShouldPickUpItem(PickUpPolicy policy, float lastTriggerDownTime)
             {
                 switch (policy)
                 {
                     case PickUpPolicy.JustCollision:
                         return true;
                     case PickUpPolicy.CollisionAndTrigger:
-                        return triggerDown;
+                        return Time.fixedTime < lastTriggerDownTime + triggerDownMemory;
                     default:
                         return false;
                 }
@@ -152,13 +158,17 @@ namespace TowerGame
             /// </summary>
             /// <param name="policy"> The put-down policy to implement.</param>
             /// <param name="triggerDown"> Whether the trigger was recently depressed. </param>
+            /// <param name="floorPosition"> The transform of the room's floor. </param>
+            /// <param name="lastTriggerDownTime"> When we last detected a trigger pull. </param>
             /// <returns> Whether the item should be picked up. </returns>
-            protected bool ShouldPutDownItem(PutDownPolicy policy, Transform handPosition, Transform floorPosition)
+            protected bool ShouldPutDownItem(PutDownPolicy policy, Transform handPosition, 
+                Transform floorPosition, float lastTriggerDownTime)
             {
                 switch (policy)
                 {
                     case PutDownPolicy.CloseToGround:
-                        var distanceFromGround = Math.Abs(handPosition.TransformPoint(0, 0, 0).y - floorPosition.TransformPoint(0, 0, 0).y);
+                        var distanceFromGround = Math.Abs(handPosition.TransformPoint(0, 0, 0).y - 
+                            floorPosition.TransformPoint(0, 0, 0).y);
                         if (distanceFromGround > PutDownFloorDistanceThreshold)
                         {
                             lastTimeFarFromGround = Time.fixedTime;
@@ -168,7 +178,7 @@ namespace TowerGame
                         // becoming close to ground again. Ie., we went up and then down.
                         return (lastTimeFarFromGround > lastHeldTime);
                     case PutDownPolicy.Trigger:
-                        return triggerDown;
+                        return Time.fixedTime < lastTriggerDownTime + triggerDownMemory;
                     default:
                         return false;
                 }
