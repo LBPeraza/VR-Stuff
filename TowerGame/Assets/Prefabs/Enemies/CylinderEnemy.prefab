@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 111ad08fdbb633a48b9eb7b6881e3b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateInterval: 0.5
+  UpdateInterval: 1
   MaxHealth: 5
   CurrentHealth: 0
   PrimaryAttackDamage: 1
@@ -124,10 +124,10 @@ NavMeshAgent:
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
+  m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 1
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_WalkableMask: 1
+  m_ObstacleAvoidanceType: 1
