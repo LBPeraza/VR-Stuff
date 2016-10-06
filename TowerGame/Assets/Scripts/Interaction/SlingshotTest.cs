@@ -1,0 +1,28 @@
+﻿using UnityEngine;
+using System.Collections;
+
+namespace TowerGame
+{
+    namespace Interaction
+    {
+        public class SlingshotTest : MonoBehaviour
+        {
+
+            public TowerGame.Slingshot.Slingshot slingshot;
+            public GameObject holder;
+            public GameObject slinger;
+
+        	// Use this for initialization
+        	void Start ()
+            {
+        	   slingshot.PickUp(holder, slinger);
+        	}
+        	
+        	// Update is called once per frame
+        	void Update ()
+            {
+        	
+        	}
+        }
+    }
+}

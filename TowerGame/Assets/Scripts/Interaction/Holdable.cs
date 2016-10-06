@@ -13,7 +13,7 @@ namespace TowerGame
             public Transform HeldTransform;
             public float grabThreshold = 1.0f;
 
-            void Start()
+            public virtual void Start()
             {
                 holder = null;
                 isHeld = false;

@@ -8,9 +8,16 @@ namespace TowerGame
         public class Slingshot : TowerGame.Interaction.Holdable
         {
             private GameObject slingHand;
+            private GameObject sling;
             private bool aiming = false;
 
             public float aimThreshold = 1.0f;
+
+            public override void Start()
+            {
+                base.Start();
+                sling = this.transform.Find("sling").gameObject;
+            }
 
             public override void PickUp(GameObject yokeHand, GameObject slingHand)
             {
@@ -25,6 +32,11 @@ namespace TowerGame
                 {
                     aiming = true;
                 }
+            }
+
+            void Update()
+            {
+
             }
         }
     }
