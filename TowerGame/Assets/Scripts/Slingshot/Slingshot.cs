@@ -16,7 +16,7 @@ namespace TowerGame
             public override void Start()
             {
                 base.Start();
-                sling = this.transform.Find("sling").gameObject;
+                sling = this.transform.FindChild("sling").gameObject;
             }
 
             public override void PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
