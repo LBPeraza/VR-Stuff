@@ -34,11 +34,15 @@ namespace TowerGame
             protected GameObject room; 
 
             protected SteamVR_TrackedObject trackedObject;
+            protected SteamVR_Controller.Device controller;
             protected Holdable heldItem;
             protected float lastHeldTime;
             protected float lastTimeFarFromGround;
+            protected Holdable lastCollidedItem;
+            protected float lastCollidedItemTime;
 
-            private float triggerDownMemory = 0.4f;
+            private float collidedItemMemory = 1.0f; // seconds
+            private float triggerDownMemory = 1.0f; // seconds
             private float lastTriggerDownTime;
             private Vector3 lastPosition;
 
@@ -80,6 +84,7 @@ namespace TowerGame
                 if (candidate != null)
                 {
                     trackedObject = candidate;
+                    controller = SteamVR_Controller.Input((int)trackedObject.index);
                     return true;
                 }
 
@@ -88,49 +93,92 @@ namespace TowerGame
 
             void OnCollisionEnter(Collision collision)
             {
-                if (heldItem == null &&
-                    collision.gameObject.tag == "Holdable" &&
-                    Time.fixedTime > lastHeldTime + HoldCooldown &&
-                    ShouldPickUpItem(PickUpPolicy, lastTriggerDownTime))
+                if (collision.gameObject.tag == "Holdable")
                 {
                     Holdable item = collision.gameObject.GetComponent<Holdable>();
                     if (item == null)
                     {
                         Debug.LogWarning("Object tagged 'holdable' does not have a Holdable component");
-                    }
-                    else
+                    } else
                     {
-                        item.PickUp(this.leftHandInteractor, this.rightHandInteractor, IsLeftHand);
-                        heldItem = item;
-                        lastHeldTime = Time.fixedTime;
+                        lastCollidedItemTime = Time.fixedTime;
+                        lastCollidedItem = item;
                     }
                 }
             }
 
+            private void Vibrate()
+            {
+                controller.TriggerHapticPulse(200);
+            }
+
+            private void PickUpItem(Holdable item)
+            {
+                item.PickUp(this.leftHandInteractor, this.rightHandInteractor, IsLeftHand);
+                heldItem = item;
+                lastCollidedItem = null;
+                lastCollidedItemTime = 0;
+                lastHeldTime = Time.fixedTime;
+
+                Vibrate();
+            }
+
+            private void PutDownItem(Holdable item, Vector3 currentVelocity)
+            {
+                item.PutDown(currentVelocity);
+                heldItem = null;
+                lastHeldTime = Time.fixedTime;
+
+                Vibrate();
+            }
+
             void Update()
             {
+                // Pick Up logic
+                if (heldItem == null &&
+                    lastCollidedItem != null && Time.fixedTime < lastCollidedItemTime + collidedItemMemory &&
+                    Time.fixedTime > lastHeldTime + HoldCooldown &&
+                    ShouldPickUpItem(PickUpPolicy, lastTriggerDownTime))
+                {
+                    PickUpItem(lastCollidedItem);
+                }
+                
                 if (trackedObject != null || CheckTrackedObjectOnParent())
                 {
                     // Store trigger down so that we can use this in the OnCollisionEnter function to
                     // implement "pick up with trigger" policy.
-                    if (SteamVR_Controller.Input((int)trackedObject.index)
-                        .GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
+                    if (controller.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
                     {
                         lastTriggerDownTime = Time.fixedTime;
                     }
 
+                    // Changes pick-up/put-down policy on touchpad press.
+                    if (controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+                    {
+                        var axis = controller.GetAxis();
+                        Debug.Log(axis);
+                        if (axis.x < -0.5)
+                        {
+                            PickUpPolicy = PickUpPolicy == PickUpPolicy.JustCollision ? 
+                                PickUpPolicy.CollisionAndTrigger : PickUpPolicy.JustCollision;  
+                        }
+                        if (axis.x > 0.5)
+                        {
+                            PutDownPolicy = PutDownPolicy == PutDownPolicy.CloseToGround ?
+                                PutDownPolicy.Trigger : PutDownPolicy.CloseToGround;
+                        }
+                    }
+                    
+                    // Put down logic.
                     if (heldItem != null &&
                         Time.fixedTime > lastHeldTime + DropCooldown &&
-                        ShouldPutDownItem(PutDownPolicy, this.transform, this.room.transform, 
-                        lastTriggerDownTime))
+                        ShouldPutDownItem(PutDownPolicy, this.transform, this.room.transform, lastTriggerDownTime))
                     {
                         Vector3 velocity = (transform.position - lastPosition) / Time.deltaTime;
-                        heldItem.PutDown(velocity);
-                        heldItem = null;
-                        lastHeldTime = Time.fixedTime;
+                        PutDownItem(heldItem, velocity);
                     }
                 }
-
+                
                 lastPosition = transform.position;
             }
 

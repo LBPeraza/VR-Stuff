@@ -50,7 +50,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000013188405876}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_MotionVectors: 1
@@ -106,9 +106,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507a680aba5e1554d899f7a84f0685f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsLeftHand: 0
-  HoldCooldown: 1
-  DropCooldown: 0
+  IsLeftHand: 1
+  HoldCooldown: 2
+  DropCooldown: 2
   PutDownFloorDistanceThreshold: 0.6
   PickUpPolicy: 1
   PutDownPolicy: 0
@@ -122,5 +122,5 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
