@@ -41,36 +41,17 @@ namespace TowerGame
             protected Holdable lastCollidedItem;
             protected float lastCollidedItemTime;
 
-            private float collidedItemMemory = 1.0f; // seconds
-            private float triggerDownMemory = 1.0f; // seconds
+            private float collidedItemMemory = 0.7f; // seconds
+            private float triggerDownMemory = 0.7f; // seconds
             private float lastTriggerDownTime;
             private Vector3 lastPosition;
 
-            void Start()
+            public void Initialize(GameObject leftHand, GameObject rightHand, bool isLeftHand, GameObject room)
             {
-                if (this.transform.parent.name == "Controller (left)")
-                {
-                    leftHandInteractor = this.gameObject;
-                    rightHandInteractor = GameObject.Find("Controller (right)/Interactor");
-                    IsLeftHand = true;
-                } else
-                {
-                    rightHandInteractor = this.gameObject;
-                    leftHandInteractor = GameObject.Find("Controller (left)/Interactor");
-                    IsLeftHand = false;
-                }
-
-                if (leftHandInteractor == null || rightHandInteractor == null)
-                {
-                    Debug.LogWarning("Failed to properly initialize both interactors.");
-                }
-
-                room = GameObject.Find("[CameraRig]");
-
-                if (room == null)
-                {
-                    Debug.LogError("Could not find Camera Rig in scene.");
-                }
+                this.leftHandInteractor = leftHand;
+                this.rightHandInteractor = rightHand;
+                this.IsLeftHand = isLeftHand;
+                this.room = room;
             }
 
             /// <summary>
@@ -91,15 +72,33 @@ namespace TowerGame
                 return false;
             }
 
-            void OnCollisionEnter(Collision collision)
+            //void OnCollisionEnter(Collision collision)
+            //{
+            //    if (collision.gameObject.tag == "Holdable")
+            //    {
+            //        Holdable item = collision.gameObject.GetComponent<Holdable>();
+            //        if (item == null)
+            //        {
+            //            Debug.LogWarning("Object tagged 'holdable' does not have a Holdable component");
+            //        } else
+            //        {
+            //            lastCollidedItemTime = Time.fixedTime;
+            //            lastCollidedItem = item;
+            //        }
+            //    }
+            //}
+
+            void OnTriggerEnter(Collider collider)
             {
-                if (collision.gameObject.tag == "Holdable")
+        
+                if (collider.gameObject.tag == "Holdable")
                 {
-                    Holdable item = collision.gameObject.GetComponent<Holdable>();
+                    Holdable item = collider.gameObject.GetComponent<Holdable>();
                     if (item == null)
                     {
                         Debug.LogWarning("Object tagged 'holdable' does not have a Holdable component");
-                    } else
+                    }
+                    else
                     {
                         lastCollidedItemTime = Time.fixedTime;
                         lastCollidedItem = item;
@@ -109,16 +108,19 @@ namespace TowerGame
 
             private void Vibrate()
             {
-                controller.TriggerHapticPulse(200);
+                controller.TriggerHapticPulse(2000);
             }
 
             private void PickUpItem(Holdable item)
             {
-                item.PickUp(this.leftHandInteractor, this.rightHandInteractor, IsLeftHand);
-                heldItem = item;
+                if (item.PickUp(this.leftHandInteractor, this.rightHandInteractor, IsLeftHand))
+                {
+                    heldItem = item;
+                    lastHeldTime = Time.fixedTime;
+                }
+
                 lastCollidedItem = null;
                 lastCollidedItemTime = 0;
-                lastHeldTime = Time.fixedTime;
 
                 Vibrate();
             }
@@ -175,6 +177,7 @@ namespace TowerGame
                         ShouldPutDownItem(PutDownPolicy, this.transform, this.room.transform, lastTriggerDownTime))
                     {
                         Vector3 velocity = (transform.position - lastPosition) / Time.deltaTime;
+                        Debug.Log("throwing with velocity: " + velocity);
                         PutDownItem(heldItem, velocity);
                     }
                 }

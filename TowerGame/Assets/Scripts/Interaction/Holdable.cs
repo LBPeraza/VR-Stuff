@@ -20,7 +20,7 @@ namespace TowerGame
                 this.transform.tag = "Holdable";
             }
 
-            public virtual void PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
+            public virtual bool PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
             {
                 GameObject holdingHand = leftHandIsPickingUp ? leftHand : rightHand;
                 Transform holdingHandTransform = holdingHand.transform;
@@ -39,7 +39,11 @@ namespace TowerGame
                         this.transform.localPosition = Vector3.zero;
                         this.transform.localRotation = Quaternion.identity;
                     }
+
+                    return true;
                 }
+
+                return false;
             }
 
             /// <summary>

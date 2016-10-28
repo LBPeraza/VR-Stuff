@@ -21,17 +21,29 @@ public class TowerBuilder : MonoBehaviour {
 			shaft = new GameObject().transform;
 			shaft.name = "shaft";
 			shaft.SetParent (this.transform);
-		}
+        }
+        shaft.localPosition = Vector3.zero;
 
-		if (shaft.childCount != Height) {
-			foreach (Transform child in shaft) {
+        Transform shaftBricks = shaft.FindChild("bricks");
+        if (shaftBricks == null)
+        {
+            shaftBricks = new GameObject().transform;
+            shaftBricks.name = "bricks";
+            shaftBricks.SetParent(shaft);
+        }
+        shaftBricks.localPosition = Vector3.zero;
+
+
+        if (shaftBricks.childCount != Height) {
+			foreach (Transform child in shaftBricks) {
 				DestroyImmediate (child.gameObject);
 			}
 
 			for (int i = 0; i < Height; i++) {
-				GameObject brick = (GameObject) Instantiate(Brick, new Vector3(0, i, 0), Quaternion.identity);
-				brick.transform.SetParent (shaft);
-			}
+				GameObject brick = (GameObject) Instantiate(Brick, Vector3.zero, Quaternion.identity);
+				brick.transform.SetParent (shaftBricks);
+                brick.transform.localPosition = new Vector3(0, i + (brick.transform.localScale.y / 2), 0);
+            }
 		}
 	}
 
@@ -42,17 +54,29 @@ public class TowerBuilder : MonoBehaviour {
 			platform.name = "platform";
 			platform.SetParent (this.transform);
 		}
+        platform.localPosition = new Vector3(0, Height, 0);
 
-		if (platform.childCount != PlatformWidth * PlatformWidth) {
-			foreach (Transform child in platform) {
+        Transform platformBricks = platform.FindChild("bricks");
+        if (platformBricks == null)
+        {
+            platformBricks = new GameObject().transform;
+            platformBricks.name = "bricks";
+            platformBricks.SetParent(platform);
+        }
+        platformBricks.localPosition = Vector3.zero;
+
+
+        if (platformBricks.childCount != PlatformWidth * PlatformWidth) {
+			foreach (Transform child in platformBricks) {
 				DestroyImmediate (child.gameObject);
 			}
 
 			for (int i = 0; i < PlatformWidth * PlatformWidth; i++) {
-				GameObject brick = (GameObject) Instantiate(Brick, new Vector3((i % PlatformWidth) - (PlatformWidth / 2),
-					Height, (i / PlatformWidth) - (PlatformWidth / 2)), Quaternion.identity);
-				brick.transform.SetParent (platform);
-				brick.transform.localScale = new Vector3 (1, 0.25f, 1);
+				GameObject brick = (GameObject) Instantiate(Brick, Vector3.zero, Quaternion.identity);
+				brick.transform.SetParent (platformBricks);
+                brick.transform.localPosition = new Vector3((i % PlatformWidth) - (PlatformWidth / 2),
+                    0, (i / PlatformWidth) - (PlatformWidth / 2));
+                brick.transform.localScale = new Vector3 (1, 0.25f, 1);
 			}
 		}
 	}

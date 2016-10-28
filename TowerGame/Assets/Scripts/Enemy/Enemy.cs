@@ -35,6 +35,8 @@ namespace TowerGame {
             public EnemyState State;
             protected AttackableEntity Target;
 
+            protected bool ReadyToBeReaped = false;
+
         	public Enemy() {
                 CurrentHealth = MaxHealth;
                 State = EnemyState.Unitialized;
@@ -75,26 +77,34 @@ namespace TowerGame {
         	}
 
             private IEnumerator InternalUpdate() {
-                while (State != EnemyState.Dead)
+                switch (State)
                 {
-                    switch (State)
-                    {
-                        case EnemyState.InTransit:
-                            CheckInRangeOfTarget();
-                            break;
-                        case EnemyState.AtTarget:
-                            if (Time.fixedTime > LastPrimaryAttackTime + PrimaryAttackCooldown)
-                            {
-                                AttackTarget();
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    // Take a break in between updates.
-                    yield return new WaitForSeconds(UpdateInterval);
+                    case EnemyState.InTransit:
+                        CheckInRangeOfTarget();
+                        break;
+                    case EnemyState.AtTarget:
+                        if (Time.fixedTime > LastPrimaryAttackTime + PrimaryAttackCooldown)
+                        {
+                            AttackTarget();
+                        }
+                        break;
+                    case EnemyState.Dead:
+                        if (ReadyToBeReaped)
+                        {
+                            Reap();
+                        }
+                        break;
+                    default:
+                        break;
                 }
+
+                // Take a break in between updates.
+                yield return new WaitForSeconds(UpdateInterval);
+            }
+
+            private void Reap()
+            {
+                Destroy(this.gameObject);
             }
 
         	private void CheckInRangeOfTarget() {
@@ -113,7 +123,10 @@ namespace TowerGame {
 
         	protected abstract void HandleDamage ();
 
-        	protected abstract void HandleDeath ();
+        	protected virtual void HandleDeath ()
+            {
+                ReadyToBeReaped = true;
+            }
         }
 
     }

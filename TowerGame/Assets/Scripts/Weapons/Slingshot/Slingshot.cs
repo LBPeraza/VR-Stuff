@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace TowerGame
 {
-    namespace Slingshot
+    namespace Weapons
     {
         public class Slingshot : TowerGame.Interaction.Holdable
         {
@@ -19,10 +19,12 @@ namespace TowerGame
                 sling = this.transform.FindChild("sling").gameObject;
             }
 
-            public override void PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
+            public override bool PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
             {
-                base.PickUp(leftHand, rightHand, leftHandIsPickingUp);
+                var ret = base.PickUp(leftHand, rightHand, leftHandIsPickingUp);
                 this.slingHand = leftHandIsPickingUp ? leftHand : rightHand;
+
+                return ret;
             }
 
             void StartShot()

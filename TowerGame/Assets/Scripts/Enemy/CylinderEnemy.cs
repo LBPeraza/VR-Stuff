@@ -12,9 +12,7 @@ public class CylinderEnemy : Enemy
 
     protected override void HandleDamage () {
 	}
-
-	protected override void HandleDeath () {
-	}
+            
 }
 
 }

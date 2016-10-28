@@ -44,6 +44,8 @@ namespace TowerGame
                     EnemySpawns[nextSpawnIndex].position, Quaternion.identity);
                 enemy.SetTarget(Tower);
                 LastEnemySpawnTime = Time.fixedTime;
+
+                TotalEnemiesSpawned++;
             }
         }
     }

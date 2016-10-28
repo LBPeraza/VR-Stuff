@@ -7,8 +7,7 @@ namespace TowerGame
     {
         public class SlingshotTest : MonoBehaviour
         {
-
-            public TowerGame.Slingshot.Slingshot slingshot;
+            public TowerGame.Weapons.Slingshot slingshot;
             public GameObject holder;
             public GameObject slinger;
 
