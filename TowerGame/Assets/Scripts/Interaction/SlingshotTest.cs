@@ -14,13 +14,16 @@ namespace TowerGame
         	// Use this for initialization
         	void Start ()
             {
-        	   slingshot.PickUp(holder, slinger, true /* is left hand picking up */);
+        	    slingshot.PickUp(holder, slinger, true /* is left hand picking up */);
+				slingshot.StartShot ();
         	}
         	
         	// Update is called once per frame
         	void Update ()
             {
-        	
+				if (Input.anyKeyDown) {
+					slingshot.Shoot ();
+				}
         	}
         }
     }

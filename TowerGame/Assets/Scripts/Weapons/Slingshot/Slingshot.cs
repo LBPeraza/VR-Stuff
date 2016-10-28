@@ -7,27 +7,41 @@ namespace TowerGame
     {
         public class Slingshot : TowerGame.Interaction.Holdable
         {
+			private GameObject yokeHand;
             private GameObject slingHand;
             private GameObject sling;
+			private Transform slingOrigin;
             private bool aiming = false;
+			private Rigidbody slingRB;
+
+			private Transform slingTransform;
 
             public float aimThreshold = 1.0f;
+			public float slingVelFactor = 200f;
+			public float slingForceFactor = 20000f;
 
             public override void Start()
             {
                 base.Start();
-                sling = this.transform.FindChild("sling").gameObject;
+				slingTransform = transform.Find ("SlingPos").transform;
+				sling = transform.Find ("Sling").gameObject;
+				slingRB = sling.GetComponent<Rigidbody> ();
+                // sling = this.transform.Find ("sling").gameObject;
+				// slingOrigin = this.transform.Find ("SlingOrigin");
             }
 
             public override bool PickUp(GameObject leftHand, GameObject rightHand, bool leftHandIsPickingUp)
             {
-                var ret = base.PickUp(leftHand, rightHand, leftHandIsPickingUp);
-                this.slingHand = leftHandIsPickingUp ? leftHand : rightHand;
+                var success = base.PickUp(leftHand, rightHand, leftHandIsPickingUp);
 
-                return ret;
+                base.PickUp(leftHand, rightHand, leftHandIsPickingUp);
+				yokeHand = leftHandIsPickingUp ? leftHand : rightHand;
+                slingHand = leftHandIsPickingUp ? rightHand : leftHand;
+
+                return success;
             }
 
-            void StartShot()
+            public void StartShot()
             {
                 Transform slingTransform = slingHand.transform;
                 if (!aiming && Vector3.Distance(slingTransform.position, transform.position) < aimThreshold)
@@ -36,10 +50,28 @@ namespace TowerGame
                 }
             }
 
-            void Update()
-            {
+			public override void Update() {
+				base.Update ();
+				sling.transform.rotation = slingTransform.rotation;
 
-            }
+				Vector3 posDelta;
+				if (aiming) {
+					posDelta = slingHand.transform.position - sling.transform.position;
+					slingRB.velocity = posDelta * Time.fixedDeltaTime * slingVelFactor;
+				} else {
+					//sling.transform.position = slingTransform.position;
+					posDelta = slingTransform.position - sling.transform.position;
+					slingRB.AddForce (
+						posDelta * Time.fixedDeltaTime * slingForceFactor
+					);
+					//sling.transform.rotation = slingTransform.rotation;
+				}
+			}
+
+			public void Shoot() {
+				if (aiming)
+					aiming = false;
+			}
         }
     }
 }
