@@ -15,8 +15,8 @@ namespace TowerGame
             public Transform HeldTransform;
             public float grabThreshold = 1.0f;
 
-			public float velocityFactor = 2000f;
-			public float rotationFactor = 20f;
+			public float velocityFactor = 4000f;
+			public float rotationFactor = 40f;
 
 			public GameObject GetHolder() {
 				return holder;
@@ -39,9 +39,10 @@ namespace TowerGame
                 {
 					isHeld = true;
 					holder = holdingHand;
-					interactionPoint.position = Vector3.zero;
-					interactionPoint.rotation = Quaternion.identity;
+                    interactionPoint.position = holdingHand.transform.position;
+                    interactionPoint.rotation = holdingHand.transform.rotation;
 					interactionPoint.SetParent (transform, true);
+                    return true;
 					/*
                     isHeld = true;
                     this.GetComponent<Rigidbody>().isKinematic = true;
@@ -68,12 +69,16 @@ namespace TowerGame
             /// <summary>
             /// Puts down the item.
             /// </summary>
-            /// <param name="velocity"> The velocity with which the item is being dropped. </param>
-            public void PutDown(Vector3 velocity)
+            public virtual bool PutDown()
             {
-                holder = null;
-                isHeld = false;
-				interactionPoint.SetParent (null);
+                if (isHeld)
+                {
+                    holder = null;
+                    isHeld = false;
+                    interactionPoint.SetParent(null);
+                    return true;
+                }
+                return false;
                 //this.GetComponent<Rigidbody>().isKinematic = false;
                 //this.GetComponent<Rigidbody>().AddForce(velocity, ForceMode.VelocityChange);
             }
@@ -85,7 +90,7 @@ namespace TowerGame
 
 			public virtual void Update() {
 				if (IsHeld () && holder) {
-					Vector3 posDelta = holder.transform.position - transform.position;
+					Vector3 posDelta = holder.transform.position - interactionPoint.position;
 					this.rigidbody.velocity = posDelta * Time.fixedDeltaTime * velocityFactor;
 
 					Quaternion rotationDelta = holder.transform.rotation * Quaternion.Inverse (interactionPoint.rotation);

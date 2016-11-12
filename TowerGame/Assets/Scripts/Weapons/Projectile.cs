@@ -18,7 +18,6 @@ namespace TowerGame
                 var attackableEntity = collision.gameObject.GetComponent<TowerGame.AttackableEntity>();
                 if (attackableEntity != null && (FriendlyFireEnabled || attackableEntity != Firer))
                 {
-                    Debug.Log("hurt enemy!");
                     attackableEntity.ReceiveDamage(Damage);
                     ResetProjectile();
                 }

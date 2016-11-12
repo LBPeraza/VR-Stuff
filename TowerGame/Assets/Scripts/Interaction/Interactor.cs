@@ -34,7 +34,6 @@ namespace TowerGame
             protected GameObject room; 
 
             protected SteamVR_TrackedObject trackedObject;
-            protected SteamVR_Controller.Device controller;
             protected Holdable heldItem;
             protected float lastHeldTime;
             protected float lastTimeFarFromGround;
@@ -52,6 +51,19 @@ namespace TowerGame
                 this.rightHandInteractor = rightHand;
                 this.IsLeftHand = isLeftHand;
                 this.room = room;
+
+                if (isLeftHand)
+                {
+                    InputManager.OnLeftTriggerClick += OnTriggerClick;
+                } else
+                {
+                    InputManager.OnRightTriggerClick += OnTriggerClick;
+                }
+            }
+
+            private void OnTriggerClick()
+            {
+                lastTriggerDownTime = Time.fixedTime;
             }
 
             /// <summary>
@@ -65,32 +77,15 @@ namespace TowerGame
                 if (candidate != null)
                 {
                     trackedObject = candidate;
-                    controller = SteamVR_Controller.Input((int)trackedObject.index);
                     return true;
                 }
 
                 return false;
             }
 
-            //void OnCollisionEnter(Collision collision)
-            //{
-            //    if (collision.gameObject.tag == "Holdable")
-            //    {
-            //        Holdable item = collision.gameObject.GetComponent<Holdable>();
-            //        if (item == null)
-            //        {
-            //            Debug.LogWarning("Object tagged 'holdable' does not have a Holdable component");
-            //        } else
-            //        {
-            //            lastCollidedItemTime = Time.fixedTime;
-            //            lastCollidedItem = item;
-            //        }
-            //    }
-            //}
-
             void OnTriggerEnter(Collider collider)
             {
-        
+                // TODO: make sure that the colliders on the interactor dont collide with themselves.
                 if (collider.gameObject.tag == "Holdable")
                 {
                     Holdable item = collider.gameObject.GetComponent<Holdable>();
@@ -108,7 +103,7 @@ namespace TowerGame
 
             private void Vibrate()
             {
-                controller.TriggerHapticPulse(2000);
+                InputManager.LeftController.TriggerHapticPulse(2000);
             }
 
             private void PickUpItem(Holdable item)
@@ -127,7 +122,7 @@ namespace TowerGame
 
             private void PutDownItem(Holdable item, Vector3 currentVelocity)
             {
-                item.PutDown(currentVelocity);
+                item.PutDown();
                 heldItem = null;
                 lastHeldTime = Time.fixedTime;
 
@@ -147,29 +142,22 @@ namespace TowerGame
                 
                 if (trackedObject != null || CheckTrackedObjectOnParent())
                 {
-                    // Store trigger down so that we can use this in the OnCollisionEnter function to
-                    // implement "pick up with trigger" policy.
-                    if (controller.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
-                    {
-                        lastTriggerDownTime = Time.fixedTime;
-                    }
-
                     // Changes pick-up/put-down policy on touchpad press.
-                    if (controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-                    {
-                        var axis = controller.GetAxis();
-                        Debug.Log(axis);
-                        if (axis.x < -0.5)
-                        {
-                            PickUpPolicy = PickUpPolicy == PickUpPolicy.JustCollision ? 
-                                PickUpPolicy.CollisionAndTrigger : PickUpPolicy.JustCollision;  
-                        }
-                        if (axis.x > 0.5)
-                        {
-                            PutDownPolicy = PutDownPolicy == PutDownPolicy.CloseToGround ?
-                                PutDownPolicy.Trigger : PutDownPolicy.CloseToGround;
-                        }
-                    }
+                    //if (controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+                    //{
+                    //    var axis = controller.GetAxis();
+                    //    Debug.Log(axis);
+                    //    if (axis.x < -0.5)
+                    //    {
+                    //        PickUpPolicy = PickUpPolicy == PickUpPolicy.JustCollision ? 
+                    //            PickUpPolicy.CollisionAndTrigger : PickUpPolicy.JustCollision;  
+                    //    }
+                    //    if (axis.x > 0.5)
+                    //    {
+                    //        PutDownPolicy = PutDownPolicy == PutDownPolicy.CloseToGround ?
+                    //            PutDownPolicy.Trigger : PutDownPolicy.CloseToGround;
+                    //    }
+                    //}
                     
                     // Put down logic.
                     if (heldItem != null &&
@@ -177,7 +165,6 @@ namespace TowerGame
                         ShouldPutDownItem(PutDownPolicy, this.transform, this.room.transform, lastTriggerDownTime))
                     {
                         Vector3 velocity = (transform.position - lastPosition) / Time.deltaTime;
-                        Debug.Log("throwing with velocity: " + velocity);
                         PutDownItem(heldItem, velocity);
                     }
                 }
