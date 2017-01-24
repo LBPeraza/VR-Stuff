@@ -56,7 +56,6 @@ namespace InternetGame
         /// <returns>Total length of link used.</returns>
         public float End(Transform endPoint = null)
         {
-            Debug.Log("Ending chain");
             if (endPoint)
             {
                 Pointer = endPoint;
@@ -71,8 +70,6 @@ namespace InternetGame
 
         private void AddNewSegment()
         {
-            Debug.Log("Trying to add new segment");
-
             // Time to add a new interval.
             var currentPointerPos = Pointer.position;
             var segmentLength = Vector3.Distance(lastSegmentEnd, currentPointerPos);
@@ -88,7 +85,7 @@ namespace InternetGame
                 linkSegment.Length = segmentLength;
 
                 segment.transform.parent = linkSegmentContainer.transform;
-                segment.transform.position = (lastSegmentEnd + currentPointerPos)/2;
+                segment.transform.position = (lastSegmentEnd + currentPointerPos) / 2;
                 // Make as long as the pointer has traveled.
                 segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
                 // Rotate the link to align with the gap between the two points.
@@ -101,13 +98,10 @@ namespace InternetGame
 
         public void Update()
         {
-            if (Time.fixedTime - lastSegmentAddTime >= SegmentAddInterval)
+            if (!Finished && Time.fixedTime - lastSegmentAddTime >= SegmentAddInterval)
             {
                 AddNewSegment();
             }
         }
-
-
     }
-
 }

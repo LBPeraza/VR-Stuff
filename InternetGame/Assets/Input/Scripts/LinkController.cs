@@ -17,7 +17,6 @@ namespace InternetGame
 
         public void TriggerDown(object sender, ClickedEventArgs args)
         {
-            Debug.Log("Trigger down");
             GameObject LinkContainer = LinkFactory.CreateLink();
             LinkContainer.GetComponent<Link>().Initialize(InputManager.RightControllerObject.transform);
 
@@ -26,10 +25,11 @@ namespace InternetGame
 
         public void TriggerUp(object sender, ClickedEventArgs args)
         {
-            Debug.Log("Trigger up");
             if (CurrentLink != null)
             {
-                CurrentLink.GetComponent<Link>().End();
+                var currentLinkComponent = CurrentLink.GetComponent<Link>();
+                currentLinkComponent.End();
+                Destroy(currentLinkComponent);
                 CurrentLink = null;
             }
         }
