@@ -18,9 +18,22 @@ namespace InternetGame
         public void TriggerDown(object sender, ClickedEventArgs args)
         {
             GameObject LinkContainer = LinkFactory.CreateLink();
-            LinkContainer.GetComponent<Link>().Initialize(InputManager.RightControllerObject.transform);
+            var linkSegment = LinkContainer.GetComponent<Link>();
+            linkSegment.Initialize(InputManager.RightControllerObject.transform);
+            // Listen for sever events.
+            linkSegment.OnSever += LinkSegment_OnSever;
 
             CurrentLink = LinkContainer;
+        }
+
+        private void LinkSegment_OnSever()
+        {
+            DestroyLink();
+        }
+
+        private void DestroyLink()
+        {
+            CurrentLink = null;
         }
 
         public void TriggerUp(object sender, ClickedEventArgs args)
@@ -29,8 +42,8 @@ namespace InternetGame
             {
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
                 currentLinkComponent.End();
-                Destroy(currentLinkComponent);
-                CurrentLink = null;
+
+                DestroyLink();
             }
         }
     }

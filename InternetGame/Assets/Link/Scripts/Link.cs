@@ -8,9 +8,11 @@ namespace InternetGame
     {
         // Public state.
         public float SegmentAddInterval;
-        public float SegmentMinLength = 0.1f;
+        public float SegmentMinLength = 0.02f;
         public GameObject LinkSegmentPrefab;
         public Transform Pointer;
+        public delegate void SeverHandler();
+        public event SeverHandler OnSever;
 
         // Read-only properties.
         public List<LinkSegment> Segments;
@@ -24,6 +26,7 @@ namespace InternetGame
         private GameObject linkSegmentContainer;
         private float lastSegmentAddTime;
         private Vector3 lastSegmentEnd;
+        private bool isAnimatingDestruction = false;
 
         /// <summary>
         /// Initializes and starts the link, using the given Transform reference as the "cursor" 
@@ -47,6 +50,44 @@ namespace InternetGame
 
             lastSegmentAddTime = Time.fixedTime;
             lastSegmentEnd = pointer.position;
+        }
+
+        /// <summary>
+        /// Early-terminates the link, alerting any subscribed delegates to the severing.
+        /// </summary>
+        public void Sever()
+        {
+            Finished = true;
+            Severed = true;
+            FinishedTime = Time.fixedTime;
+
+            if (OnSever != null)
+            {
+                OnSever.Invoke();
+            }
+
+            AnimateDestroy();
+        }
+
+        public void AnimateDestroy()
+        {
+            isAnimatingDestruction = true;
+            var fadeCoroutine  = Fade();
+            StartCoroutine(fadeCoroutine);
+        }
+
+        IEnumerator Fade()
+        {
+            for (float f = .1f; f >= 0; f -= 0.001f)
+            {
+                foreach (LinkSegment segment in Segments)
+                {
+                    segment.transform.localScale = new Vector3(f, f, segment.transform.localScale.z);
+                }
+                yield return null;
+            }
+
+            Destroy(this.gameObject);
         }
 
         /// <summary>
@@ -91,6 +132,8 @@ namespace InternetGame
                 // Rotate the link to align with the gap between the two points.
                 segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
 
+                Segments.Add(linkSegment);
+
                 lastSegmentAddTime = Time.fixedTime;
                 lastSegmentEnd = currentPointerPos;
             }
@@ -102,6 +145,10 @@ namespace InternetGame
             {
                 AddNewSegment();
             }
+            //else if (isAnimatingDestruction)
+            //{
+            //    StartCoroutine("Fade");
+            //}
         }
     }
 }
