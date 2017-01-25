@@ -8,7 +8,7 @@ namespace InternetGame
     {
         // Public state.
         public float SegmentAddInterval;
-        public float SegmentMinLength = 0.02f;
+        public float SegmentMinLength = 0.005f;
         public GameObject LinkSegmentPrefab;
         public Transform Pointer;
         public delegate void SeverHandler();
@@ -78,7 +78,8 @@ namespace InternetGame
 
         IEnumerator Fade()
         {
-            for (float f = .1f; f >= 0; f -= 0.001f)
+            float originalThickness = Segments.Count > 0 ? Segments[0].transform.localScale.x : .03f;
+            for (float f = originalThickness; f >= 0; f -= 0.001f)
             {
                 foreach (LinkSegment segment in Segments)
                 {

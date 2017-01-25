@@ -6,7 +6,7 @@ namespace InternetGame
 {
     public class LinkFactory
     {
-        public static float SEGMENT_ADD_INTERVAL = 0.1f;
+        public static float SEGMENT_ADD_INTERVAL = 0.01f;
         public static GameObject CreateLink()
         {
             GameObject linkContainer = new GameObject("Link");

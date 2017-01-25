@@ -17,13 +17,16 @@ namespace InternetGame
 
         public void TriggerDown(object sender, ClickedEventArgs args)
         {
-            GameObject LinkContainer = LinkFactory.CreateLink();
-            var linkSegment = LinkContainer.GetComponent<Link>();
-            linkSegment.Initialize(InputManager.RightControllerObject.transform);
-            // Listen for sever events.
-            linkSegment.OnSever += LinkSegment_OnSever;
+            if (CurrentLink == null)
+            {
+                GameObject LinkContainer = LinkFactory.CreateLink();
+                var linkSegment = LinkContainer.GetComponent<Link>();
+                linkSegment.Initialize(InputManager.RightControllerObject.transform);
+                // Listen for sever events.
+                linkSegment.OnSever += LinkSegment_OnSever;
 
-            CurrentLink = LinkContainer;
+                CurrentLink = LinkContainer;
+            }
         }
 
         private void LinkSegment_OnSever()

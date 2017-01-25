@@ -9,10 +9,13 @@ namespace InternetGame
         public Link ParentLink;
         public float Length;
 
+        public float SeverGracePeriod = 1.0f; // In seconds.
+
         private bool isActive {
             get
             {
-                return ParentLink.Finished && !ParentLink.Severed;
+                return ParentLink.Finished && !ParentLink.Severed 
+                    && (Time.fixedTime > (ParentLink.FinishedTime + SeverGracePeriod));
             }
         }
 
