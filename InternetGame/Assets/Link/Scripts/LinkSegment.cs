@@ -7,21 +7,45 @@ namespace InternetGame
     public class LinkSegment : MonoBehaviour
     {
         public Link ParentLink;
+        public Material DefaultMaterial;
         public float Length;
+        public bool Saturated;
 
         public float SeverGracePeriod = 1.0f; // In seconds.
 
-        private bool isActive {
-            get
+        public void Saturate(Material m)
+        {
+            if (DefaultMaterial == null)
             {
-                return ParentLink.Finished && !ParentLink.Severed 
-                    && (Time.fixedTime > (ParentLink.FinishedTime + SeverGracePeriod));
+                DefaultMaterial = GetComponent<Renderer>().material;
+            }
+
+            var materials = GetComponent<Renderer>().materials;
+            materials[0] = m;
+            GetComponent<Renderer>().materials = materials;
+
+            Saturated = true;
+        }
+
+        public void Desaturate()
+        {
+            if (Saturated && DefaultMaterial != null)
+            {
+                var materials = GetComponent<Renderer>().materials;
+                materials[0] = DefaultMaterial;
+
+                GetComponent<Renderer>().materials = materials;
+
+                Saturated = false;
             }
         }
 
         public void OnTriggerEnter(Collider col)
         {
-            if (this.isActive && col.gameObject.CompareTag("Player"))
+            if ((ParentLink.State == LinkState.AwaitingPacket 
+                || ParentLink.State == LinkState.TransmittingPacket)
+                && Time.fixedTime > ParentLink.FinishedTime + SeverGracePeriod
+                && col.gameObject.CompareTag("Player"))
             {
                 ParentLink.Sever();
             }

@@ -4,19 +4,13 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public class Packet : MonoBehaviour
+    public abstract class Packet : MonoBehaviour
     {
+        public int Size; // In "bytes".
+        public Material Indicator;
 
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+        public abstract void OnEnqueuedToPort(Port p);
+        public abstract void OnDequeuedFromPort(Port p, Link l);
+        public abstract void OnDequeuedFromLink(Link l, Port p);
     }
 }

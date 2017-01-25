@@ -1,9 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace InternetGame
 {
+    public enum LinkState
+    {
+        Default,
+        UnderConstruction,
+        Severed,
+        Completed,
+        AwaitingPacket,
+        TransmittingPacket
+    }
+
     public class Link : MonoBehaviour
     {
         // Public state.
@@ -13,6 +24,7 @@ namespace InternetGame
         public Transform Pointer;
         public delegate void SeverHandler();
         public event SeverHandler OnSever;
+        public float Bandwidth; // Meters/second.
 
         // Read-only properties.
         public List<LinkSegment> Segments;
@@ -21,12 +33,18 @@ namespace InternetGame
         public float? FinishedTime;
         public bool Severed;
         public float TotalLength;
+        public bool IsTransmittingPacket;
+        public Packet Packet;
+        public float TransmissionProgress;
+        public LinkState State;
 
         // Private state.
         private GameObject linkSegmentContainer;
         private float lastSegmentAddTime;
         private Vector3 lastSegmentEnd;
-        private bool isAnimatingDestruction = false;
+        private bool isAnimatingDestruction;
+        private int PacketStart, PacketEnd;
+        public float NeededProgress;
 
         /// <summary>
         /// Initializes and starts the link, using the given Transform reference as the "cursor" 
@@ -35,6 +53,9 @@ namespace InternetGame
         /// <param name="pointer">The pointer that the link will follow.</param>
         public void Initialize(Transform pointer)
         {
+            IsTransmittingPacket = false;
+            isAnimatingDestruction = false;
+
             // Make container for link segments.
             linkSegmentContainer = new GameObject("Segments");
             linkSegmentContainer.transform.parent = this.transform;
@@ -50,6 +71,8 @@ namespace InternetGame
 
             lastSegmentAddTime = Time.fixedTime;
             lastSegmentEnd = pointer.position;
+
+            State = LinkState.UnderConstruction;
         }
 
         /// <summary>
@@ -60,6 +83,7 @@ namespace InternetGame
             Finished = true;
             Severed = true;
             FinishedTime = Time.fixedTime;
+            State = LinkState.Severed;
 
             if (OnSever != null)
             {
@@ -98,16 +122,36 @@ namespace InternetGame
         /// <returns>Total length of link used.</returns>
         public float End(Transform endPoint = null)
         {
-            if (endPoint)
+            if (State == LinkState.UnderConstruction)
             {
-                Pointer = endPoint;
-            }
-            AddNewSegment();
+                if (endPoint)
+                {
+                    Pointer = endPoint;
+                }
+                AddNewSegment();
 
-            Finished = true;
-            FinishedTime = Time.fixedTime;
+                Finished = true;
+                FinishedTime = Time.fixedTime;
+
+                State = LinkState.AwaitingPacket;
+            }
 
             return TotalLength;
+        }
+
+        /// <summary>
+        /// Adds a packet to the link.
+        /// </summary>
+        /// <param name="p">The Packet to add.</param>
+        public void EnqueuePacket(Packet p)
+        {
+            if (State == LinkState.AwaitingPacket && !IsTransmittingPacket) {
+                Packet = p;
+                IsTransmittingPacket = true;
+                TransmissionProgress = 0.0f;
+                NeededProgress = (Packet.Size * TotalLength);
+                State = LinkState.TransmittingPacket;
+            }
         }
 
         private void AddNewSegment()
@@ -140,16 +184,81 @@ namespace InternetGame
             }
         }
 
+        public void EndTransmission()
+        {
+            if (State == LinkState.TransmittingPacket)
+            {
+                Packet.OnDequeuedFromLink(this, null);
+
+                // Desaturate all segments.
+                DesaturateSegments(0, Segments.Count);
+
+                PacketStart = 0;
+                PacketEnd = 0;
+                TransmissionProgress = 0.0f;
+                NeededProgress = 0.0f;
+
+                IsTransmittingPacket = false;
+                Packet = null;
+
+                State = LinkState.AwaitingPacket;
+            }
+        }
+
+        private void SaturateSegments(int start, int end, Packet p)
+        {
+            for (int i = start; i < end; i++)
+            {
+                Segments[i].Saturate(p.Indicator);
+            }
+        }
+
+        private void DesaturateSegments(int start, int end)
+        {
+            for (int i = start; i < end; i++)
+            {
+                Segments[i].Desaturate();
+            }
+        }
+
         public void Update()
         {
-            if (!Finished && Time.fixedTime - lastSegmentAddTime >= SegmentAddInterval)
+            switch (State)
             {
-                AddNewSegment();
+                case LinkState.UnderConstruction:
+                    if (Time.fixedTime - lastSegmentAddTime >= SegmentAddInterval)
+                    {
+                        AddNewSegment();
+                    }
+                    break;
+                case LinkState.TransmittingPacket:
+                    int oldStart = PacketStart;
+                    int oldEnd = PacketEnd;
+
+                    // Incrememnt progress
+                    TransmissionProgress += Bandwidth * Time.deltaTime;
+
+                    if (TransmissionProgress >= Packet.Size)
+                    {
+                        // Transmission completed.
+                        EndTransmission();
+                    }
+                    else
+                    {
+                        float percentageProgress = TransmissionProgress / NeededProgress;
+                        PacketEnd = (int)(Segments.Count * percentageProgress);
+                        PacketStart = 0;
+
+                        // Deactivate these segments.
+                        DesaturateSegments(oldStart, Math.Min(PacketStart, oldEnd));
+
+                        // Activate these segments.
+                        SaturateSegments(Math.Max(oldEnd, PacketStart), PacketEnd, Packet);
+                    }
+                    
+                    break;
             }
-            //else if (isAnimatingDestruction)
-            //{
-            //    StartCoroutine("Fade");
-            //}
+            
         }
     }
 }

@@ -7,12 +7,22 @@ namespace InternetGame
     public class LinkController : MonoBehaviour
     {
         private GameObject CurrentLink;
+        private GameObject LastLink;
 
         // Use this for initialization
         void Start()
         {
             InputManager.RightTriggerClicked += TriggerDown;
             InputManager.RightTriggerUnclicked += TriggerUp;
+            InputManager.RightPadClicked += AddPacketToLink;
+        }
+
+        private void AddPacketToLink(object sender, ClickedEventArgs args)
+        {
+            if (LastLink != null)
+            {
+                LastLink.GetComponent<Link>().EnqueuePacket(PacketFactory.CreateEmail());
+            }
         }
 
         public void TriggerDown(object sender, ClickedEventArgs args)
@@ -45,6 +55,8 @@ namespace InternetGame
             {
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
                 currentLinkComponent.End();
+
+                LastLink = CurrentLink;
 
                 DestroyLink();
             }
