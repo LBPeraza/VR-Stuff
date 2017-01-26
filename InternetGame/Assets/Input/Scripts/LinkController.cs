@@ -155,6 +155,9 @@ namespace InternetGame
                 if (Player.IsOutOfBandwidth())
                 {
                     CurrentLink.GetComponent<Link>().End();
+
+                    State = LinkControllerState.Inactive;
+                    UpdateModel();
                 }
             }
         }

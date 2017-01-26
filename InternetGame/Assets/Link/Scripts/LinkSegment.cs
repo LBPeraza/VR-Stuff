@@ -40,12 +40,16 @@ namespace InternetGame
             }
         }
 
+        public bool LinkIsAllowedToBeSevered(Link l)
+        {
+            return (!(l.State == LinkState.UnderConstruction)
+                && Time.fixedTime > ParentLink.FinishedTime + SeverGracePeriod) ;
+        }
+
         public void OnTriggerEnter(Collider col)
         {
-            if ((ParentLink.State == LinkState.AwaitingPacket 
-                || ParentLink.State == LinkState.TransmittingPacket)
-                && Time.fixedTime > ParentLink.FinishedTime + SeverGracePeriod
-                && col.gameObject.CompareTag("Player"))
+            if (col.gameObject.CompareTag("Player") && 
+                LinkIsAllowedToBeSevered(ParentLink))
             {
                 ParentLink.Sever();
             }

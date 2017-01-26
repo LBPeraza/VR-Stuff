@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    public struct PlayerState
+    {
+        public float BandwidthRemaining;
+        public float MaximumBandwidth;
+    }
+
     public class Player : MonoBehaviour
     {
         public LinkController LeftCursor;
@@ -12,9 +18,17 @@ namespace InternetGame
         public float TotalBandwidth;
         public float MaxBandwidth;
 
+        public PlayerUI PlayerUI;
+
+        public PlayerState CurrentState;
+
         public void Initialize()
         {
             TotalBandwidth = MaxBandwidth;
+
+            CurrentState = new PlayerState();
+            CurrentState.MaximumBandwidth = MaxBandwidth;
+            CurrentState.BandwidthRemaining = TotalBandwidth;
 
             if (LeftCursor != null)
             {
@@ -25,6 +39,17 @@ namespace InternetGame
             {
                 RightCursor.Initialize(true /* is right hand */, this);
             }
+        }
+
+        public void Update()
+        {
+            CurrentState.BandwidthRemaining = TotalBandwidth;
+            UpdatePlayerUI();
+        }
+
+        public void UpdatePlayerUI()
+        {
+            PlayerUI.UpdatePlayerState(CurrentState);
         }
         
         public bool IsOutOfBandwidth()

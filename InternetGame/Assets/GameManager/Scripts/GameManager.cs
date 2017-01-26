@@ -6,8 +6,7 @@ namespace InternetGame
 {
     public struct GameState
     {
-        float BandwidthRemaining;
-        float MaximumBandwidth;
+        
     }
 
     public class GameManager : MonoBehaviour

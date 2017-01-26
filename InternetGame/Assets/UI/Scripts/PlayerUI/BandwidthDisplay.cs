@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public interface BandwidthDisplay 
+    public abstract class BandwidthDisplay : MonoBehaviour
     {
-        void Initialize();
-        void UpdateRemainingBandwidth(float percentage);
+        public abstract void Initialize();
+        public abstract void UpdateRemainingBandwidth(float percentage);
     }
 }
