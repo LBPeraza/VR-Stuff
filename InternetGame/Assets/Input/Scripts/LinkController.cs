@@ -13,6 +13,9 @@ namespace InternetGame
 
     public class LinkController : MonoBehaviour
     {
+        public bool IsRightHand;
+        public Player Player;
+
         public GameObject ArrowModel;
         public GameObject HandModel;
         public GameObject GrabModel;
@@ -26,13 +29,24 @@ namespace InternetGame
         private PacketSink NearSink;
 
         // Use this for initialization
-        void Start()
+        public void Initialize(bool isRightHand, Player p)
         {
+            Player = p;
+            IsRightHand = isRightHand;
+
             State = LinkControllerState.Inactive;
             UpdateModel();
 
-            InputManager.RightTriggerClicked += TriggerDown;
-            InputManager.RightTriggerUnclicked += TriggerUp;
+            if (IsRightHand)
+            {
+                InputManager.RightTriggerClicked += TriggerDown;
+                InputManager.RightTriggerUnclicked += TriggerUp;
+            }
+            else
+            {
+                InputManager.LeftTriggerClicked += TriggerDown;
+                InputManager.LeftTriggerUnclicked += TriggerUp;
+            }
         }
 
         private void UpdateModel()
@@ -57,15 +71,15 @@ namespace InternetGame
             }
         }
 
-
         private void AddLink()
         {
             GameObject LinkContainer = LinkFactory.CreateLink(NearSource);
             var linkSegment = LinkContainer.GetComponent<Link>();
-            linkSegment.Initialize(InputManager.RightControllerObject.transform);
+            linkSegment.Initialize(this.transform);
 
             // Listen for sever events.
             linkSegment.OnSever += LinkSegment_OnSever;
+            linkSegment.OnConstructionProgress += LinkSegment_OnConstructionProgress;
 
             CurrentLink = LinkContainer;
 
@@ -75,7 +89,7 @@ namespace InternetGame
 
         public void TriggerDown(object sender, ClickedEventArgs args)
         {
-            if (CurrentLink == null && NearSource != null)
+            if (CurrentLink == null && NearSource != null && !Player.IsOutOfBandwidth())
             {
                 AddLink();
             }
@@ -91,7 +105,6 @@ namespace InternetGame
                 State = LinkControllerState.OverSource;
                 UpdateModel();
             }
-
             else if (CurrentLink != null && other.CompareTag("Sink"))
             {
                 // In close proximity of packet sink.
@@ -126,9 +139,24 @@ namespace InternetGame
             }
         }
 
-        private void LinkSegment_OnSever()
+        private void LinkSegment_OnSever(float totalLength)
         {
+            Player.TotalBandwidth += totalLength;
+
             DestroyLink();
+        }
+
+        private void LinkSegment_OnConstructionProgress(float deltaLength, 
+            float totalLengthSoFar)
+        {
+            if (CurrentLink != null)
+            {
+                Player.TotalBandwidth -= deltaLength;
+                if (Player.IsOutOfBandwidth())
+                {
+                    CurrentLink.GetComponent<Link>().End();
+                }
+            }
         }
 
         private void DestroyLink()
@@ -138,15 +166,7 @@ namespace InternetGame
 
         public void TriggerUp(object sender, ClickedEventArgs args)
         {
-            //if (CurrentLink != null)
-            //{
-            //    var currentLinkComponent = CurrentLink.GetComponent<Link>();
-            //    currentLinkComponent.End();
 
-            //    LastLink = CurrentLink;
-
-            //    DestroyLink();
-            //}
         }
     }
 }

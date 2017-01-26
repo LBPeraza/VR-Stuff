@@ -12,7 +12,8 @@ namespace InternetGame
         Severed,
         Completed,
         AwaitingPacket,
-        TransmittingPacket
+        TransmittingPacket,
+        EarlyTerminated
     }
 
     public class Link : MonoBehaviour
@@ -22,8 +23,13 @@ namespace InternetGame
         public float SegmentMinLength = 0.005f;
         public GameObject LinkSegmentPrefab;
         public Transform Pointer;
-        public delegate void SeverHandler();
+
+        public delegate void SeverHandler(float totalLength);
         public event SeverHandler OnSever;
+
+        public delegate void OnConstructionProgressHandler(float deltaLength, float totalLengthSoFar);
+        public event OnConstructionProgressHandler OnConstructionProgress;
+
         public float Bandwidth; // Meters/second.
         public PacketSource Source;
         public PacketSink Sink;
@@ -83,6 +89,12 @@ namespace InternetGame
         /// </summary>
         public void Sever()
         {
+            // Put packet back into source if early terminates.
+            if (State == LinkState.TransmittingPacket || State == LinkState.EarlyTerminated)
+            {
+                Source.EnqueuePacket(Packet);
+            }
+
             Finished = true;
             Severed = true;
             FinishedTime = Time.fixedTime;
@@ -90,7 +102,7 @@ namespace InternetGame
 
             if (OnSever != null)
             {
-                OnSever.Invoke();
+                OnSever.Invoke(TotalLength);
             }
 
             AnimateDestroy();
@@ -123,23 +135,30 @@ namespace InternetGame
         /// </summary>
         /// <param name="t">The sink of the link.</param>
         /// <returns>Total length of link used.</returns>
-        public float End(PacketSink t)
+        public float End(PacketSink t = null)
         {
             if (State == LinkState.UnderConstruction)
             {
-                // End at the sink.
-                Pointer = t.transform;
-                AddNewSegment();
+                if (t != null)
+                {
+                    // End at the sink.
+                    Pointer = t.transform;
+                    AddNewSegment();
+
+                    State = LinkState.AwaitingPacket;
+
+                    Sink = t;
+
+                    Source.OnLinkEstablished(this, Sink);
+                    Sink.OnLinkEstablished(this, Source);
+                }
+                else
+                {
+                    State = LinkState.EarlyTerminated;
+                }
 
                 Finished = true;
                 FinishedTime = Time.fixedTime;
-
-                State = LinkState.AwaitingPacket;
-
-                Sink = t;
-
-                Source.OnLinkEstablished(this, Sink);
-                Sink.OnLinkEstablished(this, Source);
             }
 
             return TotalLength;
@@ -187,6 +206,12 @@ namespace InternetGame
 
                 lastSegmentAddTime = Time.fixedTime;
                 lastSegmentEnd = currentPointerPos;
+
+                // Notify handlers of progress.
+                if (OnConstructionProgress != null)
+                {
+                    OnConstructionProgress.Invoke(segmentLength, TotalLength);
+                }
             }
         }
 

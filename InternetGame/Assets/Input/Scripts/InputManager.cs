@@ -146,8 +146,9 @@ namespace InternetGame
         }
 
         // Use this for initialization
-        void Start()
+        public void Initialize()
         {
+            Debug.Log("Initializing input manager");
             InitializeControllers();
         }
 

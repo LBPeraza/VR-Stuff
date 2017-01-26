@@ -4,15 +4,24 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    public struct GameState
+    {
+        float BandwidthRemaining;
+        float MaximumBandwidth;
+    }
+
     public class GameManager : MonoBehaviour
     {
         public List<PacketSource> PacketSources;
         public List<PacketSink> PacketSinks;
+        public Player Player;
+        public InputManager InputManager;
 
         // Use this for initialization
         void Start()
         {
-
+            InputManager.Initialize();
+            Player.Initialize();
         }
 
         // Update is called once per frame
