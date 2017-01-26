@@ -8,9 +8,10 @@ namespace InternetGame
     {
         public int Size; // In "bytes".
         public Material Indicator;
+        public string Destination;
 
-        public abstract void OnEnqueuedToPort(Port p);
-        public abstract void OnDequeuedFromPort(Port p, Link l);
-        public abstract void OnDequeuedFromLink(Link l, Port p);
+        public abstract void OnEnqueuedToPort(PacketSource p);
+        public abstract void OnDequeuedFromPort(PacketSource p, Link l);
+        public abstract void OnDequeuedFromLink(Link l, PacketSink p);
     }
 }

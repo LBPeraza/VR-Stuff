@@ -13,15 +13,15 @@ namespace InternetGame
             this.Indicator = Resources.Load<Material>("EmailIndicator"); 
         }
 
-        public override void OnDequeuedFromLink(Link l, Port p)
+        public override void OnDequeuedFromLink(Link l, PacketSink p)
         {
         }
 
-        public override void OnDequeuedFromPort(Port p, Link l)
+        public override void OnDequeuedFromPort(PacketSource p, Link l)
         {
         }
 
-        public override void OnEnqueuedToPort(Port p)
+        public override void OnEnqueuedToPort(PacketSource p)
         {
         }
     }

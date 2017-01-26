@@ -25,6 +25,8 @@ namespace InternetGame
         public delegate void SeverHandler();
         public event SeverHandler OnSever;
         public float Bandwidth; // Meters/second.
+        public PacketSource Source;
+        public PacketSink Sink;
 
         // Read-only properties.
         public List<LinkSegment> Segments;
@@ -37,6 +39,7 @@ namespace InternetGame
         public Packet Packet;
         public float TransmissionProgress;
         public LinkState State;
+        public float SeedTransmissionProgress = 5.0f;
 
         // Private state.
         private GameObject linkSegmentContainer;
@@ -118,22 +121,25 @@ namespace InternetGame
         /// <summary>
         /// Ends the link, returning the total length of the link.
         /// </summary>
-        /// <param name="endPoint">Optional transform to override the endpoint of the link.</param>
+        /// <param name="t">The sink of the link.</param>
         /// <returns>Total length of link used.</returns>
-        public float End(Transform endPoint = null)
+        public float End(PacketSink t)
         {
             if (State == LinkState.UnderConstruction)
             {
-                if (endPoint)
-                {
-                    Pointer = endPoint;
-                }
+                // End at the sink.
+                Pointer = t.transform;
                 AddNewSegment();
 
                 Finished = true;
                 FinishedTime = Time.fixedTime;
 
                 State = LinkState.AwaitingPacket;
+
+                Sink = t;
+
+                Source.OnLinkEstablished(this, Sink);
+                Sink.OnLinkEstablished(this, Source);
             }
 
             return TotalLength;
@@ -148,7 +154,7 @@ namespace InternetGame
             if (State == LinkState.AwaitingPacket && !IsTransmittingPacket) {
                 Packet = p;
                 IsTransmittingPacket = true;
-                TransmissionProgress = 0.0f;
+                TransmissionProgress = SeedTransmissionProgress;
                 NeededProgress = (Packet.Size * TotalLength);
                 State = LinkState.TransmittingPacket;
             }
@@ -188,7 +194,7 @@ namespace InternetGame
         {
             if (State == LinkState.TransmittingPacket)
             {
-                Packet.OnDequeuedFromLink(this, null);
+                Packet.OnDequeuedFromLink(this, Sink);
 
                 // Desaturate all segments.
                 DesaturateSegments(0, Segments.Count);
@@ -238,7 +244,7 @@ namespace InternetGame
                     // Incrememnt progress
                     TransmissionProgress += Bandwidth * Time.deltaTime;
 
-                    if (TransmissionProgress >= Packet.Size)
+                    if (TransmissionProgress >= NeededProgress)
                     {
                         // Transmission completed.
                         EndTransmission();

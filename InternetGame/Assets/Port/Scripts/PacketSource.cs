@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public class Port : MonoBehaviour
+    public class PacketSource : MonoBehaviour
     {
-        public Transform ConnectionPoint;
         public List<Packet> QueuedPackets;
 
         public void EnqueuePacket(Packet p)
@@ -16,12 +15,12 @@ namespace InternetGame
             OnNewPacket(p);
         }
 
-        public Packet DequeuePacket()
+        public Packet DequeuePacket(int i)
         {
-            if (QueuedPackets.Count > 0)
+            if (QueuedPackets.Count > i)
             {
-                Packet popped = QueuedPackets[0];
-                QueuedPackets.RemoveAt(0);
+                Packet popped = QueuedPackets[i];
+                QueuedPackets.RemoveAt(i);
 
                 if (QueuedPackets.Count == 0)
                 {
@@ -33,6 +32,23 @@ namespace InternetGame
 
             // Indicates empty queue.
             return null;
+        }
+
+        private void FindAndSendPacketTo(Link l, PacketSink t)
+        {
+            for (int i = 0; i < QueuedPackets.Count; i++)
+            {
+                Packet p = QueuedPackets[i];
+                if (p.Destination == t.Address)
+                {
+                    l.EnqueuePacket(DequeuePacket(i));
+                }
+            }
+        }
+
+        public void OnLinkEstablished(Link l, PacketSink t)
+        {
+            FindAndSendPacketTo(l, t);
         }
 
         private void OnEmptied()
