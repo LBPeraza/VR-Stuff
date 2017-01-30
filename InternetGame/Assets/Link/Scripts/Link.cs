@@ -46,6 +46,8 @@ namespace InternetGame
         public float TransmissionProgress;
         public LinkState State;
         public float SeedTransmissionProgress = 5.0f;
+        // Ends of link are unseverable because they are in close proximity to other links.
+        public float UnseverableSegmentThreshold = 0.4f; // Meters
 
         // Private state.
         private GameObject linkSegmentContainer;
@@ -130,6 +132,40 @@ namespace InternetGame
             Destroy(this.gameObject);
         }
 
+        private void MakeEndsUnseverable(List<LinkSegment> segments, 
+            float lengthToMakeUnseverable)
+        {
+            float distanceTraversed = 0.0f;
+
+            foreach (LinkSegment segment in segments)
+            {
+                distanceTraversed += segment.Length;
+                if (distanceTraversed <= lengthToMakeUnseverable)
+                {
+                    segment.IsUnseverableSegment = true;
+                } else
+                {
+                    break;
+                }
+            }
+
+            distanceTraversed = 0.0f;
+            for (int i = segments.Count - 1; i >= 0; i --)
+            {
+                var segment = segments[i];
+                distanceTraversed += segment.Length;
+                if (distanceTraversed <= lengthToMakeUnseverable)
+                {
+                    segment.IsUnseverableSegment = true;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+        }
+             
         /// <summary>
         /// Ends the link, returning the total length of the link.
         /// </summary>
@@ -151,9 +187,12 @@ namespace InternetGame
 
                     Source.OnLinkEstablished(this, Sink);
                     Sink.OnLinkEstablished(this, Source);
+
+                    MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
                 }
                 else
                 {
+                    // Ended somewhere other than a sink.
                     State = LinkState.EarlyTerminated;
                 }
 

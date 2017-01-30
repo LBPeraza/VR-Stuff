@@ -12,8 +12,8 @@ namespace InternetGame
 
     public class Player : MonoBehaviour
     {
-        public LinkController LeftCursor;
-        public LinkController RightCursor;
+        public Cursor LeftCursor;
+        public Cursor RightCursor;
 
         public float TotalBandwidth;
         public float MaxBandwidth;
@@ -32,12 +32,12 @@ namespace InternetGame
 
             if (LeftCursor != null)
             {
-                LeftCursor.Initialize(false /* is right hand */, this);
+                LeftCursor.Initialize(this, false /* is right hand */);
             }
 
             if (RightCursor != null)
             {
-                RightCursor.Initialize(true /* is right hand */, this);
+                RightCursor.Initialize(this, true /* is right hand */);
             }
         }
 
@@ -49,7 +49,10 @@ namespace InternetGame
 
         public void UpdatePlayerUI()
         {
-            PlayerUI.UpdatePlayerState(CurrentState);
+            if (PlayerUI != null)
+            {
+                PlayerUI.UpdatePlayerState(CurrentState);
+            }
         }
         
         public bool IsOutOfBandwidth()

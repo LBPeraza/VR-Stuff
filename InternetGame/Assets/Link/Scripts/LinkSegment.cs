@@ -10,6 +10,7 @@ namespace InternetGame
         public Material DefaultMaterial;
         public float Length;
         public bool Saturated;
+        public bool IsUnseverableSegment;
 
         public float SeverGracePeriod = 1.0f; // In seconds.
 
@@ -48,7 +49,8 @@ namespace InternetGame
 
         public void OnTriggerEnter(Collider col)
         {
-            if (col.gameObject.CompareTag("Player") && 
+            if (!IsUnseverableSegment &&
+                col.gameObject.CompareTag("Player") && 
                 LinkIsAllowedToBeSevered(ParentLink))
             {
                 ParentLink.Sever();

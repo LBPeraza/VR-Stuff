@@ -14,6 +14,8 @@ namespace InternetGame
         public static GameObject LeftControllerObject;
         public static GameObject RightControllerObject;
 
+        public bool IsInitialized = false;
+
         public static event ClickedEventHandler LeftMenuButtonClicked;
         public static event ClickedEventHandler LeftMenuButtonUnclicked;
         public static event ClickedEventHandler LeftTriggerClicked;
@@ -148,8 +150,17 @@ namespace InternetGame
         // Use this for initialization
         public void Initialize()
         {
-            Debug.Log("Initializing input manager");
             InitializeControllers();
+
+            IsInitialized = true;
+        }
+
+        void Start()
+        {
+            if (!IsInitialized)
+            {
+                Initialize();
+            }
         }
 
         // Update is called once per frame

@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public struct GameState
+    public struct GameScore
     {
-        
+        public int BytesDelivered;
+        public int PacketsDelivered;
+        public int PacketsDropped;
     }
 
     public class GameManager : MonoBehaviour
@@ -16,19 +18,33 @@ namespace InternetGame
         public Player Player;
         public InputManager InputManager;
 
+        public GameScore Score;
+
         // Use this for initialization
         void Start()
         {
             InputManager.Initialize();
             Player.Initialize();
+
+            ResetScore(Score);
+        }
+
+        public void ResetScore(GameScore score)
+        {
+            score.BytesDelivered = 0;
+            score.PacketsDelivered = 0;
+            score.PacketsDropped = 0;
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (PacketSources[0].QueuedPackets.Count == 0)
+            if (PacketSources.Count > 0)
             {
-                Packet p = PacketFactory.CreateEmail(PacketSources[0], PacketSinks[0]);
+                if (PacketSources[0].QueuedPackets.Count == 0)
+                {
+                    Packet p = PacketFactory.CreateEmail(PacketSources[0], PacketSinks[0]);
+                }
             }
         }
     }

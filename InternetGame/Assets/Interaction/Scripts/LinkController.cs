@@ -15,10 +15,8 @@ namespace InternetGame
     {
         public bool IsRightHand;
         public Player Player;
-
-        public GameObject ArrowModel;
-        public GameObject HandModel;
-        public GameObject GrabModel;
+        public Cursor Cursor;
+        public int ObjectId;
 
         public LinkControllerState State;
 
@@ -28,14 +26,23 @@ namespace InternetGame
         private PacketSource NearSource;
         private PacketSink NearSink;
 
+        private CursorEventArgs cursorEventArgs;
+
         // Use this for initialization
-        public void Initialize(bool isRightHand, Player p)
+        public void Initialize(Player p, bool isRightHand)
         {
             Player = p;
             IsRightHand = isRightHand;
 
+            ObjectId = GetInstanceID();
+            cursorEventArgs.senderId = ObjectId;
+
+            if (Cursor == null)
+            {
+                Cursor = GetComponent<Cursor>();
+            }
+
             State = LinkControllerState.Inactive;
-            UpdateModel();
 
             if (IsRightHand)
             {
@@ -48,28 +55,7 @@ namespace InternetGame
                 InputManager.LeftTriggerUnclicked += TriggerUp;
             }
         }
-
-        private void UpdateModel()
-        {
-            switch (State)
-            {
-                case LinkControllerState.Inactive:
-                    ArrowModel.SetActive(true);
-                    HandModel.SetActive(false);
-                    GrabModel.SetActive(false);
-                    break;
-                case LinkControllerState.OverSource:
-                    ArrowModel.SetActive(false);
-                    HandModel.SetActive(true);
-                    GrabModel.SetActive(false);
-                    break;
-                case LinkControllerState.DrawingLink:
-                    ArrowModel.SetActive(false);
-                    HandModel.SetActive(false);
-                    GrabModel.SetActive(true);
-                    break;
-            }
-        }
+        
 
         private void AddLink()
         {
@@ -84,7 +70,7 @@ namespace InternetGame
             CurrentLink = LinkContainer;
 
             State = LinkControllerState.DrawingLink;
-            UpdateModel();
+            Cursor.OnGrab(cursorEventArgs);
         }
 
         public void TriggerDown(object sender, ClickedEventArgs args)
@@ -103,7 +89,7 @@ namespace InternetGame
                 NearSource = other.GetComponent<PacketSource>();
 
                 State = LinkControllerState.OverSource;
-                UpdateModel();
+                Cursor.OnEnter(cursorEventArgs);
             }
             else if (CurrentLink != null && other.CompareTag("Sink"))
             {
@@ -117,7 +103,7 @@ namespace InternetGame
                 DestroyLink();
 
                 State = LinkControllerState.Inactive;
-                UpdateModel();
+                Cursor.OnExit(cursorEventArgs);
             }
         }
 
@@ -130,7 +116,7 @@ namespace InternetGame
                 if (State == LinkControllerState.OverSource)
                 {
                     State = LinkControllerState.Inactive;
-                    UpdateModel();
+                    Cursor.OnExit(cursorEventArgs);
                 }
             }
             else if (other.CompareTag("Sink"))
@@ -156,8 +142,8 @@ namespace InternetGame
                 {
                     CurrentLink.GetComponent<Link>().End();
 
+                    Cursor.OnExit(cursorEventArgs);
                     State = LinkControllerState.Inactive;
-                    UpdateModel();
                 }
             }
         }
