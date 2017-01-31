@@ -53,6 +53,7 @@ namespace InternetGame
                 Packet p = QueuedPackets[i];
                 if (p.Destination == t.Address)
                 {
+                    p.OnDequeuedFromPort(this, l);
                     l.EnqueuePacket(DequeuePacket(i));
                     OnTransmissionStarted(l);
                 }

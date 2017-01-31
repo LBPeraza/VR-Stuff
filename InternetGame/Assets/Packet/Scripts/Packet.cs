@@ -11,7 +11,11 @@ namespace InternetGame
         public string Destination;
 
         public abstract void OnEnqueuedToPort(PacketSource p);
-        public abstract void OnDequeuedFromPort(PacketSource p, Link l);
+        public virtual void OnDequeuedFromPort(PacketSource p, Link l)
+        {
+            l.OnTransmissionProgress += OnTransmissionProgress;
+        }
         public abstract void OnDequeuedFromLink(Link l, PacketSink p);
+        public abstract void OnTransmissionProgress(float percentageDone);
     }
 }

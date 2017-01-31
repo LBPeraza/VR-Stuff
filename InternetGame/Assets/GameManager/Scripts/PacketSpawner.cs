@@ -9,7 +9,7 @@ namespace InternetGame
         public List<PacketSource> Sources;
         public List<PacketSink> Sinks;
 
-        public float SpawnInterval = 1.5f;
+        public float SpawnInterval = 3.0f;
         public float LastSpawn;
 
         private System.Random random;
@@ -30,8 +30,10 @@ namespace InternetGame
             {
                 var sourceIndex = random.Next(Sources.Count);
                 var sinkIndex = random.Next(Sinks.Count);
-                
-                Packet p = PacketFactory.CreateEmail(Sources[sourceIndex], Sinks[sinkIndex]);
+
+                // Packet p = PacketFactory.CreateEmail(Sources[sourceIndex], Sinks[sinkIndex]);
+
+                Packet p = PacketFactory.CreateEmailVirus(Sources[sourceIndex], Sinks[sinkIndex]);
 
                 LastSpawn = Time.fixedTime;
             }
@@ -43,7 +45,7 @@ namespace InternetGame
             if (Time.fixedTime > LastSpawn + SpawnInterval)
             {
                 double p = random.NextDouble();
-                if (p > 0.9)
+                if (p > 0.95)
                 {
                     SpawnPacket();
                 }

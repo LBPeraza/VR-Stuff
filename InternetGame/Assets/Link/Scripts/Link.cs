@@ -30,6 +30,9 @@ namespace InternetGame
         public delegate void OnConstructionProgressHandler(float deltaLength, float totalLengthSoFar);
         public event OnConstructionProgressHandler OnConstructionProgress;
 
+        public delegate void OnTransmissionProgressHandler(float percentage);
+        public event OnTransmissionProgressHandler OnTransmissionProgress;
+
         public float Bandwidth; // Meters/second.
         public PacketSource Source;
         public PacketSink Sink;
@@ -128,12 +131,6 @@ namespace InternetGame
         /// </summary>
         public void Sever()
         {
-            // Put packet back into source if early terminates.
-            if (State == LinkState.TransmittingPacket || State == LinkState.EarlyTerminated)
-            {
-                Source.EnqueuePacket(Packet);
-            }
-
             Finished = true;
             Severed = true;
             FinishedTime = Time.fixedTime;
@@ -145,6 +142,10 @@ namespace InternetGame
             {
                 OnSever.Invoke(TotalLength);
             }
+
+            Packet = null;
+            Source = null;
+            Sink = null;
 
             AnimateDestroy();
         }
@@ -360,6 +361,15 @@ namespace InternetGame
                     // Incrememnt progress
                     TransmissionProgress += Bandwidth * Time.deltaTime;
 
+                    float percentageProgress = TransmissionProgress / NeededProgress;
+                    percentageProgress = percentageProgress > 100.0f ? 100.0f : percentageProgress;
+
+                    // Notify listeners of progress.
+                    if (OnTransmissionProgress != null)
+                    {
+                        OnTransmissionProgress.Invoke(percentageProgress);
+                    }
+
                     if (TransmissionProgress >= NeededProgress)
                     {
                         // Transmission completed.
@@ -367,7 +377,6 @@ namespace InternetGame
                     }
                     else
                     {
-                        float percentageProgress = TransmissionProgress / NeededProgress;
                         PacketEnd = (int)(Segments.Count * percentageProgress);
                         PacketStart = 0;
 

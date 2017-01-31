@@ -24,5 +24,9 @@ namespace InternetGame
         public override void OnEnqueuedToPort(PacketSource p)
         {
         }
+
+        public override void OnTransmissionProgress(float percentageDone)
+        {
+        }
     }
 }

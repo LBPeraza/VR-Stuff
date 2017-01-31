@@ -9,6 +9,9 @@ namespace InternetGame
         public int BytesDelivered;
         public int PacketsDelivered;
         public int PacketsDropped;
+        public float VirusAmount;
+        public float NumberOfVirusesInfected;
+        public float NumberOfVirusesStopped;
     }
 
     public class GameManager : MonoBehaviour
@@ -23,7 +26,7 @@ namespace InternetGame
         public Player Player;
         public InputManager InputManager;
 
-        public GameScore Score;
+        public static GameScore Score;
 
         public static string PacketSinksPath = "/Sinks";
         public static string PacketSourcesPath = "/Sources";
@@ -58,6 +61,17 @@ namespace InternetGame
 
             AllPacketSources = new List<PacketSource>(PacketSources.GetComponentsInChildren<PacketSource>());
             AllPacketSinks = new List<PacketSink>(PacketSinks.GetComponentsInChildren<PacketSink>());
+        }
+
+        public static void AddVirus(Virus v)
+        {
+            Score.VirusAmount += v.Damage;
+            Score.NumberOfVirusesInfected++;
+        }
+
+        public static void ReportStoppedVirus(Virus v)
+        {
+            Score.NumberOfVirusesStopped++;
         }
 
         public void ResetScore(GameScore score)

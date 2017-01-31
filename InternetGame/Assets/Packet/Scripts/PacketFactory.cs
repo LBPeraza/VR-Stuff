@@ -20,5 +20,21 @@ namespace InternetGame
 
             return email;
         }
+
+        public static Virus CreateEmailVirus(PacketSource s, PacketSink t)
+        {
+            GameObject emailContainer = new GameObject("EmailVirus");
+            emailContainer.transform.parent = s.transform;
+
+            ChameleonVirus emailVirus = emailContainer.AddComponent<ChameleonVirus>();
+            emailVirus.Destination = t.Address;
+            emailVirus.ColorChangePercentageOffset = 0.1f; // 10%
+
+            emailVirus.Initialize();
+
+            s.EnqueuePacket(emailVirus);
+
+            return emailVirus;
+        }
     }
 }
