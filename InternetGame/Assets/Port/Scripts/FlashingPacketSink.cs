@@ -12,6 +12,8 @@ namespace InternetGame
         public Color StartColor;
         public Color EndColor;
 
+        public bool IsFlashing;
+
         public override void OnBecameOptionForLink(Link l)
         {
             base.OnBecameOptionForLink(l);
@@ -28,14 +30,26 @@ namespace InternetGame
 
         private void StartFlashing()
         {
-            flashingCoroutine = Flash();
-            StartCoroutine(flashingCoroutine);
+            if (!IsFlashing)
+            {
+                flashingCoroutine = Flash();
+                StartCoroutine(flashingCoroutine);
+
+                IsFlashing = true;
+            }
+            
         }
 
         private void EndFlashing()
         {
-            StopCoroutine(flashingCoroutine);
-            ResetColor();
+            if (IsFlashing)
+            {
+                StopCoroutine(flashingCoroutine);
+                ResetColor();
+
+                IsFlashing = false;
+            }
+            
         }
 
         private void ResetColor()

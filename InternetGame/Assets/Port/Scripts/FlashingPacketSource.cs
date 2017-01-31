@@ -12,10 +12,11 @@ namespace InternetGame
         public Color StartColor;
         public Color EndColor;
 
+        public bool IsFlashing;
+
         public override void OnLinkStarted(Link l)
         {
             base.OnLinkStarted(l);
-            Debug.Log("Ending flashing " + this.GetInstanceID());
 
             EndFlashing();
         }
@@ -36,21 +37,31 @@ namespace InternetGame
 
             if (this.ActiveLink == null)
             {
-                Debug.Log("No active link, so started flashing " + this.GetInstanceID());
                 StartFlashing();
             }
         }
 
         private void StartFlashing()
         {
-            flashingCoroutine = Flash();
-            StartCoroutine(flashingCoroutine);
+            if (!IsFlashing)
+            {
+                flashingCoroutine = Flash();
+                StartCoroutine(flashingCoroutine);
+
+                IsFlashing = true;
+            }
         }
 
         private void EndFlashing()
         {
-            StopCoroutine(flashingCoroutine);
-            ResetColor();
+
+            if (IsFlashing)
+            {
+                StopCoroutine(flashingCoroutine);
+                ResetColor();
+
+                IsFlashing = false;
+            }
         }
 
         private void ResetColor()

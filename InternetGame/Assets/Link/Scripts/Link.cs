@@ -141,7 +141,6 @@ namespace InternetGame
 
             UndoAlertPacketSinksOfPacket();
 
-            Debug.Log("Sending sever events!");
             if (OnSever != null)
             {
                 OnSever.Invoke(TotalLength);
@@ -324,7 +323,7 @@ namespace InternetGame
                 IsTransmittingPacket = false;
                 Packet = null;
 
-                State = LinkState.AwaitingPacket;
+                this.Sever();
             }
         }
 
