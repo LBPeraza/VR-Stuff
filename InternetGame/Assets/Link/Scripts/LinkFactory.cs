@@ -7,7 +7,7 @@ namespace InternetGame
     public class LinkFactory
     {
         public static float SEGMENT_ADD_INTERVAL = 0.05f;
-        public static float LINK_BANDWIDTH = 100.0f;
+        public static float LINK_BANDWIDTH = 200.0f;
 
         public static GameObject CreateLink(PacketSource s)
         {
