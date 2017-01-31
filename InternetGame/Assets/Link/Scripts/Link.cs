@@ -41,10 +41,12 @@ namespace InternetGame
         public float? FinishedTime;
         public bool Severed;
         public float TotalLength;
+
         public bool IsTransmittingPacket;
         public Packet Packet;
         public float TransmissionProgress;
         public LinkState State;
+
         public float SeedTransmissionProgress = 5.0f;
         // Ends of link are unseverable because they are in close proximity to other links.
         public float UnseverableSegmentThreshold = 0.4f; // Meters
@@ -56,13 +58,14 @@ namespace InternetGame
         private bool isAnimatingDestruction;
         private int PacketStart, PacketEnd;
         public float NeededProgress;
+        private List<PacketSink> possibleDestinations;
 
         /// <summary>
         /// Initializes and starts the link, using the given Transform reference as the "cursor" 
         /// that the link will follow.
         /// </summary>
         /// <param name="pointer">The pointer that the link will follow.</param>
-        public void Initialize(Transform pointer)
+        public void Initialize(PacketSource source, Transform pointer)
         {
             IsTransmittingPacket = false;
             isAnimatingDestruction = false;
@@ -80,10 +83,44 @@ namespace InternetGame
             Severed = false;
             Segments = new List<LinkSegment>();
 
+            possibleDestinations = new List<PacketSink>();
+
             lastSegmentAddTime = Time.fixedTime;
             lastSegmentEnd = pointer.position;
 
+            source.OnLinkStarted(this);
+            
+            // Finds and alerts all ports that might be destination for
+            // the current link.
+            Packet p = source.Peek();
+            if (p != null)
+            {
+                AlertPacketSinksOfPacket(p);
+            }
+
             State = LinkState.UnderConstruction;
+        }
+
+        private void AlertPacketSinksOfPacket(Packet p)
+        {
+            foreach (PacketSink sink in GameManager.AllPacketSinks)
+            {
+                if (sink.Address == p.Destination)
+                {
+                    sink.OnBecameOptionForLink(this);
+                    possibleDestinations.Add(sink);
+                }
+            }
+        }
+
+        private void UndoAlertPacketSinksOfPacket()
+        {
+            foreach (PacketSink sink in possibleDestinations)
+            {
+                 sink.OnNoLongerOptionForLink(this);   
+            }
+
+            possibleDestinations.Clear();
         }
 
         /// <summary>
@@ -102,6 +139,9 @@ namespace InternetGame
             FinishedTime = Time.fixedTime;
             State = LinkState.Severed;
 
+            UndoAlertPacketSinksOfPacket();
+
+            Debug.Log("Sending sever events!");
             if (OnSever != null)
             {
                 OnSever.Invoke(TotalLength);
@@ -132,6 +172,11 @@ namespace InternetGame
             Destroy(this.gameObject);
         }
 
+        /// <summary>
+        /// Makes the end of a current link "unseverable."
+        /// </summary>
+        /// <param name="segments">The length of segments to consider.</param>
+        /// <param name="lengthToMakeUnseverable">The distance in meters to make unseverable.</param>
         private void MakeEndsUnseverable(List<LinkSegment> segments, 
             float lengthToMakeUnseverable)
         {
@@ -177,7 +222,7 @@ namespace InternetGame
             {
                 if (t != null)
                 {
-                    // End at the sink.
+                    // End at a sink.
                     Pointer = t.transform;
                     AddNewSegment();
 
@@ -192,9 +237,11 @@ namespace InternetGame
                 }
                 else
                 {
-                    // Ended somewhere other than a sink.
+                    // End somewhere other than a sink.
                     State = LinkState.EarlyTerminated;
                 }
+
+                UndoAlertPacketSinksOfPacket();
 
                 Finished = true;
                 FinishedTime = Time.fixedTime;
@@ -218,6 +265,9 @@ namespace InternetGame
             }
         }
 
+        /// <summary>
+        /// Adds a new segment to the current Link.
+        /// </summary>
         private void AddNewSegment()
         {
             // Time to add a new interval.
@@ -254,6 +304,9 @@ namespace InternetGame
             }
         }
 
+        /// <summary>
+        /// Clears link of transmission.
+        /// </summary>
         public void EndTransmission()
         {
             if (State == LinkState.TransmittingPacket)

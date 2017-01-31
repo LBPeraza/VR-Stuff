@@ -8,12 +8,13 @@ namespace InternetGame
     public class PacketSource : MonoBehaviour
     {
         public List<Packet> QueuedPackets;
+        public Link ActiveLink;
 
         public void EnqueuePacket(Packet p)
         {
             QueuedPackets.Add(p);
             
-            OnNewPacket(p);
+            OnNewPacketEnqued(p);
         }
 
         public Packet DequeuePacket(int i)
@@ -35,6 +36,16 @@ namespace InternetGame
             return null;
         }
 
+        public Packet Peek()
+        {
+            if (QueuedPackets.Count > 0)
+            {
+                return QueuedPackets[0];
+            }
+
+            return null;
+        }
+
         private void FindAndSendPacketTo(Link l, PacketSink t)
         {
             for (int i = 0; i < QueuedPackets.Count; i++)
@@ -43,8 +54,20 @@ namespace InternetGame
                 if (p.Destination == t.Address)
                 {
                     l.EnqueuePacket(DequeuePacket(i));
+                    OnTransmissionStarted(l);
                 }
             }
+        }
+
+        public virtual void OnLinkStarted(Link l)
+        {
+            ActiveLink = l;
+
+            // Listen for sever events.
+            l.OnSever += (float totalLength) =>
+            {
+                OnTransmissionSevered(l);
+            };
         }
 
         public void OnLinkEstablished(Link l, PacketSink t)
@@ -52,24 +75,21 @@ namespace InternetGame
             FindAndSendPacketTo(l, t);
         }
 
-        private void OnEmptied()
+        protected virtual void OnEmptied()
         {
-            // TODO
         }
 
-        private void OnNewPacket(Packet p)
+        protected virtual void OnTransmissionStarted(Link l)
         {
-            // TODO
         }
 
-        private IEnumerator Flash()
+        protected virtual void OnTransmissionSevered(Link severedLink)
         {
-            return null;
+            ActiveLink = null;
         }
 
-        private IEnumerator Wilt()
+        protected virtual void OnNewPacketEnqued(Packet p)
         {
-            return null;
         }
     }
 }

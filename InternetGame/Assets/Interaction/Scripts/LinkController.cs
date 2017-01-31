@@ -61,7 +61,7 @@ namespace InternetGame
         {
             GameObject LinkContainer = LinkFactory.CreateLink(NearSource);
             var linkSegment = LinkContainer.GetComponent<Link>();
-            linkSegment.Initialize(this.transform);
+            linkSegment.Initialize(NearSource, this.transform);
 
             // Listen for sever events.
             linkSegment.OnSever += LinkSegment_OnSever;
@@ -127,6 +127,7 @@ namespace InternetGame
 
         private void LinkSegment_OnSever(float totalLength)
         {
+            // Restore the bandwidth that this link was using.
             Player.TotalBandwidth += totalLength;
 
             DestroyLink();

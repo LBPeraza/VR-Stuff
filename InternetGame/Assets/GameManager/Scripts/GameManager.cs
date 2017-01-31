@@ -15,6 +15,10 @@ namespace InternetGame
     {
         public List<PacketSource> PacketSources;
         public List<PacketSink> PacketSinks;
+
+        public static List<PacketSource> AllPacketSources;
+        public static List<PacketSink> AllPacketSinks;
+
         public Player Player;
         public InputManager InputManager;
 
@@ -23,10 +27,18 @@ namespace InternetGame
         // Use this for initialization
         void Start()
         {
+            Initialize();
+
             InputManager.Initialize();
             Player.Initialize();
 
             ResetScore(Score);
+        }
+
+        public void Initialize()
+        {
+            AllPacketSources = PacketSources;
+            AllPacketSinks = PacketSinks;
         }
 
         public void ResetScore(GameScore score)
@@ -39,7 +51,7 @@ namespace InternetGame
         // Update is called once per frame
         void Update()
         {
-            if (PacketSources.Count > 0)
+            if (PacketSources.Count > 0 && PacketSinks.Count > 0)
             {
                 if (PacketSources[0].QueuedPackets.Count == 0)
                 {
