@@ -13,16 +13,20 @@ namespace InternetGame
 
     public class GameManager : MonoBehaviour
     {
-        public List<PacketSource> PacketSources;
-        public List<PacketSink> PacketSinks;
+        public GameObject PacketSources;
+        public GameObject PacketSinks;
 
         public static List<PacketSource> AllPacketSources;
         public static List<PacketSink> AllPacketSinks;
 
+        public PacketSpawner PacketSpawner;
         public Player Player;
         public InputManager InputManager;
 
         public GameScore Score;
+
+        public static string PacketSinksPath = "/Sinks";
+        public static string PacketSourcesPath = "/Sources";
 
         // Use this for initialization
         void Start()
@@ -32,13 +36,28 @@ namespace InternetGame
             InputManager.Initialize();
             Player.Initialize();
 
+            if (PacketSpawner != null)
+            {
+                PacketSpawner.Initialize();
+            }
+
             ResetScore(Score);
         }
 
         public void Initialize()
         {
-            AllPacketSources = PacketSources;
-            AllPacketSinks = PacketSinks;
+            if (PacketSinks == null)
+            {
+                PacketSinks = GameObject.Find(PacketSinksPath);
+            }
+
+            if (PacketSources == null)
+            {
+                PacketSources = GameObject.Find(PacketSourcesPath);
+            }
+
+            AllPacketSources = new List<PacketSource>(PacketSources.GetComponentsInChildren<PacketSource>());
+            AllPacketSinks = new List<PacketSink>(PacketSinks.GetComponentsInChildren<PacketSink>());
         }
 
         public void ResetScore(GameScore score)
@@ -51,13 +70,7 @@ namespace InternetGame
         // Update is called once per frame
         void Update()
         {
-            if (PacketSources.Count > 0 && PacketSinks.Count > 0)
-            {
-                if (PacketSources[0].QueuedPackets.Count == 0)
-                {
-                    Packet p = PacketFactory.CreateEmail(PacketSources[0], PacketSinks[0]);
-                }
-            }
+            
         }
     }
 }

@@ -15,8 +15,7 @@ namespace InternetGame
         public override void OnLinkStarted(Link l)
         {
             base.OnLinkStarted(l);
-
-            Debug.Log("Link started!");
+            Debug.Log("Ending flashing " + this.GetInstanceID());
 
             EndFlashing();
         }
@@ -24,8 +23,6 @@ namespace InternetGame
         protected override void OnTransmissionSevered(Link severedLink)
         {
             base.OnTransmissionSevered(severedLink);
-
-            Debug.Log("Transmission severed and " + this.QueuedPackets.Count + " packets left");
 
             if (this.QueuedPackets.Count > 0)
             {
@@ -35,8 +32,11 @@ namespace InternetGame
 
         protected override void OnNewPacketEnqued(Packet p)
         {
+            base.OnNewPacketEnqued(p);
+
             if (this.ActiveLink == null)
             {
+                Debug.Log("No active link, so started flashing " + this.GetInstanceID());
                 StartFlashing();
             }
         }

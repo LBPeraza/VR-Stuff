@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Scoreboard : MonoBehaviour {
+namespace InternetGame
+{
+    public class Scoreboard : MonoBehaviour
+    {
+        public void Initialize()
+        {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        }
+
+        void Update()
+        {
+
+        }
+    }
 }
+
