@@ -6,7 +6,9 @@ using UnityEngine;
 namespace InternetGame
 {
     public class PacketSource : MonoBehaviour
-    {
+	{
+		public PortInfo info;
+
         public List<Packet> QueuedPackets;
         public Link ActiveLink;
 
@@ -91,5 +93,12 @@ namespace InternetGame
         protected virtual void OnNewPacketEnqued(Packet p)
         {
         }
+
+		void Start() {
+			this.info = new PortInfo (
+				this.transform.position,
+				this.transform.rotation
+			);
+		}
     }
 }
