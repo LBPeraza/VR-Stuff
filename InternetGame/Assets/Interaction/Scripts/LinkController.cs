@@ -75,6 +75,7 @@ namespace InternetGame
 
         public void TriggerDown(object sender, ClickedEventArgs args)
         {
+            Debug.Log("Controller (right? = " + IsRightHand + ") Trigger down fired");
             if (CurrentLink == null && NearSource != null && !Player.IsOutOfBandwidth())
             {
                 AddLink();
@@ -129,8 +130,6 @@ namespace InternetGame
         {
             // Restore the bandwidth that this link was using.
             Player.TotalBandwidth += totalLength;
-
-            DestroyLink();
         }
 
         private void LinkSegment_OnConstructionProgress(float deltaLength, 

@@ -49,6 +49,7 @@ namespace InternetGame
 
         public void Initialize()
         {
+            // Try to find Sinks and Sources gameobject in scene, if not already set.
             if (PacketSinks == null)
             {
                 PacketSinks = GameObject.Find(PacketSinksPath);
@@ -59,8 +60,16 @@ namespace InternetGame
                 PacketSources = GameObject.Find(PacketSourcesPath);
             }
 
-            AllPacketSources = new List<PacketSource>(PacketSources.GetComponentsInChildren<PacketSource>());
-            AllPacketSinks = new List<PacketSink>(PacketSinks.GetComponentsInChildren<PacketSink>());
+            // If we found the Sinks/Sources obj, load their children as sources and sinks.
+            if (PacketSources != null)
+            {
+                AllPacketSources = new List<PacketSource>(PacketSources.GetComponentsInChildren<PacketSource>());
+            }
+
+            if (PacketSinks != null)
+            {
+                AllPacketSinks = new List<PacketSink>(PacketSinks.GetComponentsInChildren<PacketSink>());
+            }
         }
 
         public static void AddVirus(Virus v)

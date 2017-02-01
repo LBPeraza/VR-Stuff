@@ -17,7 +17,7 @@ namespace InternetGame
             OnNewPacketEnqued(p);
         }
 
-        public Packet DequeuePacket(int i)
+        public Packet DequeuePacket(int i = 0)
         {
             if (QueuedPackets.Count > i)
             {
@@ -48,16 +48,13 @@ namespace InternetGame
 
         private void FindAndSendPacketTo(Link l, PacketSink t)
         {
-            for (int i = 0; i < QueuedPackets.Count; i++)
+            Packet p = Peek();
+            if (p.Destination == t.Address)
             {
-                Packet p = QueuedPackets[i];
-                if (p.Destination == t.Address)
-                {
-                    p.OnDequeuedFromPort(this, l);
-                    l.EnqueuePacket(DequeuePacket(i));
-                    OnTransmissionStarted(l);
-                }
-            }
+                p.OnDequeuedFromPort(this, l);
+                l.EnqueuePacket(DequeuePacket());
+                OnTransmissionStarted(l);
+            }   
         }
 
         public virtual void OnLinkStarted(Link l)

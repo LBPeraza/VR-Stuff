@@ -77,10 +77,11 @@ namespace InternetGame
                 }
                 LeftController = leftController.GetComponent<SteamVR_TrackedController>();
 
-                if (LeftController!= null && !registeredLeftController)
+                if (LeftController != null && !registeredLeftController)
                 {
                     RegisterLeftController();
                     registeredLeftController = true;
+                    Debug.Log("registered left controller");
                 }
             }
 
@@ -116,16 +117,16 @@ namespace InternetGame
             if (LeftController)
             {
                 LeftController.MenuButtonClicked += Handle_LeftMenuButtonClicked;
-                LeftController.MenuButtonUnclicked += LeftMenuButtonUnclicked;
-                LeftController.TriggerClicked += LeftTriggerClicked;
-                LeftController.TriggerUnclicked += LeftTriggerUnclicked;
-                LeftController.SteamClicked += LeftSteamClicked;
-                LeftController.PadClicked += LeftPadClicked;
-                LeftController.PadUnclicked += LeftPadUnclicked;
-                LeftController.PadTouched += LeftPadTouched;
-                LeftController.PadUntouched += LeftPadUntouched;
-                LeftController.Gripped += LeftGripped;
-                LeftController.Ungripped += LeftUngripped;
+                LeftController.MenuButtonUnclicked += Handle_LeftMenuButtonUnclicked;
+                LeftController.TriggerClicked += Handle_LeftTriggerClicked;
+                LeftController.TriggerUnclicked += Handle_LeftTriggerUnclicked;
+                LeftController.SteamClicked += Handle_LeftSteamClicked;
+                LeftController.PadClicked += Handle_LeftPadClicked;
+                LeftController.PadUnclicked += Handle_LeftPadUnclicked;
+                LeftController.PadTouched += Handle_LeftPadTouched;
+                LeftController.PadUntouched += Handle_LeftPadUntouched;
+                LeftController.Gripped += Handle_LeftGripped;
+                LeftController.Ungripped += Handle_LeftUngripped;
             }
         }
 
@@ -219,6 +220,13 @@ namespace InternetGame
                 LeftPadClicked.Invoke(sender, args);
             }
         }
+        private void Handle_LeftPadUnclicked(object sender, ClickedEventArgs args)
+        {
+            if (LeftPadUnclicked != null)
+            {
+                LeftPadUnclicked.Invoke(sender, args);
+            }
+        }
         private void Handle_LeftPadTouched(object sender, ClickedEventArgs args)
         {
             if (LeftPadTouched != null)
@@ -266,6 +274,7 @@ namespace InternetGame
         }
         private void Handle_RightTriggerClicked(object sender, ClickedEventArgs args)
         {
+            Debug.Log("Right trigger clicked");
             if (RightTriggerClicked != null)
             {
                 RightTriggerClicked.Invoke(sender, args);
