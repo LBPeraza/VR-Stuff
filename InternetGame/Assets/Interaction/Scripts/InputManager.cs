@@ -81,7 +81,6 @@ namespace InternetGame
                 {
                     RegisterLeftController();
                     registeredLeftController = true;
-                    Debug.Log("registered left controller");
                 }
             }
 
