@@ -53,7 +53,7 @@ namespace InternetGame
                 col.gameObject.CompareTag("Player") && 
                 LinkIsAllowedToBeSevered(ParentLink))
             {
-                ParentLink.Sever(this);
+                ParentLink.Sever(SeverCause.Player, this);
             }
         }
     }

@@ -15,7 +15,7 @@ namespace InternetGame
             l.OnSever += OnSever;
         }
 
-        public virtual void OnSever(float totalLength)
+        public virtual void OnSever(SeverCause cause, float totalLength)
         {
             GameManager.ReportStoppedVirus(this);
         }

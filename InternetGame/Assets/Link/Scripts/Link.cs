@@ -16,6 +16,12 @@ namespace InternetGame
         EarlyTerminated
     }
 
+    public enum SeverCause
+    {
+        Player,
+        TransmissionFinished
+    }
+
     public class Link : MonoBehaviour
     {
         // Public state.
@@ -24,7 +30,7 @@ namespace InternetGame
         public GameObject LinkSegmentPrefab;
         public Transform Pointer;
 
-        public delegate void SeverHandler(float totalLength);
+        public delegate void SeverHandler(SeverCause cause, float totalLength);
         public event SeverHandler OnSever;
 
         public delegate void OnConstructionProgressHandler(float deltaLength, float totalLengthSoFar);
@@ -210,7 +216,7 @@ namespace InternetGame
         /// <summary>
         /// Early-terminates the link, alerting any subscribed delegates to the severing.
         /// </summary>
-        public void Sever(LinkSegment severedSegment)
+        public void Sever(SeverCause cause, LinkSegment severedSegment)
         {
             Finished = true;
             Severed = true;
@@ -221,7 +227,7 @@ namespace InternetGame
 
             if (OnSever != null)
             {
-                OnSever.Invoke(TotalLength);
+                OnSever.Invoke(cause, TotalLength);
             }
 
             Packet = null;
@@ -307,7 +313,7 @@ namespace InternetGame
                 Packet = null;
 
                 // Sever at middle element.
-                this.Sever(Segments[Segments.Count / 2]);
+                this.Sever(SeverCause.TransmissionFinished, Segments[Segments.Count / 2]);
             }
         }
 

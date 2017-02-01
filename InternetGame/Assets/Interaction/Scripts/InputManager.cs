@@ -176,6 +176,24 @@ namespace InternetGame
             }
         }
 
+        public static void RumbleController(bool rightController, ushort length)
+        {
+            if (rightController)
+            {
+                if (RightDevice != null)
+                {
+                    RightDevice.TriggerHapticPulse(length);
+                }
+            }
+            else
+            {
+                if (LeftDevice != null)
+                {
+                    LeftDevice.TriggerHapticPulse(length);
+                }
+            } 
+        }
+
         #region Left Controller Event Handlers
         private void Handle_LeftMenuButtonClicked(object sender, ClickedEventArgs args)
         {

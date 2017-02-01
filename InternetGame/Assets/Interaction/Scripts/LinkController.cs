@@ -18,6 +18,10 @@ namespace InternetGame
         public Cursor Cursor;
         public int ObjectId;
 
+        public float DrawingLinkRumbleBaseLength = 0.01f;
+        public ushort DrawingLinkRumbleLength = 500;
+        public ushort SeverLinkRumbleLength = 1000;
+
         public LinkControllerState State;
 
         private GameObject CurrentLink;
@@ -55,7 +59,6 @@ namespace InternetGame
                 InputManager.LeftTriggerUnclicked += TriggerUp;
             }
         }
-        
 
         private void AddLink()
         {
@@ -125,8 +128,14 @@ namespace InternetGame
             }
         }
 
-        private void LinkSegment_OnSever(float totalLength)
+        private void LinkSegment_OnSever(SeverCause cause, float totalLength)
         {
+            if (cause == SeverCause.Player)
+            {
+                // Rumble controller on sever.
+                InputManager.RumbleController(IsRightHand, SeverLinkRumbleLength);
+            }
+
             // Restore the bandwidth that this link was using.
             Player.TotalBandwidth += totalLength;
         }
@@ -144,6 +153,11 @@ namespace InternetGame
                     Cursor.OnExit(cursorEventArgs);
                     State = LinkControllerState.Inactive;
                 }
+
+                
+                // Trigger haptic feedback proportional to the deltaLength as we draw the link.
+                InputManager.RumbleController(IsRightHand, 
+                    (ushort) (DrawingLinkRumbleLength * (deltaLength / DrawingLinkRumbleBaseLength)));
             }
         }
 

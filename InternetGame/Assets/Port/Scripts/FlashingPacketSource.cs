@@ -21,9 +21,9 @@ namespace InternetGame
             EndFlashing();
         }
 
-        protected override void OnTransmissionSevered(Link severedLink)
+        protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
         {
-            base.OnTransmissionSevered(severedLink);
+            base.OnTransmissionSevered(cause, severedLink);
 
             if (this.QueuedPackets.Count > 0)
             {

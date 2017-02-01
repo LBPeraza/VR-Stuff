@@ -93,9 +93,9 @@ namespace InternetGame
             ActiveLink = l;
 
             // Listen for sever events.
-            l.OnSever += (float totalLength) =>
+            l.OnSever += (SeverCause cause, float totalLength) =>
             {
-                OnTransmissionSevered(l);
+                OnTransmissionSevered(cause, l);
             };
         }
 
@@ -115,7 +115,7 @@ namespace InternetGame
             Indicator.UpdatePacketSourceInfo(Info);
         }
 
-        protected virtual void OnTransmissionSevered(Link severedLink)
+        protected virtual void OnTransmissionSevered(SeverCause cause, Link severedLink)
         {
             ActiveLink = null;
         }
