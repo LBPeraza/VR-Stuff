@@ -20,7 +20,8 @@ namespace InternetGame
     {
         Player,
         TransmissionFinished,
-        UnfinishedLink
+        UnfinishedLink,
+        VirusTransmitted
     }
 
     public class Link : MonoBehaviour
@@ -44,8 +45,6 @@ namespace InternetGame
         public PacketSource Source;
         public PacketSink Sink;
 
-        public Color InactiveLinkColor;
-
         // Read-only properties.
         public List<LinkSegment> Segments;
         public float StartTime;
@@ -64,7 +63,9 @@ namespace InternetGame
         public float UnseverableSegmentThreshold = 0.4f; // Meters
 
         // Private state.
-        private Material linkMaterial;
+        protected Material LinkMaterial;
+        protected Color PacketColor;
+
         private GameObject linkSegmentContainer;
         private float lastSegmentAddTime;
         private Vector3 lastSegmentEnd;
@@ -86,8 +87,7 @@ namespace InternetGame
             linkSegmentContainer.transform.parent = this.transform;
 
             // Make a copy of the link material and store its default color for later.
-            linkMaterial = new Material(Resources.Load<Material>("LinkMaterial"));
-            InactiveLinkColor = linkMaterial.color;
+            LinkMaterial = new Material(Resources.Load<Material>("LinkMaterial"));
 
             Pointer = pointer;
 
@@ -111,7 +111,9 @@ namespace InternetGame
             if (p != null)
             {
                 AlertPacketSinksOfPacket(p);
-                linkMaterial.color = (Color) PacketSpawner.AddressToColor[p.Destination];
+
+                PacketColor = (Color)PacketSpawner.AddressToColor[p.Destination];
+                LinkMaterial.color = PacketColor;
             }
 
             State = LinkState.UnderConstruction;
@@ -139,7 +141,7 @@ namespace InternetGame
             possibleDestinations.Clear();
         }
 
-        public virtual void AnimateAndDestroy(LinkSegment severedSegment)
+        public virtual void AnimateAndDestroy(SeverCause cause, LinkSegment severedSegment)
         {
             
         }
@@ -210,7 +212,7 @@ namespace InternetGame
                 segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
 
                 // Color should match destination.
-                segment.GetComponent<Renderer>().material = linkMaterial;
+                segment.GetComponent<Renderer>().material = LinkMaterial;
 
                 Segments.Add(linkSegment);
 
@@ -246,7 +248,7 @@ namespace InternetGame
             Source = null;
             Sink = null;
 
-            AnimateAndDestroy(severedSegment);
+            AnimateAndDestroy(cause, severedSegment);
         }
 
         /// <summary>
@@ -272,8 +274,6 @@ namespace InternetGame
                     Sink.OnLinkEstablished(this, Source);
 
                     MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
-
-                    linkMaterial.color = InactiveLinkColor;
                 }
                 else
                 {
@@ -318,6 +318,13 @@ namespace InternetGame
                 // Desaturate all segments.
                 DesaturateSegments(0, Segments.Count);
 
+                var cause = Packet is Virus ?
+                    SeverCause.VirusTransmitted : 
+                    SeverCause.TransmissionFinished;
+
+                // Sever at first link segment.
+                this.Sever(cause, Segments[0]);
+
                 PacketStart = 0;
                 PacketEnd = 0;
                 TransmissionProgress = 0.0f;
@@ -325,9 +332,6 @@ namespace InternetGame
 
                 IsTransmittingPacket = false;
                 Packet = null;
-
-                // Sever at first link segment.
-                this.Sever(SeverCause.TransmissionFinished, Segments[0]);
             }
         }
 
