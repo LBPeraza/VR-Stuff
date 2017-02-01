@@ -84,6 +84,23 @@ namespace InternetGame
             }
         }
 
+        public void TriggerUp(object sender, ClickedEventArgs args)
+        {
+            if (CurrentLink != null && NearSink == null)
+            {
+                // End the current link in the air.
+                var currentLinkComponent = CurrentLink.GetComponent<Link>();
+                currentLinkComponent.End();
+
+                var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
+                currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
+
+                Cursor.OnExit(cursorEventArgs);
+
+                DestroyLink();
+            }
+        }
+
         public void OnTriggerEnter(Collider other)
         {
             if (CurrentLink == null && other.CompareTag("Source"))
@@ -153,7 +170,6 @@ namespace InternetGame
                     Cursor.OnExit(cursorEventArgs);
                     State = LinkControllerState.Inactive;
                 }
-
                 
                 // Trigger haptic feedback proportional to the deltaLength as we draw the link.
                 InputManager.RumbleController(IsRightHand, 
@@ -164,11 +180,6 @@ namespace InternetGame
         private void DestroyLink()
         {
             CurrentLink = null;
-        }
-
-        public void TriggerUp(object sender, ClickedEventArgs args)
-        {
-
         }
     }
 }

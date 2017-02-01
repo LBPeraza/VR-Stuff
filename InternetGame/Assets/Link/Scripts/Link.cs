@@ -19,7 +19,8 @@ namespace InternetGame
     public enum SeverCause
     {
         Player,
-        TransmissionFinished
+        TransmissionFinished,
+        UnfinishedLink
     }
 
     public class Link : MonoBehaviour
