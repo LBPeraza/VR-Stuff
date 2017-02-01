@@ -1,0 +1,71 @@
+Initialize engine version: 5.5.0f3 (38b4efef76f0)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 1070 (ID=0x1b81)
+    Vendor:   NVIDIA
+    VRAM:     8145 MB
+    Driver:   21.21.13.6909
+Begin MonoManager ReloadAssembly
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.VR.dll (this message is harmless)
+Loading O:\VR-Projects\InternetGame\main_Data\Managed\UnityEngine.VR.dll into Unity Child Domain
+- Completed reload, in  0.374 seconds
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: O:\VR-Projects\InternetGame\main_Data\Managed\System.dll (this message is harmless)
+OnLevelWasLoaded was found on VRCameraFade
+This message has been deprecated and will be removed in a later version of Unity.
+Add a delegate to SceneManager.sceneLoaded instead to get notifications after scene loading has completed
+ 
+(Filename:  Line: 382)
+
+OnLevelWasLoaded was found on ReturnToMainMenu
+This message has been deprecated and will be removed in a later version of Unity.
+Add a delegate to SceneManager.sceneLoaded instead to get notifications after scene loading has completed
+ 
+(Filename:  Line: 382)
+
+<RI> Initializing input.
+<RI> Input initialized.
+desktop: 1920x1080 60Hz; virtual: 3840x1080 at 0,0
+<RI> Initialized touch support.
+OpenVR initialized!
+ 
+(Filename:  Line: 381)
+
+UnloadTime: 0.535097 ms
+Connected to lighthouse:LHR-546D555E
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at InternetGame.GameManager.Initialize () [0x00000] in <filename unknown>:0 
+  at InternetGame.GameManager.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+Setting up 1 worker threads for Enlighten.
+  Thread -> id: 5730 -> priority: 1 
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.934838 ms
+
+Unloading 9 unused Assets to reduce memory usage. Loaded Objects now: 858.
+Total: 0.647699 ms (FindLiveObjects: 0.057423 ms CreateObjectMapping: 0.044912 ms MarkObjects: 0.517132 ms  DeleteObjects: 0.027588 ms)
+
+OpenVR Shutdown
+ 
+(Filename:  Line: 815)
+
