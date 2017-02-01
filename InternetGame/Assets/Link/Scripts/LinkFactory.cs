@@ -12,14 +12,13 @@ namespace InternetGame
         public static GameObject CreateLink(PacketSource s)
         {
             GameObject linkContainer = new GameObject("Link");
-            Link link = linkContainer.AddComponent<Link>();
+            Link link = linkContainer.AddComponent<SplittingLink>();
 
             link.Source = s;
             link.SegmentAddInterval = SEGMENT_ADD_INTERVAL;
             link.Bandwidth = LINK_BANDWIDTH;
             link.LinkSegmentPrefab = (GameObject) Resources.Load("LinkSegment");
             
-
             return linkContainer;
         }
     }

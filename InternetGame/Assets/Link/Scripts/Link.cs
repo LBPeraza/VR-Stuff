@@ -58,7 +58,6 @@ namespace InternetGame
         private GameObject linkSegmentContainer;
         private float lastSegmentAddTime;
         private Vector3 lastSegmentEnd;
-        private bool isAnimatingDestruction;
         private int PacketStart, PacketEnd;
         public float NeededProgress;
         private List<PacketSink> possibleDestinations;
@@ -71,7 +70,6 @@ namespace InternetGame
         public void Initialize(PacketSource source, Transform pointer)
         {
             IsTransmittingPacket = false;
-            isAnimatingDestruction = false;
 
             // Make container for link segments.
             linkSegmentContainer = new GameObject("Segments");
@@ -126,50 +124,9 @@ namespace InternetGame
             possibleDestinations.Clear();
         }
 
-        /// <summary>
-        /// Early-terminates the link, alerting any subscribed delegates to the severing.
-        /// </summary>
-        public void Sever()
+        public virtual void AnimateAndDestroy(LinkSegment severedSegment)
         {
-            Finished = true;
-            Severed = true;
-            FinishedTime = Time.fixedTime;
-            State = LinkState.Severed;
-
-            UndoAlertPacketSinksOfPacket();
-
-            if (OnSever != null)
-            {
-                OnSever.Invoke(TotalLength);
-            }
-
-            Packet = null;
-            Source = null;
-            Sink = null;
-
-            AnimateDestroy();
-        }
-
-        public void AnimateDestroy()
-        {
-            isAnimatingDestruction = true;
-            var fadeCoroutine  = Fade();
-            StartCoroutine(fadeCoroutine);
-        }
-
-        IEnumerator Fade()
-        {
-            float originalThickness = Segments.Count > 0 ? Segments[0].transform.localScale.x : .03f;
-            for (float f = originalThickness; f >= 0; f -= 0.001f)
-            {
-                foreach (LinkSegment segment in Segments)
-                {
-                    segment.transform.localScale = new Vector3(f, f, segment.transform.localScale.z);
-                }
-                yield return null;
-            }
-
-            Destroy(this.gameObject);
+            
         }
 
         /// <summary>
@@ -211,6 +168,69 @@ namespace InternetGame
             
         }
              
+        /// <summary>
+        /// Adds a new segment to the current Link.
+        /// </summary>
+        private void AddNewSegment()
+        {
+            // Time to add a new interval.
+            var currentPointerPos = Pointer.position;
+            var segmentLength = Vector3.Distance(lastSegmentEnd, currentPointerPos);
+
+            if (segmentLength >= SegmentMinLength)
+            {
+                TotalLength += segmentLength;
+
+                var segment = Instantiate(LinkSegmentPrefab);
+
+                var linkSegment = segment.AddComponent<LinkSegment>();
+                linkSegment.ParentLink = this;
+                linkSegment.Length = segmentLength;
+
+                segment.transform.parent = linkSegmentContainer.transform;
+                segment.transform.position = (lastSegmentEnd + currentPointerPos) / 2;
+                // Make as long as the pointer has traveled.
+                segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
+                // Rotate the link to align with the gap between the two points.
+                segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
+
+                Segments.Add(linkSegment);
+
+                lastSegmentAddTime = Time.fixedTime;
+                lastSegmentEnd = currentPointerPos;
+
+                // Notify handlers of progress.
+                if (OnConstructionProgress != null)
+                {
+                    OnConstructionProgress.Invoke(segmentLength, TotalLength);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Early-terminates the link, alerting any subscribed delegates to the severing.
+        /// </summary>
+        public void Sever(LinkSegment severedSegment)
+        {
+            Finished = true;
+            Severed = true;
+            FinishedTime = Time.fixedTime;
+            State = LinkState.Severed;
+
+            UndoAlertPacketSinksOfPacket();
+
+            if (OnSever != null)
+            {
+                OnSever.Invoke(TotalLength);
+            }
+
+            Packet = null;
+            Source = null;
+            Sink = null;
+
+            AnimateAndDestroy(severedSegment);
+        }
+
         /// <summary>
         /// Ends the link, returning the total length of the link.
         /// </summary>
@@ -256,51 +276,13 @@ namespace InternetGame
         /// <param name="p">The Packet to add.</param>
         public void EnqueuePacket(Packet p)
         {
-            if (State == LinkState.AwaitingPacket && !IsTransmittingPacket) {
+            if (State == LinkState.AwaitingPacket && !IsTransmittingPacket)
+            {
                 Packet = p;
                 IsTransmittingPacket = true;
                 TransmissionProgress = SeedTransmissionProgress;
                 NeededProgress = (Packet.Size * TotalLength);
                 State = LinkState.TransmittingPacket;
-            }
-        }
-
-        /// <summary>
-        /// Adds a new segment to the current Link.
-        /// </summary>
-        private void AddNewSegment()
-        {
-            // Time to add a new interval.
-            var currentPointerPos = Pointer.position;
-            var segmentLength = Vector3.Distance(lastSegmentEnd, currentPointerPos);
-
-            if (segmentLength >= SegmentMinLength)
-            {
-                TotalLength += segmentLength;
-
-                var segment = Instantiate(LinkSegmentPrefab);
-
-                var linkSegment = segment.AddComponent<LinkSegment>();
-                linkSegment.ParentLink = this;
-                linkSegment.Length = segmentLength;
-
-                segment.transform.parent = linkSegmentContainer.transform;
-                segment.transform.position = (lastSegmentEnd + currentPointerPos) / 2;
-                // Make as long as the pointer has traveled.
-                segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
-                // Rotate the link to align with the gap between the two points.
-                segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
-
-                Segments.Add(linkSegment);
-
-                lastSegmentAddTime = Time.fixedTime;
-                lastSegmentEnd = currentPointerPos;
-
-                // Notify handlers of progress.
-                if (OnConstructionProgress != null)
-                {
-                    OnConstructionProgress.Invoke(segmentLength, TotalLength);
-                }
             }
         }
 
@@ -324,7 +306,8 @@ namespace InternetGame
                 IsTransmittingPacket = false;
                 Packet = null;
 
-                this.Sever();
+                // Sever at middle element.
+                this.Sever(Segments[Segments.Count / 2]);
             }
         }
 
