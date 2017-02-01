@@ -44,6 +44,8 @@ namespace InternetGame
         public PacketSource Source;
         public PacketSink Sink;
 
+        public Color InactiveLinkColor;
+
         // Read-only properties.
         public List<LinkSegment> Segments;
         public float StartTime;
@@ -62,6 +64,7 @@ namespace InternetGame
         public float UnseverableSegmentThreshold = 0.4f; // Meters
 
         // Private state.
+        private Material linkMaterial;
         private GameObject linkSegmentContainer;
         private float lastSegmentAddTime;
         private Vector3 lastSegmentEnd;
@@ -81,6 +84,10 @@ namespace InternetGame
             // Make container for link segments.
             linkSegmentContainer = new GameObject("Segments");
             linkSegmentContainer.transform.parent = this.transform;
+
+            // Make a copy of the link material and store its default color for later.
+            linkMaterial = new Material(Resources.Load<Material>("LinkMaterial"));
+            InactiveLinkColor = linkMaterial.color;
 
             Pointer = pointer;
 
@@ -104,6 +111,7 @@ namespace InternetGame
             if (p != null)
             {
                 AlertPacketSinksOfPacket(p);
+                linkMaterial.color = (Color) PacketSpawner.AddressToColor[p.Destination];
             }
 
             State = LinkState.UnderConstruction;
@@ -201,6 +209,9 @@ namespace InternetGame
                 // Rotate the link to align with the gap between the two points.
                 segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
 
+                // Color should match destination.
+                segment.GetComponent<Renderer>().material = linkMaterial;
+
                 Segments.Add(linkSegment);
 
                 lastSegmentAddTime = Time.fixedTime;
@@ -261,6 +272,8 @@ namespace InternetGame
                     Sink.OnLinkEstablished(this, Source);
 
                     MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
+
+                    linkMaterial.color = InactiveLinkColor;
                 }
                 else
                 {
