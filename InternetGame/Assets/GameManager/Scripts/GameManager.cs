@@ -64,18 +64,34 @@ namespace InternetGame
             if (PacketSources != null)
             {
                 AllPacketSources = new List<PacketSource>(PacketSources.GetComponentsInChildren<PacketSource>());
+
+                foreach (PacketSource source in AllPacketSources)
+                {
+                    source.Initialize();
+                }
             }
 
             if (PacketSinks != null)
             {
                 AllPacketSinks = new List<PacketSink>(PacketSinks.GetComponentsInChildren<PacketSink>());
+
+                foreach (PacketSink sink in AllPacketSinks)
+                {
+                    // sink.Initialize();
+                }
             }
+
         }
 
         public static void AddVirus(Virus v)
         {
             Score.VirusAmount += v.Damage;
             Score.NumberOfVirusesInfected++;
+        }
+
+        public static void ReportPacketDropped(Packet p)
+        {
+            Score.PacketsDropped++;
         }
 
         public static void ReportStoppedVirus(Virus v)

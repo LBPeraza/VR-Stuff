@@ -9,12 +9,41 @@ namespace InternetGame
     {
         public List<Packet> QueuedPackets;
         public Link ActiveLink;
+        public PacketSourceIndicator Indicator;
+        public int Capacity = 5;
+        public PacketSourceInfo Info;
+
+        public void Initialize()
+        {
+            Info.Capacity = Capacity;
+            Info.NumQueuedPackets = 0;
+
+            if (Indicator == null)
+            {
+                var prefab = Resources.Load<GameObject>("PacketSourceIndicator");
+                var indicator = Instantiate(prefab, this.transform, false);
+
+                Indicator = indicator.GetComponent<PacketSourceIndicator>();
+            }
+
+            Indicator.UpdatePacketSourceInfo(Info);
+        }
 
         public void EnqueuePacket(Packet p)
         {
-            QueuedPackets.Add(p);
-            
-            OnNewPacketEnqued(p);
+            if (QueuedPackets.Count < Capacity)
+            {
+                QueuedPackets.Add(p);
+
+                OnNewPacketEnqued(p);
+            }
+            else
+            {
+                // Drop packet.
+                GameManager.ReportPacketDropped(p);
+
+                OnPacketDropped(p);
+            }
         }
 
         public Packet DequeuePacket(int i = 0)
@@ -79,6 +108,9 @@ namespace InternetGame
 
         protected virtual void OnTransmissionStarted(Link l)
         {
+            Info.NumQueuedPackets--;
+
+            Indicator.UpdatePacketSourceInfo(Info);
         }
 
         protected virtual void OnTransmissionSevered(Link severedLink)
@@ -88,6 +120,14 @@ namespace InternetGame
 
         protected virtual void OnNewPacketEnqued(Packet p)
         {
+            Info.NumQueuedPackets++;
+
+            Indicator.UpdatePacketSourceInfo(Info);
+        }
+
+        protected virtual void OnPacketDropped(Packet p)
+        {
+
         }
     }
 }
