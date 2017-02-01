@@ -86,12 +86,16 @@ namespace InternetGame
 
             var burnTrail = Instantiate(BurnTrail, Segments[i].transform, false);
             var burnTrailSystem = burnTrail.GetComponent<ParticleSystem>();
+            burnTrailSystem.Pause();
+
             burnTrail.transform.localPosition = new Vector3(0, 0, segment.Length);
             burnTrailSystem.randomSeed = (uint) randomSource.Next(10000);
 
             // Make the particle effect fill the segment.
             var shape = burnTrailSystem.shape;
             shape.length = segment.Length;
+
+            burnTrailSystem.Play();
 
             // Burn segment.
             float t = 0;

@@ -178,6 +178,7 @@ namespace InternetGame
 
         public static void RumbleController(bool rightController, ushort length)
         {
+            length = (ushort) Mathf.Clamp(length, 0, 3999);
             if (rightController)
             {
                 if (RightDevice != null)
