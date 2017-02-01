@@ -75,7 +75,6 @@ namespace InternetGame
 
         public void TriggerDown(object sender, ClickedEventArgs args)
         {
-            Debug.Log("Controller (right? = " + IsRightHand + ") Trigger down fired");
             if (CurrentLink == null && NearSource != null && !Player.IsOutOfBandwidth())
             {
                 AddLink();

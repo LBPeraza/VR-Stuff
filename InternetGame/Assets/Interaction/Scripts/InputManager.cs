@@ -274,7 +274,6 @@ namespace InternetGame
         }
         private void Handle_RightTriggerClicked(object sender, ClickedEventArgs args)
         {
-            Debug.Log("Right trigger clicked");
             if (RightTriggerClicked != null)
             {
                 RightTriggerClicked.Invoke(sender, args);

@@ -49,7 +49,7 @@ namespace InternetGame
         private void FindAndSendPacketTo(Link l, PacketSink t)
         {
             Packet p = Peek();
-            if (p.Destination == t.Address)
+            if (p != null && p.Destination == t.Address)
             {
                 p.OnDequeuedFromPort(this, l);
                 l.EnqueuePacket(DequeuePacket());
