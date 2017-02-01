@@ -9,20 +9,36 @@ namespace InternetGame
         public List<PacketSource> Sources;
         public List<PacketSink> Sinks;
 
+        public static Hashtable AddressToColor;
+
         public float SpawnInterval = 6.0f;
         public float VirusProbability = 0.2f;
         public float LastSpawn;
 
         private System.Random random;
+        private static Color[] AddressColors = { Color.green, Color.blue, Color.magenta, Color.yellow };
 
         public void Initialize()
         {
             Sources = GameManager.AllPacketSources;
             Sinks = GameManager.AllPacketSinks;
 
+            AddressToColor = new Hashtable();
+            BuildAddressToColorTable(Sinks);
+
             LastSpawn = Time.fixedTime;
 
             random = new System.Random();
+        }
+
+        private void BuildAddressToColorTable(List<PacketSink> Sinks)
+        {
+            int i = 0;
+            foreach (var sink in Sinks)
+            {
+                AddressToColor.Add(sink.Address, AddressColors[i]);
+                i++;
+            }
         }
 
         private void SpawnPacket()

@@ -9,6 +9,17 @@ namespace InternetGame
         public string Address;
         public Link ActiveLink;
 
+        private void Start()
+        {
+            // TODO: call Initialize from PortSpawner or similar.
+            Initialize();
+        }
+
+        public virtual void Initialize()
+        {
+
+        }
+
         public virtual void OnBecameOptionForLink(Link l)
         {
 

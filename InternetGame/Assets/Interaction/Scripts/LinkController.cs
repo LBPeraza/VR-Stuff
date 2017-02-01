@@ -20,7 +20,7 @@ namespace InternetGame
 
         public float DrawingLinkRumbleBaseLength = 0.01f;
         public ushort DrawingLinkRumbleLength = 100;
-        public ushort SeverLinkRumbleLength = 1000;
+        public ushort SeverLinkRumbleLength = 2000;
 
         public LinkControllerState State;
 
@@ -95,6 +95,7 @@ namespace InternetGame
                 var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
                 currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
 
+                State = LinkControllerState.Inactive;
                 Cursor.OnExit(cursorEventArgs);
 
                 DestroyLink();
@@ -118,12 +119,17 @@ namespace InternetGame
 
                 // End the current link at the sink.
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
-                currentLinkComponent.End(NearSink);
 
-                DestroyLink();
+                // Only finish the link if the destination matches the packet from the source.
+                if (currentLinkComponent.Source.Peek().Destination == NearSink.Address)
+                {
+                    currentLinkComponent.End(NearSink);
 
-                State = LinkControllerState.Inactive;
-                Cursor.OnExit(cursorEventArgs);
+                    DestroyLink();
+
+                    State = LinkControllerState.Inactive;
+                    Cursor.OnExit(cursorEventArgs);
+                }
             }
         }
 

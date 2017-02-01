@@ -10,7 +10,6 @@ namespace InternetGame
 
         public float FlashRate; // Somewhere from (0, 2] is reasonable.
         public Color StartColor;
-        public Color EndColor;
 
         public bool IsFlashing;
 
@@ -27,7 +26,7 @@ namespace InternetGame
 
             if (this.QueuedPackets.Count > 0)
             {
-                StartFlashing();
+                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
@@ -37,15 +36,15 @@ namespace InternetGame
 
             if (this.ActiveLink == null)
             {
-                StartFlashing();
+                StartFlashing((Color) PacketSpawner.AddressToColor[p.Destination]);
             }
         }
 
-        private void StartFlashing()
+        private void StartFlashing(Color flashColor)
         {
             if (!IsFlashing)
             {
-                flashingCoroutine = Flash();
+                flashingCoroutine = Flash(flashColor);
                 StartCoroutine(flashingCoroutine);
 
                 IsFlashing = true;
@@ -54,7 +53,6 @@ namespace InternetGame
 
         private void EndFlashing()
         {
-
             if (IsFlashing)
             {
                 StopCoroutine(flashingCoroutine);
@@ -69,11 +67,11 @@ namespace InternetGame
             GetComponent<Renderer>().material.color = StartColor;
         }
 
-        private IEnumerator Flash()
+        private IEnumerator Flash(Color flashColor)
         {
             while (true)
             {
-                Color lerpedColor = Color.Lerp(StartColor, EndColor, Mathf.PingPong(Time.fixedTime * FlashRate, 1));
+                Color lerpedColor = Color.Lerp(StartColor, flashColor, Mathf.PingPong(Time.fixedTime * FlashRate, 1));
                 GetComponent<Renderer>().material.color = lerpedColor;
 
                 yield return null;
