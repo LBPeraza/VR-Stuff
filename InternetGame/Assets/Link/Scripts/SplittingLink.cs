@@ -6,15 +6,23 @@ namespace InternetGame
 {
     public class SplittingLink : Link
     {
-        private bool isAnimatingDestruction;
-
+        public GameObject BurnTrail;
         public float LinkBurnDuration = 3.2f;
         public float SegmentBurnOverlap = 0.8f;
 
+        private bool isAnimatingDestruction;
         private float segmentBurnDuration;
 
         private bool leftSideFinishedBurning = false;
         private bool rightSideFinishedBurning = false;
+
+        private System.Random randomSource;
+
+        private void Start()
+        {
+            BurnTrail = Resources.Load<GameObject>("LinkBurnTrail");
+            randomSource = new System.Random();
+        }
 
         public override void AnimateAndDestroy(LinkSegment linkSegment)
         {
@@ -29,8 +37,12 @@ namespace InternetGame
             
             var burnLeft = BurnTag(leftIndex, false);
             var burnRight = BurnTag(rightIndex, true);
+
+            if (rightIndex < Segments.Count)
+            {
+                StartCoroutine(burnRight);
+            }
             StartCoroutine(burnLeft);
-            StartCoroutine(burnRight);
         }
 
         private void OnSegmentFinishedBuring(bool wasRightSide)
@@ -50,9 +62,15 @@ namespace InternetGame
             }
         }
 
+        private bool isEndSegment(int i, bool increasing)
+        {
+            return (increasing && i >= Segments.Count - 1) || (!increasing && i == 0);
+        }
+
         private IEnumerator BurnTag(int i, bool increasing)
         {
             var segment = Segments[i];
+            bool isEnd = isEndSegment(i, increasing);
             var dupMaterial = new Material(segment.GetComponent<Renderer>().material);
             segment.GetComponent<Renderer>().material = dupMaterial;
 
@@ -66,13 +84,22 @@ namespace InternetGame
             var tagThreshold = 1.0f - SegmentBurnOverlap;
             bool tagged = false;
 
+            var burnTrail = Instantiate(BurnTrail, Segments[i].transform, false);
+            var burnTrailSystem = burnTrail.GetComponent<ParticleSystem>();
+            burnTrail.transform.localPosition = new Vector3(0, 0, segment.Length);
+            burnTrailSystem.randomSeed = (uint) randomSource.Next(10000);
+
+            // Make the particle effect fill the segment.
+            var shape = burnTrailSystem.shape;
+            shape.length = segment.Length;
+
             // Burn segment.
             float t = 0;
             while (t <= 1.0f)
             {
                 t = (Time.fixedTime - startTime) * burnTimeScalar;
 
-                if (!tagged && t > tagThreshold)
+                if (!isEnd && !tagged && t > tagThreshold)
                 {
                     // Tag neighboring segment.
                     if (increasing && i < Segments.Count - 1)
@@ -82,10 +109,6 @@ namespace InternetGame
                     else if (!increasing && i > 0)
                     {
                         StartCoroutine(BurnTag(i - 1, false));
-                    }
-                    else
-                    {
-                        OnSegmentFinishedBuring(increasing);
                     }
 
                     tagged = true;
@@ -97,6 +120,21 @@ namespace InternetGame
                 yield return null;
             }
 
+
+            var stopTrail = stopBurnTrail(segment, burnTrail.GetComponent<ParticleSystem>());
+            StartCoroutine(stopTrail);
+
+            if (isEnd)
+            {
+                yield return new WaitUntil(() => burnTrailSystem.particleCount == 0);
+                OnSegmentFinishedBuring(increasing);
+            }
+        }
+
+        private IEnumerator stopBurnTrail(LinkSegment segment, ParticleSystem burnTrail)
+        {
+            burnTrail.Stop();
+            yield return new WaitForSeconds(1.0f);
             segment.gameObject.SetActive(false);
         }
 

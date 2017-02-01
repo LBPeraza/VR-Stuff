@@ -9,7 +9,7 @@ namespace InternetGame
         public List<PacketSource> Sources;
         public List<PacketSink> Sinks;
 
-        public float SpawnInterval = 3.0f;
+        public float SpawnInterval = 6.0f;
         public float VirusProbability = 0.2f;
         public float LastSpawn;
 

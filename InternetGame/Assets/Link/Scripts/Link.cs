@@ -313,8 +313,8 @@ namespace InternetGame
                 IsTransmittingPacket = false;
                 Packet = null;
 
-                // Sever at middle element.
-                this.Sever(SeverCause.TransmissionFinished, Segments[Segments.Count / 2]);
+                // Sever at first link segment.
+                this.Sever(SeverCause.TransmissionFinished, Segments[0]);
             }
         }
 
