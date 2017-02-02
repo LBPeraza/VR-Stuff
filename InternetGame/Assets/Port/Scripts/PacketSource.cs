@@ -45,6 +45,16 @@ namespace InternetGame
             Indicator.Initialize(Info);
         }
 
+        public bool IsEmpty()
+        {
+            return QueuedPackets.Count == 0;
+        }
+
+        public bool IsFull()
+        {
+            return QueuedPackets.Count == Capacity;
+        }
+
         public void EnqueuePacket(Packet p)
         {
             if (QueuedPackets.Count < Capacity)
@@ -52,13 +62,7 @@ namespace InternetGame
                 QueuedPackets.Add(p);
 
                 OnNewPacketEnqued(p);
-            }
-            else
-            {
-                // Drop packet.
-                GameManager.ReportPacketDropped(p);
-
-                OnPacketDropped(p);
+                p.OnEnqueuedToPort(this);
             }
         }
 

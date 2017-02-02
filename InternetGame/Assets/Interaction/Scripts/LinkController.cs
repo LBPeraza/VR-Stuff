@@ -21,6 +21,7 @@ namespace InternetGame
         public float DrawingLinkRumbleBaseLength = 0.01f;
         public ushort DrawingLinkRumbleLength = 100;
         public ushort SeverLinkRumbleLength = 3000;
+        public ushort SeverLinkRumbleDecay = 300;
 
         public LinkControllerState State;
 
@@ -161,7 +162,7 @@ namespace InternetGame
             if (cause == SeverCause.Player)
             {
                 // Rumble controller on sever.
-                StartCoroutine(RumbleWithDecay(SeverLinkRumbleLength, 300));
+                StartCoroutine(RumbleWithDecay(SeverLinkRumbleLength, SeverLinkRumbleDecay));
             }
 
             // Restore the bandwidth that this link was using.

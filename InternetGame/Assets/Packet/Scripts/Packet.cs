@@ -12,6 +12,16 @@ namespace InternetGame
         public Material Destaturated;
         public string Destination;
 
+        public bool IsWaitingAtPort;
+        public float EnqueuedTime;
+        public float Patience;
+        public float AlertTime;
+
+        public PacketSource Source;
+
+        protected bool HasAlerted = false;
+        protected bool HasDropped = false;
+
         protected float saturationPenalty = 0.2f;
         protected float lighterTransparency = 0.5f;
         protected Color MakeLighter(Color c)
@@ -34,12 +44,62 @@ namespace InternetGame
         {
             Color = (Color)PacketSpawner.AddressToColor[Destination];
         }
-        public abstract void OnEnqueuedToPort(PacketSource p);
+        public virtual void OnEnqueuedToPort(PacketSource p)
+        {
+            Source = p;
+
+            EnqueuedTime = Time.fixedTime;
+            IsWaitingAtPort = true;
+        }
         public virtual void OnDequeuedFromPort(PacketSource p, Link l)
         {
             l.OnTransmissionProgress += OnTransmissionProgress;
         }
-        public abstract void OnDequeuedFromLink(Link l, PacketSink p);
-        public abstract void OnTransmissionProgress(float percentageDone);
+        public virtual void OnDequeuedFromLink(Link l, PacketSink p)
+        {
+
+        }
+        public virtual void OnTransmissionProgress(float percentageDone)
+        {
+
+        }
+
+        public virtual void Alert()
+        {
+
+        }
+
+        public virtual void Drop()
+        {
+            // Dequeue packet.
+            Source.DequeuePacket(Source.QueuedPackets.FindIndex(
+                packet => packet.GetInstanceID() == this.GetInstanceID()));
+
+            GameManager.ReportPacketDropped(this);
+
+            Destroy(this.gameObject);
+        }
+
+        public virtual void Update()
+        {
+            if (IsWaitingAtPort)
+            {
+                if (!HasAlerted && Time.fixedTime > EnqueuedTime + AlertTime)
+                {
+                    // Alert player to expiring packet.
+                    Alert();
+
+                    HasAlerted = true;
+                }
+                if (!HasDropped && Time.fixedTime > EnqueuedTime + Patience)
+                {
+                    // Drop packet.
+                    Drop();
+
+                    HasDropped = true;
+                    IsWaitingAtPort = false;
+                }
+            }
+        }
     }
 }

@@ -39,10 +39,13 @@ namespace InternetGame
 
         public override void OnEnqueuedToPort(PacketSource p)
         {
+            base.OnEnqueuedToPort(p);
         }
 
         public override void OnTransmissionProgress(float percentageDone)
         {
+            base.OnTransmissionProgress(percentageDone);
+
             float scaledPercentage = Mathf.Clamp01((percentageDone - ColorChangePercentageOffset) / (1.0f - ColorChangePercentageOffset));
             Color currentColor = Color.Lerp(StartColor, EndColor, scaledPercentage);
             this.Saturated.color = currentColor;
