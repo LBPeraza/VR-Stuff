@@ -161,7 +161,7 @@ namespace InternetGame
             if (cause == SeverCause.Player)
             {
                 // Rumble controller on sever.
-                InputManager.RumbleController(IsRightHand, SeverLinkRumbleLength);
+                StartCoroutine(RumbleWithDecay(SeverLinkRumbleLength, 300));
             }
 
             // Restore the bandwidth that this link was using.
@@ -185,6 +185,25 @@ namespace InternetGame
                 // Trigger haptic feedback proportional to the deltaLength as we draw the link.
                 InputManager.RumbleController(IsRightHand, 
                     (ushort) (DrawingLinkRumbleLength * (deltaLength / DrawingLinkRumbleBaseLength)));
+            }
+        }
+
+        private IEnumerator RumbleWithDecay(ushort startIntensity, ushort decay)
+        {
+            ushort intensity = startIntensity;
+            while (intensity > 0)
+            {
+                InputManager.RumbleController(IsRightHand, intensity);
+                if (decay > intensity)
+                {
+                    intensity = 0;
+                }
+                else
+                {
+                    intensity -= decay;
+                }
+
+                yield return null;
             }
         }
 
