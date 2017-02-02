@@ -20,7 +20,8 @@ namespace InternetGame
     {
         Player,
         TransmissionFinished,
-        UnfinishedLink
+        UnfinishedLink,
+        VirusTransmitted
     }
 
     public class Link : MonoBehaviour
@@ -131,7 +132,7 @@ namespace InternetGame
             possibleDestinations.Clear();
         }
 
-        public virtual void AnimateAndDestroy(LinkSegment severedSegment)
+        public virtual void AnimateAndDestroy(SeverCause cause, LinkSegment severedSegment)
         {
             
         }
@@ -201,6 +202,9 @@ namespace InternetGame
                 // Rotate the link to align with the gap between the two points.
                 segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
 
+                // Set initial color to be desaturated.
+                linkSegment.Desaturate(Source.Peek().Destaturated);
+
                 Segments.Add(linkSegment);
 
                 lastSegmentAddTime = Time.fixedTime;
@@ -231,11 +235,11 @@ namespace InternetGame
                 OnSever.Invoke(cause, TotalLength);
             }
 
+            AnimateAndDestroy(cause, severedSegment);
+
             Packet = null;
             Source = null;
             Sink = null;
-
-            AnimateAndDestroy(severedSegment);
         }
 
         /// <summary>
@@ -302,8 +306,18 @@ namespace InternetGame
             {
                 Packet.OnDequeuedFromLink(this, Sink);
 
+                // Clean up packet.
+                Destroy(Packet.gameObject);
+
                 // Desaturate all segments.
-                DesaturateSegments(0, Segments.Count);
+                DesaturateSegments(0, Segments.Count, Packet);
+
+                var cause = Packet is Virus ?
+                    SeverCause.VirusTransmitted : 
+                    SeverCause.TransmissionFinished;
+
+                // Sever at first link segment.
+                this.Sever(cause, Segments[0]);
 
                 PacketStart = 0;
                 PacketEnd = 0;
@@ -312,9 +326,6 @@ namespace InternetGame
 
                 IsTransmittingPacket = false;
                 Packet = null;
-
-                // Sever at first link segment.
-                this.Sever(SeverCause.TransmissionFinished, Segments[0]);
             }
         }
 
@@ -322,15 +333,15 @@ namespace InternetGame
         {
             for (int i = start; i < end; i++)
             {
-                Segments[i].Saturate(p.Indicator);
+                Segments[i].Saturate(p.Saturated);
             }
         }
 
-        private void DesaturateSegments(int start, int end)
+        private void DesaturateSegments(int start, int end, Packet p)
         {
             for (int i = start; i < end; i++)
             {
-                Segments[i].Desaturate();
+                Segments[i].Desaturate(p.Destaturated);
             }
         }
 
@@ -371,7 +382,7 @@ namespace InternetGame
                         PacketStart = 0;
 
                         // Deactivate these segments.
-                        DesaturateSegments(oldStart, Math.Min(PacketStart, oldEnd));
+                        DesaturateSegments(oldStart, Math.Min(PacketStart, oldEnd), Packet);
 
                         // Activate these segments.
                         SaturateSegments(Math.Max(oldEnd, PacketStart), PacketEnd, Packet);

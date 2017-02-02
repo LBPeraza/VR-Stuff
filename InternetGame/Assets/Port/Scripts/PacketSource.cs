@@ -10,15 +10,27 @@ namespace InternetGame
 		public PortInfo info;
 
         public List<Packet> QueuedPackets;
-        public Link ActiveLink;
+        public List<Link> ActiveLinks;
         public PacketSourceIndicator Indicator;
         public int Capacity = 5;
         public PacketSourceInfo Info;
 
+        public bool HasUnfinishedLink()
+        {
+            return ActiveLinks.Exists(link => !link.Finished);
+        }
+
         public void Initialize()
         {
+            ActiveLinks = new List<Link>();
+
             Info.Capacity = Capacity;
             Info.NumQueuedPackets = 0;
+
+            this.info = new PortInfo(
+                this.transform.position,
+                this.transform.rotation
+            );
 
             if (Indicator == null)
             {
@@ -82,15 +94,16 @@ namespace InternetGame
             Packet p = Peek();
             if (p != null && p.Destination == t.Address)
             {
-                p.OnDequeuedFromPort(this, l);
-                l.EnqueuePacket(DequeuePacket());
+                var packet = DequeuePacket();
+                l.EnqueuePacket(packet);
+                packet.OnDequeuedFromPort(this, l);
                 OnTransmissionStarted(l);
             }   
         }
 
         public virtual void OnLinkStarted(Link l)
         {
-            ActiveLink = l;
+            ActiveLinks.Add(l);
 
             // Listen for sever events.
             l.OnSever += (SeverCause cause, float totalLength) =>
@@ -99,7 +112,7 @@ namespace InternetGame
             };
         }
 
-        public void OnLinkEstablished(Link l, PacketSink t)
+        public virtual void OnLinkEstablished(Link l, PacketSink t)
         {
             FindAndSendPacketTo(l, t);
         }
@@ -117,7 +130,8 @@ namespace InternetGame
 
         protected virtual void OnTransmissionSevered(SeverCause cause, Link severedLink)
         {
-            ActiveLink = null;
+            ActiveLinks.RemoveAt(ActiveLinks.FindIndex(
+                link => link.GetInstanceID() == severedLink.GetInstanceID()));
         }
 
         protected virtual void OnNewPacketEnqued(Packet p)
@@ -131,12 +145,5 @@ namespace InternetGame
         {
 
         }
-
-		void Start() {
-			this.info = new PortInfo (
-				this.transform.position,
-				this.transform.rotation
-			);
-		}
     }
 }

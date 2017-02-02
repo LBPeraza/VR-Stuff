@@ -9,10 +9,24 @@ namespace InternetGame
         IEnumerator flashingCoroutine;
 
         public float FlashRate; // Somewhere from (0, 2] is reasonable.
+        public Color NeutralColor;
         public Color StartColor;
-        public Color EndColor;
 
         public bool IsFlashing;
+
+        private float saturationPenalty = 0.7f;
+        private Color MakeLighter(Color c)
+        {
+            float h, s, v;
+            Color.RGBToHSV(c, out h, out s, out v);
+
+            return Color.HSVToRGB(h, (s - saturationPenalty), v);
+        }
+
+        public void Start()
+        {
+            NeutralColor = GetComponent<Renderer>().material.color;
+        }
 
         public override void OnLinkStarted(Link l)
         {
@@ -21,13 +35,23 @@ namespace InternetGame
             EndFlashing();
         }
 
+        public override void OnLinkEstablished(Link l, PacketSink t)
+        {
+            base.OnLinkEstablished(l, t);
+
+            if (this.QueuedPackets.Count > 0)
+            {
+                StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
+            }
+        }
+
         protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
         {
             base.OnTransmissionSevered(cause, severedLink);
 
             if (this.QueuedPackets.Count > 0)
             {
-                StartFlashing();
+                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
@@ -35,17 +59,18 @@ namespace InternetGame
         {
             base.OnNewPacketEnqued(p);
 
-            if (this.ActiveLink == null)
+            if (!HasUnfinishedLink())
             {
-                StartFlashing();
+                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
-        private void StartFlashing()
+        private void StartFlashing(Color flashColor)
         {
             if (!IsFlashing)
             {
-                flashingCoroutine = Flash();
+                StartColor = MakeLighter(flashColor);
+                flashingCoroutine = Flash(flashColor);
                 StartCoroutine(flashingCoroutine);
 
                 IsFlashing = true;
@@ -54,7 +79,6 @@ namespace InternetGame
 
         private void EndFlashing()
         {
-
             if (IsFlashing)
             {
                 StopCoroutine(flashingCoroutine);
@@ -66,14 +90,14 @@ namespace InternetGame
 
         private void ResetColor()
         {
-            GetComponent<Renderer>().material.color = StartColor;
+            GetComponent<Renderer>().material.color = NeutralColor;
         }
 
-        private IEnumerator Flash()
+        private IEnumerator Flash(Color flashColor)
         {
             while (true)
             {
-                Color lerpedColor = Color.Lerp(StartColor, EndColor, Mathf.PingPong(Time.fixedTime * FlashRate, 1));
+                Color lerpedColor = Color.Lerp(StartColor, flashColor, Mathf.PingPong(Time.fixedTime * FlashRate, 1));
                 GetComponent<Renderer>().material.color = lerpedColor;
 
                 yield return null;

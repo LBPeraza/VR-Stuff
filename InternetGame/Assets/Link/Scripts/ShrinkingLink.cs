@@ -8,9 +8,9 @@ namespace InternetGame
     {
         private bool isAnimatingDestruction;
 
-        public override void AnimateAndDestroy(LinkSegment linkSegment)
+        public override void AnimateAndDestroy(SeverCause cause, LinkSegment linkSegment)
         {
-            base.AnimateAndDestroy(linkSegment);
+            base.AnimateAndDestroy(cause, linkSegment);
 
             isAnimatingDestruction = true;
             var fadeCoroutine = Fade();

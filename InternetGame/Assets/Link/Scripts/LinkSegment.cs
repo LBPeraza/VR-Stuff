@@ -16,29 +16,16 @@ namespace InternetGame
 
         public void Saturate(Material m)
         {
-            if (DefaultMaterial == null)
-            {
-                DefaultMaterial = GetComponent<Renderer>().material;
-            }
-
-            var materials = GetComponent<Renderer>().materials;
-            materials[0] = m;
-            GetComponent<Renderer>().materials = materials;
+            GetComponent<Renderer>().material = m;
 
             Saturated = true;
         }
 
-        public void Desaturate()
+        public void Desaturate(Material m)
         {
-            if (Saturated && DefaultMaterial != null)
-            {
-                var materials = GetComponent<Renderer>().materials;
-                materials[0] = DefaultMaterial;
+            GetComponent<Renderer>().material = m;
 
-                GetComponent<Renderer>().materials = materials;
-
-                Saturated = false;
-            }
+            Saturated = false;
         }
 
         public bool LinkIsAllowedToBeSevered(Link l)

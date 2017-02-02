@@ -10,6 +10,9 @@ namespace InternetGame
         public float LinkBurnDuration = 3.2f;
         public float SegmentBurnOverlap = 0.8f;
 
+        private Color burnColor = Color.black;
+        private Color virusBurnColor = Color.red;
+
         private bool isAnimatingDestruction;
         private float segmentBurnDuration;
 
@@ -24,25 +27,49 @@ namespace InternetGame
             randomSource = new System.Random();
         }
 
-        public override void AnimateAndDestroy(LinkSegment linkSegment)
+        public override void AnimateAndDestroy(SeverCause cause, LinkSegment linkSegment)
         {
-            base.AnimateAndDestroy(linkSegment);
+            base.AnimateAndDestroy(cause, linkSegment);
 
             isAnimatingDestruction = true;
-            segmentBurnDuration = (LinkBurnDuration / Segments.Count) / (1.0f - SegmentBurnOverlap);
 
-            // Start burning at the point we severed the link.
-            int leftIndex = Segments.FindIndex(candidate => candidate.GetInstanceID() == linkSegment.GetInstanceID());
-            int rightIndex = leftIndex + 1;
-            
-            var burnLeft = BurnTag(leftIndex, false);
-            var burnRight = BurnTag(rightIndex, true);
-
-            if (rightIndex < Segments.Count)
+            switch (cause)
             {
-                StartCoroutine(burnRight);
+                case SeverCause.TransmissionFinished:
+                case SeverCause.VirusTransmitted:
+                    segmentBurnDuration = 1.0f;
+                    SegmentBurnOverlap = 1.0f;
+
+                    if (cause == SeverCause.VirusTransmitted)
+                    {
+                        burnColor = virusBurnColor;
+                    }
+                    else
+                    {
+                        burnColor = Packet.Color;
+                    }
+
+                    var burnAllAtOnce = BurnTag(0, true);
+                    StartCoroutine(burnAllAtOnce);
+                    break;
+                default:
+                    segmentBurnDuration = (LinkBurnDuration / Segments.Count) / (1.0f - SegmentBurnOverlap);
+
+                    // Start burning at the point we severed the link.
+                    int leftIndex = Segments.FindIndex(candidate => candidate.GetInstanceID() == linkSegment.GetInstanceID());
+                    int rightIndex = leftIndex + 1;
+
+                    var burnLeft = BurnTag(leftIndex, false);
+                    var burnRight = BurnTag(rightIndex, true);
+
+                    if (rightIndex < Segments.Count)
+                    {
+                        StartCoroutine(burnRight);
+                    }
+                    StartCoroutine(burnLeft);
+                    break;
             }
-            StartCoroutine(burnLeft);
+            
         }
 
         private void OnSegmentFinishedBuring(bool wasRightSide)
@@ -86,12 +113,20 @@ namespace InternetGame
 
             var burnTrail = Instantiate(BurnTrail, Segments[i].transform, false);
             var burnTrailSystem = burnTrail.GetComponent<ParticleSystem>();
+            burnTrailSystem.Pause();
+
             burnTrail.transform.localPosition = new Vector3(0, 0, segment.Length);
             burnTrailSystem.randomSeed = (uint) randomSource.Next(10000);
 
             // Make the particle effect fill the segment.
             var shape = burnTrailSystem.shape;
             shape.length = segment.Length;
+
+            // Set burn color of particles.
+            var mainSettings = burnTrailSystem.main;
+            mainSettings.startColor = burnColor;
+
+            burnTrailSystem.Play();
 
             // Burn segment.
             float t = 0;

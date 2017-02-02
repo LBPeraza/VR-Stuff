@@ -10,6 +10,20 @@ namespace InternetGame
         public Link ActiveLink;
 		public PortInfo info;
 
+        private void Start()
+        {
+            // TODO: call Initialize from PortSpawner or similar.
+            Initialize();
+        }
+
+        public virtual void Initialize()
+        {
+            this.info = new PortInfo(
+                this.transform.position,
+                this.transform.rotation
+            );
+        }
+
         public virtual void OnBecameOptionForLink(Link l)
         {
 
@@ -37,13 +51,6 @@ namespace InternetGame
         {
             ActiveLink = null;
         }
-
-		void Start() {
-			this.info = new PortInfo (
-				this.transform.position,
-				this.transform.rotation
-			);
-		}
     }
 }
 

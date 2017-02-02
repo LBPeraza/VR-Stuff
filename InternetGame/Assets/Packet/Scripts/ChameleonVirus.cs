@@ -12,13 +12,19 @@ namespace InternetGame
 
         public float ColorChangePercentageOffset;
 
-        public void Initialize()
+        public override void Initialize()
         {
+            base.Initialize();
+
             this.Size = 1000;
             this.Damage = 10.0f;
-            this.Indicator = new Material(Resources.Load<Material>("EmailIndicator"));
 
-            StartColor = this.Indicator.color;
+            Saturated = new Material(Resources.Load<Material>("EmailIndicator"));
+            Destaturated = new Material(Saturated);
+
+            SetSaturatedColor(Color);
+
+            StartColor = this.Saturated.color;
         }
 
         public override void OnDequeuedFromLink(Link l, PacketSink p)
@@ -39,7 +45,7 @@ namespace InternetGame
         {
             float scaledPercentage = Mathf.Clamp01((percentageDone - ColorChangePercentageOffset) / (1.0f - ColorChangePercentageOffset));
             Color currentColor = Color.Lerp(StartColor, EndColor, scaledPercentage);
-            this.Indicator.color = currentColor;
+            this.Saturated.color = currentColor;
         }
     }
 }
