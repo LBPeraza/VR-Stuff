@@ -8,7 +8,8 @@ namespace InternetGame
     {
         Inactive,
         Grabbing,
-        Hovering
+        Hovering,
+		Snipping
     }
 
     public struct CursorEventArgs
@@ -30,6 +31,7 @@ namespace InternetGame
         public GameObject ArrowModel;
         public GameObject HandModel;
         public GameObject GrabModel;
+		public GameObject ScissorModel;
 
         public static CursorEventArgs DefaultCursorEventArgs;
 
@@ -110,21 +112,30 @@ namespace InternetGame
         {
             switch (newState)
             {
-                case CursorState.Inactive:
-                    ArrowModel.SetActive(true);
-                    HandModel.SetActive(false);
-                    GrabModel.SetActive(false);
+				case CursorState.Inactive:
+					ArrowModel.SetActive (true);
+					HandModel.SetActive (false);
+					GrabModel.SetActive (false);
+					ScissorModel.SetActive (false);
                     break;
                 case CursorState.Hovering:
                     ArrowModel.SetActive(false);
                     HandModel.SetActive(true);
-                    GrabModel.SetActive(false);
+					GrabModel.SetActive(false);
+					ScissorModel.SetActive (false);
                     break;
                 case CursorState.Grabbing:
                     ArrowModel.SetActive(false);
                     HandModel.SetActive(false);
-                    GrabModel.SetActive(true);
+					GrabModel.SetActive(true);
+					ScissorModel.SetActive (false);
                     break;
+				case CursorState.Snipping:
+					ArrowModel.SetActive (false);
+					HandModel.SetActive (false);
+					GrabModel.SetActive (false);
+					ScissorModel.SetActive (true);
+					break;
             }
 
             State = newState;
