@@ -25,6 +25,7 @@ namespace InternetGame
 
         public void SetSaturatedColor(Color c)
         {
+            Saturated.SetColor("_EmissionColor", c);
             Saturated.color = c;
             Destaturated.color = MakeLighter(c);
         }

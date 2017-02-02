@@ -78,7 +78,10 @@ namespace InternetGame
 
         public void TriggerDown(object sender, ClickedEventArgs args)
         {
-            if (CurrentLink == null && NearSource != null && !Player.IsOutOfBandwidth())
+            if (CurrentLink == null 
+                && NearSource != null
+                && !Player.IsOutOfBandwidth()
+                && NearSource.QueuedPackets.Count > 0)
             {
                 AddLink();
             }
