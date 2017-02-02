@@ -25,6 +25,7 @@ namespace InternetGame
         public PacketSpawner PacketSpawner;
         public Player Player;
         public InputManager InputManager;
+		public PortLoader PortLoader;
 
         public static GameScore Score;
 
@@ -36,8 +37,23 @@ namespace InternetGame
         {
             Initialize();
 
-            InputManager.Initialize();
-            Player.Initialize();
+			if (InputManager != null) {
+				InputManager.Initialize ();
+			} else {
+				Debug.Log ("No InputManager found. Skipping initialization.");
+			}
+
+			if (PortLoader != null) {
+				PortLoader.Initialize ();
+			} else {
+				Debug.Log ("No PortLoader found. Skipping initialization.");
+			}
+
+			if (Player != null) {
+				Player.Initialize ();
+			} else {
+				Debug.Log ("No Player found. Skipping initialization.");
+			}
 
             if (PacketSpawner != null)
             {
