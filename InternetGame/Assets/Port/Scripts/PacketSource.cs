@@ -130,8 +130,12 @@ namespace InternetGame
 
         protected virtual void OnTransmissionSevered(SeverCause cause, Link severedLink)
         {
-            ActiveLinks.RemoveAt(ActiveLinks.FindIndex(
-                link => link.GetInstanceID() == severedLink.GetInstanceID()));
+            var index = ActiveLinks.FindIndex(
+                link => link.GetInstanceID() == severedLink.GetInstanceID());
+            if (index != -1)
+            {
+                ActiveLinks.RemoveAt(index);
+            }
         }
 
         protected virtual void OnNewPacketEnqued(Packet p)
