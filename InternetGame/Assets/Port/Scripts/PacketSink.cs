@@ -8,6 +8,7 @@ namespace InternetGame
     {
         public string Address;
         public Link ActiveLink;
+		public PortInfo info;
 
         public virtual void OnBecameOptionForLink(Link l)
         {
@@ -36,6 +37,13 @@ namespace InternetGame
         {
             ActiveLink = null;
         }
+
+		void Start() {
+			this.info = new PortInfo (
+				this.transform.position,
+				this.transform.rotation
+			);
+		}
     }
 }
 
