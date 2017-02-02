@@ -20,7 +20,7 @@ namespace InternetGame
 
         public float DrawingLinkRumbleBaseLength = 0.01f;
         public ushort DrawingLinkRumbleLength = 100;
-        public ushort SeverLinkRumbleLength = 2000;
+        public ushort SeverLinkRumbleLength = 3000;
 
         public LinkControllerState State;
 

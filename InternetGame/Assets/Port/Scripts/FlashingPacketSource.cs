@@ -9,15 +9,40 @@ namespace InternetGame
         IEnumerator flashingCoroutine;
 
         public float FlashRate; // Somewhere from (0, 2] is reasonable.
+        public Color NeutralColor;
         public Color StartColor;
 
         public bool IsFlashing;
+
+        private float saturationPenalty = 0.7f;
+        private Color MakeLighter(Color c)
+        {
+            float h, s, v;
+            Color.RGBToHSV(c, out h, out s, out v);
+
+            return Color.HSVToRGB(h, (s - saturationPenalty), v);
+        }
+
+        public void Start()
+        {
+            NeutralColor = GetComponent<Renderer>().material.color;
+        }
 
         public override void OnLinkStarted(Link l)
         {
             base.OnLinkStarted(l);
 
             EndFlashing();
+        }
+
+        public override void OnLinkEstablished(Link l, PacketSink t)
+        {
+            base.OnLinkEstablished(l, t);
+
+            if (this.QueuedPackets.Count > 0)
+            {
+                StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
+            }
         }
 
         protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
@@ -34,9 +59,9 @@ namespace InternetGame
         {
             base.OnNewPacketEnqued(p);
 
-            if (this.ActiveLink == null)
+            if (!HasUnfinishedLink())
             {
-                StartFlashing((Color) PacketSpawner.AddressToColor[p.Destination]);
+                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
@@ -44,6 +69,7 @@ namespace InternetGame
         {
             if (!IsFlashing)
             {
+                StartColor = MakeLighter(flashColor);
                 flashingCoroutine = Flash(flashColor);
                 StartCoroutine(flashingCoroutine);
 
@@ -64,7 +90,7 @@ namespace InternetGame
 
         private void ResetColor()
         {
-            GetComponent<Renderer>().material.color = StartColor;
+            GetComponent<Renderer>().material.color = NeutralColor;
         }
 
         private IEnumerator Flash(Color flashColor)

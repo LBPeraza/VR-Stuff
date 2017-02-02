@@ -411,7 +411,8 @@ MonoBehaviour:
   ActiveLink: {fileID: 0}
   Indicator: {fileID: 0}
   Capacity: 5
-  FlashRate: 0.7
+  FlashRate: 1.2
+  NeutralColor: {r: 0, g: 0, b: 0, a: 0}
   StartColor: {r: 0.8235294, g: 0.8235294, b: 0.8235294, a: 0}
   IsFlashing: 0
 --- !u!4 &195703231 stripped
@@ -587,35 +588,6 @@ MonoBehaviour:
     type: 2}
   m_PrefabInternal: {fileID: 461805191}
   m_Script: {fileID: 11500000, guid: d66753dbcc59e4c49870b359147ac12b, type: 3}
---- !u!21 &444260418
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: Sprites/Default
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 5
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  m_SavedProperties:
-    serializedVersion: 2
-    m_TexEnvs:
-    - first:
-        name: _MainTex
-      second:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - first:
-        name: PixelSnap
-      second: 0
-    m_Colors:
-    - first:
-        name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &461805191
 Prefab:
   m_ObjectHideFlags: 0
@@ -772,7 +744,8 @@ MonoBehaviour:
   ActiveLink: {fileID: 0}
   Indicator: {fileID: 0}
   Capacity: 5
-  FlashRate: 0.7
+  FlashRate: 1.2
+  NeutralColor: {r: 0, g: 0, b: 0, a: 0}
   StartColor: {r: 0.8235294, g: 0.8235294, b: 0.8235294, a: 0}
   IsFlashing: 0
 --- !u!1001 &616752568
@@ -1128,7 +1101,42 @@ Prefab:
     - {fileID: 114264800426366452, guid: 37567eb128bec95428a41d79e3e290d3, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 37567eb128bec95428a41d79e3e290d3, type: 2}
   m_IsPrefabParent: 0
---- !u!43 &872261841
+--- !u!21 &846268052
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Sprites/Default
+  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+    - first:
+        name: _MainTex
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - first:
+        name: PixelSnap
+      second: 0
+    m_Colors:
+    - first:
+        name: _Color
+      second: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &957400261 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114570033374993850, guid: 98b31bb87a558bc4a854e976a9127cb0,
+    type: 2}
+  m_PrefabInternal: {fileID: 70212359}
+  m_Script: {fileID: 11500000, guid: 911523e4e6aa46847bdfef12c2cc36b9, type: 3}
+--- !u!43 &1048478651
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1256,12 +1264,6 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 0
---- !u!114 &957400261 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114570033374993850, guid: 98b31bb87a558bc4a854e976a9127cb0,
-    type: 2}
-  m_PrefabInternal: {fileID: 70212359}
-  m_Script: {fileID: 11500000, guid: 911523e4e6aa46847bdfef12c2cc36b9, type: 3}
 --- !u!1 &1050423762
 GameObject:
   m_ObjectHideFlags: 0
@@ -1930,12 +1932,12 @@ Prefab:
         type: 2}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 444260418}
+      objectReference: {fileID: 846268052}
     - target: {fileID: 33615853567066882, guid: cbe1b1915e686a8419b4705f8fb92449,
         type: 2}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 872261841}
+      objectReference: {fileID: 1048478651}
     - target: {fileID: 1759858839024230, guid: cbe1b1915e686a8419b4705f8fb92449, type: 2}
       propertyPath: m_Name
       value: '[CameraRig]'
@@ -2355,7 +2357,8 @@ MonoBehaviour:
   ActiveLink: {fileID: 0}
   Indicator: {fileID: 0}
   Capacity: 5
-  FlashRate: 0.7
+  FlashRate: 1.2
+  NeutralColor: {r: 0, g: 0, b: 0, a: 0}
   StartColor: {r: 0.8235294, g: 0.8235294, b: 0.8235294, a: 0}
   IsFlashing: 0
 --- !u!1 &2083733676

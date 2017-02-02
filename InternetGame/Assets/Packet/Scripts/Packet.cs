@@ -13,7 +13,7 @@ namespace InternetGame
         public string Destination;
 
         protected float saturationPenalty = 0.2f;
-        protected float lighterTransparency = 0.7f;
+        protected float lighterTransparency = 0.5f;
         protected Color MakeLighter(Color c)
         {
             float h, s, v;

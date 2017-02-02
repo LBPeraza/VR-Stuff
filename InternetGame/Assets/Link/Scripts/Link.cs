@@ -306,6 +306,9 @@ namespace InternetGame
             {
                 Packet.OnDequeuedFromLink(this, Sink);
 
+                // Clean up packet.
+                Destroy(Packet.gameObject);
+
                 // Desaturate all segments.
                 DesaturateSegments(0, Segments.Count, Packet);
 
