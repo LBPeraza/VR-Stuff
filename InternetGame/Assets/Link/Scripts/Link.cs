@@ -191,16 +191,22 @@ namespace InternetGame
 
                 var segment = Instantiate(LinkSegmentPrefab);
 
-                var linkSegment = segment.AddComponent<LinkSegment>();
+                LinkSegment linkSegment;
+                linkSegment = segment.AddComponent<LinkSegment>();
+
+                // Make as long as the pointer has traveled.
+                segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
+
+                // Rotate the link to align with the gap between the two points.
+                segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
+
                 linkSegment.ParentLink = this;
                 linkSegment.Length = segmentLength;
 
                 segment.transform.parent = linkSegmentContainer.transform;
                 segment.transform.position = (lastSegmentEnd + currentPointerPos) / 2;
-                // Make as long as the pointer has traveled.
-                segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
-                // Rotate the link to align with the gap between the two points.
-                segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
+
+                linkSegment.Initialize();
 
                 // Set initial color to be desaturated.
                 linkSegment.Desaturate(Source.Peek().Destaturated);

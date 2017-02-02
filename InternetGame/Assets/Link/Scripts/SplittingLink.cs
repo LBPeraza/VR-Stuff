@@ -97,9 +97,11 @@ namespace InternetGame
         private IEnumerator BurnTag(int i, bool increasing)
         {
             var segment = Segments[i];
+            segment.Numb();
+
             bool isEnd = isEndSegment(i, increasing);
-            var dupMaterial = new Material(segment.GetComponent<Renderer>().material);
-            segment.GetComponent<Renderer>().material = dupMaterial;
+            var dupMaterial = new Material(segment.Model.GetComponent<Renderer>().material);
+            segment.Model.GetComponent<Renderer>().material = dupMaterial;
 
             var startColor = dupMaterial.color;
             var endColor = Color.black;
