@@ -28,30 +28,17 @@ namespace InternetGame
             NeutralColor = GetComponent<Renderer>().material.color;
         }
 
-        public override void OnLinkStarted(Link l)
+        protected override void OnDequeued(Packet p)
         {
-            base.OnLinkStarted(l);
-
-            EndFlashing();
-        }
-
-        public override void OnLinkEstablished(Link l, PacketSink t)
-        {
-            base.OnLinkEstablished(l, t);
+            base.OnDequeued(p);
 
             if (this.QueuedPackets.Count > 0)
             {
                 StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
-        }
-
-        protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
-        {
-            base.OnTransmissionSevered(cause, severedLink);
-
-            if (this.QueuedPackets.Count > 0)
+            else
             {
-                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
+                EndFlashing();
             }
         }
 
@@ -61,20 +48,22 @@ namespace InternetGame
 
             if (!HasUnfinishedLink())
             {
-                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
+                StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
         private void StartFlashing(Color flashColor)
         {
-            if (!IsFlashing)
+            if (IsFlashing)
             {
-                StartColor = MakeLighter(flashColor);
-                flashingCoroutine = Flash(flashColor);
-                StartCoroutine(flashingCoroutine);
-
-                IsFlashing = true;
+                EndFlashing();
             }
+
+            StartColor = MakeLighter(flashColor);
+            flashingCoroutine = Flash(flashColor);
+            StartCoroutine(flashingCoroutine);
+
+            IsFlashing = true;
         }
 
         private void EndFlashing()

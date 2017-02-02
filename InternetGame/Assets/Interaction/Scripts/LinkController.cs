@@ -92,6 +92,8 @@ namespace InternetGame
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
                 currentLinkComponent.End();
 
+                GameManager.ReportPacketDropped(currentLinkComponent.Source.DequeuePacket());
+
                 var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
                 currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
 

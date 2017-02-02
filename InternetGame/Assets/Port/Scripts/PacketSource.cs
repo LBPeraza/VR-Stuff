@@ -23,8 +23,10 @@ namespace InternetGame
         public void Initialize()
         {
             ActiveLinks = new List<Link>();
+            QueuedPackets = new List<Packet>();
 
             Info.Capacity = Capacity;
+            Info.QueuedPackets = QueuedPackets;
             Info.NumQueuedPackets = 0;
 
             this.info = new PortInfo(
@@ -34,13 +36,13 @@ namespace InternetGame
 
             if (Indicator == null)
             {
-                var prefab = Resources.Load<GameObject>("PacketSourceIndicator");
+                var prefab = Resources.Load<GameObject>("RingIndicator");
                 var indicator = Instantiate(prefab, this.transform, false);
 
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
 
-            Indicator.UpdatePacketSourceInfo(Info);
+            Indicator.Initialize(Info);
         }
 
         public void EnqueuePacket(Packet p)
@@ -71,6 +73,12 @@ namespace InternetGame
                 {
                     OnEmptied();
                 }
+                OnDequeued(popped);
+
+                Info.NumQueuedPackets--;
+                Info.QueuedPackets = QueuedPackets;
+
+                Indicator.UpdatePacketSourceInfo(Info);
 
                 return popped;
             }
@@ -123,9 +131,7 @@ namespace InternetGame
 
         protected virtual void OnTransmissionStarted(Link l)
         {
-            Info.NumQueuedPackets--;
-
-            Indicator.UpdatePacketSourceInfo(Info);
+            
         }
 
         protected virtual void OnTransmissionSevered(SeverCause cause, Link severedLink)
@@ -138,9 +144,15 @@ namespace InternetGame
             }
         }
 
+        protected virtual void OnDequeued(Packet p)
+        {
+
+        }
+
         protected virtual void OnNewPacketEnqued(Packet p)
         {
             Info.NumQueuedPackets++;
+            Info.QueuedPackets = QueuedPackets;
 
             Indicator.UpdatePacketSourceInfo(Info);
         }
