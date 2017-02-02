@@ -7,10 +7,15 @@ namespace InternetGame
 {
     public class Email : Packet
     {
-        public void Initialize()
+        public override void Initialize()
         {
+            base.Initialize();
+            Saturated = new Material(Resources.Load<Material>("EmailIndicator"));
+            Destaturated = new Material(Saturated);
+
+            SetSaturatedColor(Color);
+
             this.Size = 1000;
-            this.Indicator = Resources.Load<Material>("EmailIndicator"); 
         }
 
         public override void OnDequeuedFromLink(Link l, PacketSink p)

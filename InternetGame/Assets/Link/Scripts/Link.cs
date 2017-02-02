@@ -63,9 +63,6 @@ namespace InternetGame
         public float UnseverableSegmentThreshold = 0.4f; // Meters
 
         // Private state.
-        protected Material LinkMaterial;
-        protected Color PacketColor;
-
         private GameObject linkSegmentContainer;
         private float lastSegmentAddTime;
         private Vector3 lastSegmentEnd;
@@ -85,9 +82,6 @@ namespace InternetGame
             // Make container for link segments.
             linkSegmentContainer = new GameObject("Segments");
             linkSegmentContainer.transform.parent = this.transform;
-
-            // Make a copy of the link material and store its default color for later.
-            LinkMaterial = new Material(Resources.Load<Material>("LinkMaterial"));
 
             Pointer = pointer;
 
@@ -111,9 +105,6 @@ namespace InternetGame
             if (p != null)
             {
                 AlertPacketSinksOfPacket(p);
-
-                PacketColor = (Color)PacketSpawner.AddressToColor[p.Destination];
-                LinkMaterial.color = PacketColor;
             }
 
             State = LinkState.UnderConstruction;
@@ -211,8 +202,8 @@ namespace InternetGame
                 // Rotate the link to align with the gap between the two points.
                 segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
 
-                // Color should match destination.
-                segment.GetComponent<Renderer>().material = LinkMaterial;
+                // Set initial color to be desaturated.
+                linkSegment.Desaturate(Source.Peek().Destaturated);
 
                 Segments.Add(linkSegment);
 
@@ -244,11 +235,11 @@ namespace InternetGame
                 OnSever.Invoke(cause, TotalLength);
             }
 
+            AnimateAndDestroy(cause, severedSegment);
+
             Packet = null;
             Source = null;
             Sink = null;
-
-            AnimateAndDestroy(cause, severedSegment);
         }
 
         /// <summary>
@@ -316,7 +307,7 @@ namespace InternetGame
                 Packet.OnDequeuedFromLink(this, Sink);
 
                 // Desaturate all segments.
-                DesaturateSegments(0, Segments.Count);
+                DesaturateSegments(0, Segments.Count, Packet);
 
                 var cause = Packet is Virus ?
                     SeverCause.VirusTransmitted : 
@@ -339,15 +330,15 @@ namespace InternetGame
         {
             for (int i = start; i < end; i++)
             {
-                Segments[i].Saturate(p.Indicator);
+                Segments[i].Saturate(p.Saturated);
             }
         }
 
-        private void DesaturateSegments(int start, int end)
+        private void DesaturateSegments(int start, int end, Packet p)
         {
             for (int i = start; i < end; i++)
             {
-                Segments[i].Desaturate();
+                Segments[i].Desaturate(p.Destaturated);
             }
         }
 
@@ -388,7 +379,7 @@ namespace InternetGame
                         PacketStart = 0;
 
                         // Deactivate these segments.
-                        DesaturateSegments(oldStart, Math.Min(PacketStart, oldEnd));
+                        DesaturateSegments(oldStart, Math.Min(PacketStart, oldEnd), Packet);
 
                         // Activate these segments.
                         SaturateSegments(Math.Max(oldEnd, PacketStart), PacketEnd, Packet);

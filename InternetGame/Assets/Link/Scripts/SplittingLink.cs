@@ -46,7 +46,7 @@ namespace InternetGame
                     }
                     else
                     {
-                        burnColor = this.PacketColor;
+                        burnColor = Packet.Color;
                     }
 
                     var burnAllAtOnce = BurnTag(0, true);
