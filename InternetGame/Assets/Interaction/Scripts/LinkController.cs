@@ -149,7 +149,7 @@ namespace InternetGame
                 if (currentLinkComponent != null)
                 {
                     currentLinkComponent.End();
-                    currentLinkComponent.Source.OnPacketDropped(currentLinkComponent.Packet);
+
                     GameManager.ReportPacketDropped(currentLinkComponent.Source.DequeuePacket());
 
                     if (currentLinkComponent.Segments.Count > 0)
@@ -236,7 +236,7 @@ namespace InternetGame
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
 
                 // Only finish the link if the destination matches the packet from the source.
-                if (currentLinkComponent.Source.Peek().Destination == NearSink.Address)
+                if (currentLinkComponent.Packet.Destination == NearSink.Address)
                 {
                     PlayClip(LinkSoundEffect.LinkCompleted);
 

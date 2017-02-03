@@ -13,13 +13,17 @@ namespace InternetGame
         public string Destination;
 
         public bool IsWaitingAtPort;
-        public bool IsNextForPendingLink;
+        public bool IsOnDeck;
+        public float OnDeckTime;
         public float EnqueuedTime;
         public float DequeuedTime;
         public float Patience;
         public float AlertTime;
 
         public PacketSource Source;
+
+        public delegate void OnExpireWarningHandler(Packet p);
+        public OnExpireWarningHandler OnExpireWarning;
 
         protected bool HasAlerted = false;
         protected bool HasDropped = false;
@@ -46,69 +50,83 @@ namespace InternetGame
         {
             Color = (Color)PacketSpawner.AddressToColor[Destination];
         }
+
+        public virtual void OnDeckAtPort(PacketSource p)
+        {
+            IsOnDeck = true;
+            OnDeckTime = Time.fixedTime;
+        }
+
         public virtual void OnEnqueuedToPort(PacketSource p)
         {
-            Source = p;
-
             EnqueuedTime = Time.fixedTime;
-            IsWaitingAtPort = true;
+
+            Source = p;
         }
+
         public virtual void OnDequeuedFromPort(PacketSource p, Link l)
         {
-            l.OnTransmissionProgress += OnTransmissionProgress;
-
             DequeuedTime = Time.fixedTime;
             IsWaitingAtPort = false;
+            IsOnDeck = false;
+
+            l.OnTransmissionStarted += OnTransmissionStarted;
         }
         public virtual void OnDequeuedFromLink(Link l, PacketSink p)
         {
             // Don't put anything critical in here -- Virus overrides this without calling base.
             GameManager.ReportPacketDelivered(this);
         }
+
+        public virtual void OnTransmissionStarted(Link l, Packet p)
+        {
+            l.OnTransmissionProgress += OnTransmissionProgress;
+        }
+
         public virtual void OnTransmissionProgress(float percentageDone)
         {
 
         }
-        public virtual void OnFutureLinkStarted(Link l)
+
+        public virtual void ExpireWarning()
         {
-            IsNextForPendingLink = true;
+            if (OnExpireWarning != null)
+            {
+                OnExpireWarning.Invoke(this);
+            }
+
+            Source.PlayClip(PacketSourceSoundEffect.PacketWarning);
         }
 
-        public virtual void Alert()
-        {
-
-        }
-
-        public virtual void Drop()
+        public virtual void Expire()
         {
             // Dequeue packet.
             Source.DequeuePacket(Source.QueuedPackets.FindIndex(
                 packet => packet.GetInstanceID() == this.GetInstanceID()));
 
-            Source.OnPacketDropped(this);
-            GameManager.ReportPacketDropped(this);
+            Source.OnPacketHasExpired(this);
 
             Destroy(this.gameObject);
         }
 
         public virtual void Update()
         {
-            if (IsWaitingAtPort && !IsNextForPendingLink)
+            if (IsOnDeck)
             {
-                if (!HasAlerted && Time.fixedTime > EnqueuedTime + AlertTime)
+                if (!HasAlerted && Time.fixedTime > OnDeckTime + AlertTime)
                 {
                     // Alert player to expiring packet.
-                    Alert();
+                    ExpireWarning();
 
                     HasAlerted = true;
                 }
-                if (!HasDropped && Time.fixedTime > EnqueuedTime + Patience)
+                if (!HasDropped && Time.fixedTime > OnDeckTime + Patience)
                 {
                     // Drop packet.
-                    Drop();
+                    Expire();
 
                     HasDropped = true;
-                    IsWaitingAtPort = false;
+                    IsOnDeck = false;
                 }
             }
         }

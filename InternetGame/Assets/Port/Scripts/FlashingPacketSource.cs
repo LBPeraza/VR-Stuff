@@ -23,30 +23,31 @@ namespace InternetGame
             return Color.HSVToRGB(h, (s - saturationPenalty), v);
         }
 
-        public void Start()
+        public override void Initialize()
         {
+            base.Initialize();
+
             NeutralColor = GetComponent<Renderer>().material.color;
         }
 
-        protected override void OnDequeued(Packet p)
+        protected override void OnNewPacketOnDeck(Packet p)
         {
-            base.OnDequeued(p);
+            base.OnNewPacketOnDeck(p);
 
-            if (this.QueuedPackets.Count > 0)
+            if (!HasUnfinishedLink())
             {
-                StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
-            }
-            else
-            {
-                EndFlashing();
+                StartFlashing((Color)PacketSpawner.AddressToColor[p.Destination]);
             }
         }
 
-        protected override void OnNewPacketEnqued(Packet p)
+        protected override void OnTransmissionStarted(Link l, Packet p)
         {
-            base.OnNewPacketEnqued(p);
+            base.OnTransmissionStarted(l, p);
 
-            if (!HasUnfinishedLink())
+            if (IsEmpty())
+            {
+                EndFlashing();
+            } else
             {
                 StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }

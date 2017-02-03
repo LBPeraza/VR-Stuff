@@ -11,7 +11,21 @@ namespace InternetGame
         public Text NumQueuedPacketsText;
         public Text CapacityText;
 
-        public override void UpdatePacketSourceInfo(PacketSourceInfo info)
+        public override void OnPacketDequeued(Packet p)
+        {
+            base.OnPacketDequeued(p);
+
+            UpdateDisplay(Source.Info);
+        }
+
+        public override void OnPacketEnqueued(Packet p)
+        {
+            base.OnPacketEnqueued(p);
+
+            UpdateDisplay(Source.Info);
+        }
+
+        public void UpdateDisplay(PacketSourceInfo info)
         {
             NumQueuedPacketsText.text = info.NumQueuedPackets + "";
             CapacityText.text = info.Capacity + "";

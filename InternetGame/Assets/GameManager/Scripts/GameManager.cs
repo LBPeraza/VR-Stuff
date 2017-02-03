@@ -139,7 +139,7 @@ namespace InternetGame
             }
 
             // TODO refactor this into a Music class.
-            var musicAudioSource = GameObject.Find("Music").GetComponent<AudioSource>();
+            var musicAudioSource = GameObject.Find("/Music").GetComponent<AudioSource>();
             musicAudioSource.clip = Resources.Load<AudioClip>(LevelParameters.SoundtrackName);
             musicAudioSource.Play();
         }

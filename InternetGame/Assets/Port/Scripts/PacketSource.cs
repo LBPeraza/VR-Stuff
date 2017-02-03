@@ -22,6 +22,15 @@ namespace InternetGame
         public int Capacity = 5;
         public PacketSourceInfo Info;
 
+        public delegate void OnPacketEnqueuedHandler(Packet p);
+        public event OnPacketEnqueuedHandler OnPacketEnqueued;
+        public delegate void OnPacketDequeuedHandler(Packet p);
+        public event OnPacketDequeuedHandler OnPacketDequeued;
+        public delegate void OnLinkStartedHandler(Link l);
+        public event OnLinkStartedHandler OnPendingLinkStarted;
+        public delegate void OnPacketExpiredHandler(Packet p);
+        public event OnPacketExpiredHandler OnPacketExpired;
+
         public AudioSource EnqueuedAudioSource;
         public AudioSource PacketDroppedAudioSource;
         public AudioSource PacketWarningAudioSource;
@@ -35,7 +44,7 @@ namespace InternetGame
             return ActiveLinks.Exists(link => !link.Finished);
         }
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             ActiveLinks = new List<Link>();
             QueuedPackets = new List<Packet>();
@@ -59,7 +68,7 @@ namespace InternetGame
 
             InitializeAudio();
 
-            Indicator.Initialize(Info);
+            Indicator.Initialize(this);
         }
 
         public void InitializeAudio()
@@ -136,6 +145,12 @@ namespace InternetGame
                 OnNewPacketEnqued(p);
                 p.OnEnqueuedToPort(this);
 
+                if (QueuedPackets.Count == 1)
+                {
+                    // Initial packet.
+                    OnNewPacketOnDeck(Peek());
+                }
+
                 PlayClip(PacketSourceSoundEffect.PacketEnqueued);
             }
         }
@@ -153,10 +168,14 @@ namespace InternetGame
                 }
                 OnDequeued(popped);
 
+                // New packet is 'on deck'.
+                if (i == 0 && !IsEmpty())
+                {
+                    OnNewPacketOnDeck(Peek());
+                }
+
                 Info.NumQueuedPackets--;
                 Info.QueuedPackets = QueuedPackets;
-
-                Indicator.UpdatePacketSourceInfo(Info);
 
                 return popped;
             }
@@ -175,47 +194,55 @@ namespace InternetGame
             return null;
         }
 
-        private void FindAndSendPacketTo(Link l, PacketSink t)
-        {
-            Packet p = Peek();
-            if (p != null && p.Destination == t.Address)
-            {
-                var packet = DequeuePacket();
-                l.EnqueuePacket(packet);
-                packet.OnDequeuedFromPort(this, l);
-                OnTransmissionStarted(l);
-            }   
-        }
-
         public virtual void OnLinkStarted(Link l)
         {
             ActiveLinks.Add(l);
+            
+            if (!IsEmpty())
+            {
+                // Dequeue packet and load it onto link.
+                var packet = DequeuePacket();
+                l.EnqueuePacket(packet);
 
-            // Notify the next packet that it is staged for a link.
-            Peek().OnFutureLinkStarted(l);
+                packet.OnDequeuedFromPort(this, l);
+            }
 
             // Listen for sever events.
             l.OnSever += (Link severed, SeverCause cause, float totalLength) =>
             {
                 OnTransmissionSevered(cause, l);
             };
+
+            l.OnTransmissionStarted += OnTransmissionStarted;
+
+            if (OnPendingLinkStarted != null)
+            {
+                OnPendingLinkStarted.Invoke(l);
+            }
         }
 
         public virtual void OnLinkEstablished(Link l, PacketSink t)
         {
-            FindAndSendPacketTo(l, t);
+
         }
 
-        public virtual void OnPacketDropped(Packet p)
+        public virtual void OnPacketHasExpired(Packet p)
         {
             PlayClip(PacketSourceSoundEffect.PacketDropped);
+
+            if (OnPacketExpired != null)
+            {
+                OnPacketExpired.Invoke(p);
+            }
+
+            GameManager.ReportPacketDropped(p);
         }
 
         protected virtual void OnEmptied()
         {
         }
 
-        protected virtual void OnTransmissionStarted(Link l)
+        protected virtual void OnTransmissionStarted(Link l, Packet p)
         {
             
         }
@@ -232,7 +259,10 @@ namespace InternetGame
 
         protected virtual void OnDequeued(Packet p)
         {
-
+            if (OnPacketDequeued != null)
+            {
+                OnPacketDequeued.Invoke(p);
+            }
         }
 
         protected virtual void OnNewPacketEnqued(Packet p)
@@ -240,9 +270,15 @@ namespace InternetGame
             Info.NumQueuedPackets++;
             Info.QueuedPackets = QueuedPackets;
 
-            Indicator.UpdatePacketSourceInfo(Info);
+            if (OnPacketEnqueued != null)
+            {
+                OnPacketEnqueued.Invoke(p);
+            }
         }
-
         
+        protected virtual void OnNewPacketOnDeck(Packet p)
+        {
+            p.OnDeckAtPort(this);
+        }
     }
 }

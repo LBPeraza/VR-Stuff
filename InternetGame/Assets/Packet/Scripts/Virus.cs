@@ -27,9 +27,9 @@ namespace InternetGame
             VirusAlertClip = Resources.Load<AudioClip>("virus_warning");
         }
 
-        public override void OnDequeuedFromPort(PacketSource p, Link l)
+        public override void OnTransmissionStarted(Link l, Packet p)
         {
-            base.OnDequeuedFromPort(p, l);
+            base.OnTransmissionStarted(l, p);
 
             l.OnSever += OnSever;
         }

@@ -15,11 +15,36 @@ namespace InternetGame
 
     public abstract class PacketSourceIndicator : MonoBehaviour
     {
-        public virtual void Initialize(PacketSourceInfo info)
+        public PacketSource Source;
+        public virtual void Initialize(PacketSource source)
+        {
+            Source = source;
+
+            source.OnPacketEnqueued += OnPacketEnqueued;
+            source.OnPacketDequeued += OnPacketDequeued;
+            source.OnPendingLinkStarted += OnLinkStarted;
+            source.OnPacketExpired += OnPacketExpired;
+        }
+
+        public virtual void OnPacketExpired(Packet p)
         {
 
         }
-        public abstract void UpdatePacketSourceInfo(PacketSourceInfo info);   
+
+        public virtual void OnPacketEnqueued(Packet p)
+        {
+
+        }
+
+        public virtual void OnPacketDequeued(Packet p)
+        {
+
+        }
+
+        public virtual void OnLinkStarted(Link l)
+        {
+
+        } 
     }
 }
 

@@ -39,6 +39,9 @@ namespace InternetGame
         public delegate void OnConstructionProgressHandler(float deltaLength, float totalLengthSoFar);
         public event OnConstructionProgressHandler OnConstructionProgress;
 
+        public delegate void OnTransmissionStartedHandler(Link l, Packet p);
+        public event OnTransmissionStartedHandler OnTransmissionStarted;
+
         public delegate void OnTransmissionProgressHandler(float percentage);
         public event OnTransmissionProgressHandler OnTransmissionProgress;
 
@@ -102,10 +105,9 @@ namespace InternetGame
             
             // Finds and alerts all ports that might be destination for
             // the current link.
-            Packet p = source.Peek();
-            if (p != null)
+            if (Packet != null)
             {
-                AlertPacketSinksOfPacket(p);
+                AlertPacketSinksOfPacket(Packet);
             }
 
             State = LinkState.UnderConstruction;
@@ -210,7 +212,7 @@ namespace InternetGame
                 linkSegment.Initialize();
 
                 // Set initial color to be desaturated.
-                linkSegment.Desaturate(Source.Peek().Destaturated);
+                linkSegment.Desaturate(Packet.Destaturated);
 
                 Segments.Add(linkSegment);
 
@@ -274,15 +276,19 @@ namespace InternetGame
 
                     Sink = t;
 
+                    MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
+
+                    StartTransmission();
+
                     Source.OnLinkEstablished(this, Sink);
                     Sink.OnLinkEstablished(this, Source);
-
-                    MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
                 }
                 else
                 {
                     // End somewhere other than a sink.
                     State = LinkState.EarlyTerminated;
+
+                    // TODO: move the packet drop logic from link controller into here.
                 }
 
                 UndoAlertPacketSinksOfPacket();
@@ -295,18 +301,30 @@ namespace InternetGame
         }
 
         /// <summary>
-        /// Adds a packet to the link.
+        /// Adds a packet to the link, but does not start transmission.
         /// </summary>
         /// <param name="p">The Packet to add.</param>
         public void EnqueuePacket(Packet p)
         {
-            if (State == LinkState.AwaitingPacket && !IsTransmittingPacket)
+            Packet = p;
+        }
+
+        /// <summary>
+        /// Begins the transmission of the packet that was enqueued.
+        /// </summary>
+        public void StartTransmission()
+        {
+            if (Packet != null)
             {
-                Packet = p;
-                IsTransmittingPacket = true;
+                State = LinkState.TransmittingPacket;
                 TransmissionProgress = SeedTransmissionProgress;
                 NeededProgress = (Packet.Size * TotalLength);
-                State = LinkState.TransmittingPacket;
+                IsTransmittingPacket = true;
+
+                if (OnTransmissionStarted != null)
+                {
+                    OnTransmissionStarted.Invoke(this, Packet);
+                }
             }
         }
 
