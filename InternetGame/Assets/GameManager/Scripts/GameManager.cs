@@ -19,6 +19,7 @@ namespace InternetGame
     public struct LevelParameters
     {
         public int NumDroppedPacketsAllowed;
+        public string SoundtrackName;
     }
 
     public class GameManager : MonoBehaviour
@@ -54,6 +55,7 @@ namespace InternetGame
         {
             // TODO
             LevelParameters.NumDroppedPacketsAllowed = 5;
+            LevelParameters.SoundtrackName = "deep_dream_machine";
         }
 
         public void Initialize()
@@ -135,6 +137,11 @@ namespace InternetGame
                     Scoreboard.Initialize(Score);
                 }
             }
+
+            // TODO refactor this into a Music class.
+            var musicAudioSource = GameObject.Find("Music").GetComponent<AudioSource>();
+            musicAudioSource.clip = Resources.Load<AudioClip>(LevelParameters.SoundtrackName);
+            musicAudioSource.Play();
         }
 
         public static void ReportPacketDelivered(Packet p)

@@ -270,7 +270,7 @@ namespace InternetGame
 
         private void LinkSegment_OnSever(Link severed, SeverCause cause, float totalLength)
         {
-            if (cause == SeverCause.Player)
+            if (cause == SeverCause.Player || cause == SeverCause.PlayerPreventedVirus)
             {
                 if (!(severed.Packet is Virus))
                 {

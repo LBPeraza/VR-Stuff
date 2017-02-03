@@ -19,6 +19,7 @@ namespace InternetGame
     public enum SeverCause
     {
         Player,
+        PlayerPreventedVirus,
         TransmissionFinished,
         UnfinishedLink,
         VirusTransmitted
@@ -235,6 +236,12 @@ namespace InternetGame
             State = LinkState.Severed;
 
             UndoAlertPacketSinksOfPacket();
+
+            if (cause == SeverCause.Player && Packet is Virus)
+            {
+                // Add some additional information if the player prevented a virus, specifically.
+                cause = SeverCause.PlayerPreventedVirus;
+            }
 
             if (OnSever != null)
             {

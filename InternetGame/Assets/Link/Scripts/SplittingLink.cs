@@ -37,6 +37,7 @@ namespace InternetGame
             {
                 case SeverCause.TransmissionFinished:
                 case SeverCause.VirusTransmitted:
+                case SeverCause.PlayerPreventedVirus:
                     segmentBurnDuration = 1.0f;
                     SegmentBurnOverlap = 1.0f;
 
