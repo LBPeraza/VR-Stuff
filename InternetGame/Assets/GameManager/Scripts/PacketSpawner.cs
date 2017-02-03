@@ -15,6 +15,13 @@ namespace InternetGame
         public float VirusProbability = 0.2f;
         public float LastSpawn;
 
+        public float IncreaseSpawnRateInterval = 15.0f;
+        public float IncreaseSpawnRateAmount = 1.0f;
+        public float LastSpawnRateIncrease;
+        public float IncreaseVirusRateInterval = 15.0f;
+        public float IncreaseVirusRateAmount = .05f;
+        public float LastVirusRateIncrease;
+
         private System.Random random;
         private static Color[] AddressColors = { Color.green, Color.blue, Color.magenta, Color.yellow };
 
@@ -27,6 +34,8 @@ namespace InternetGame
             BuildAddressToColorTable(Sinks);
 
             LastSpawn = Time.fixedTime;
+            LastSpawnRateIncrease = Time.fixedTime;
+            LastVirusRateIncrease = Time.fixedTime;
 
             random = new System.Random();
         }
@@ -74,6 +83,20 @@ namespace InternetGame
                 {
                     SpawnPacket();
                 }
+            }
+
+            if (Time.fixedTime > LastSpawnRateIncrease + IncreaseSpawnRateInterval)
+            {
+                LastSpawnRateIncrease = Time.fixedTime;
+
+                SpawnInterval -= IncreaseSpawnRateAmount;
+            }
+
+            if (Time.fixedTime > LastVirusRateIncrease + IncreaseVirusRateInterval)
+            {
+                LastVirusRateIncrease = Time.fixedTime;
+
+                VirusProbability += IncreaseVirusRateAmount;
             }
         }
     }

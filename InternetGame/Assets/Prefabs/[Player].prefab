@@ -1594,6 +1594,7 @@ MonoBehaviour:
   Player: {fileID: 114570033374993850}
   Cursor: {fileID: 0}
   AudioSource: {fileID: 82465060003776714}
+  AuxillaryAudioSource: {fileID: 0}
   LinkSevered: {fileID: 0}
   LinkDrawing: {fileID: 0}
   LinkConnected: {fileID: 0}
@@ -1694,6 +1695,7 @@ MonoBehaviour:
   Player: {fileID: 114570033374993850}
   Cursor: {fileID: 0}
   AudioSource: {fileID: 82142470065031200}
+  AuxillaryAudioSource: {fileID: 0}
   LinkSevered: {fileID: 0}
   LinkDrawing: {fileID: 0}
   LinkConnected: {fileID: 0}

@@ -1,19 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace InternetGame
 {
     public class Scoreboard : MonoBehaviour
     {
-        public void Initialize()
-        {
+        public GameScore Score;
 
+        public virtual void Initialize(GameScore score)
+        {
+            
         }
 
-        void Update()
+        public virtual void UpdateScore(GameScore score)
         {
-
+            
         }
     }
 }

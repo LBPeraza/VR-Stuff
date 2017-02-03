@@ -77,7 +77,8 @@ namespace InternetGame
         void Update()
         {
             float intensity = GetBandVol(Audio, Low, High);
-            SetGlowIntensity(intensity / MaxIntensity);
+            float volumeScalar = Audio.volume;
+            SetGlowIntensity(intensity / (MaxIntensity * volumeScalar));
         }
     }
 }

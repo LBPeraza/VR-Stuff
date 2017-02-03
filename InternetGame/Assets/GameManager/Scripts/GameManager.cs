@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace InternetGame
 {
@@ -12,6 +13,12 @@ namespace InternetGame
         public float VirusAmount;
         public float NumberOfVirusesInfected;
         public float NumberOfVirusesStopped;
+        public float Time;
+    }
+
+    public struct LevelParameters
+    {
+        public int NumDroppedPacketsAllowed;
     }
 
     public class GameManager : MonoBehaviour
@@ -28,43 +35,31 @@ namespace InternetGame
 		public PortLoader PortLoader;
 
         public static GameScore Score;
+        public static Scoreboard Scoreboard;
+
+        public static LevelParameters LevelParameters;
+
+        public static bool IsGameOver;
+        public static bool IsPaused;
 
         public static string PacketSinksPath = "/Sinks";
         public static string PacketSourcesPath = "/Sources";
 
-        // Use this for initialization
         void Start()
         {
             Initialize();
+        }
 
-			if (InputManager != null) {
-				InputManager.Initialize ();
-			} else {
-				Debug.Log ("No InputManager found. Skipping initialization.");
-			}
-
-			if (PortLoader != null) {
-				PortLoader.Initialize ();
-			} else {
-				Debug.Log ("No PortLoader found. Skipping initialization.");
-			}
-
-			if (Player != null) {
-				Player.Initialize ();
-			} else {
-				Debug.Log ("No Player found. Skipping initialization.");
-			}
-
-            if (PacketSpawner != null)
-            {
-                PacketSpawner.Initialize();
-            }
-
-            ResetScore(Score);
+        public void LoadLevelData()
+        {
+            // TODO
+            LevelParameters.NumDroppedPacketsAllowed = 5;
         }
 
         public void Initialize()
         {
+            LoadLevelData();
+
             // Try to find Sinks and Sources gameobject in scene, if not already set.
             if (PacketSinks == null)
             {
@@ -97,9 +92,58 @@ namespace InternetGame
                 }
             }
 
+            if (InputManager != null)
+            {
+                InputManager.Initialize();
+            }
+            else
+            {
+                Debug.Log("No InputManager found. Skipping initialization.");
+            }
+
+            if (PortLoader != null)
+            {
+                PortLoader.Initialize();
+            }
+            else
+            {
+                Debug.Log("No PortLoader found. Skipping initialization.");
+            }
+
+            if (Player != null)
+            {
+                Player.Initialize();
+            }
+            else
+            {
+                Debug.Log("No Player found. Skipping initialization.");
+            }
+
+            if (PacketSpawner != null)
+            {
+                PacketSpawner.Initialize();
+            }
+
+            ResetScore(Score);
+
+            if (Scoreboard == null)
+            {
+                var scoreboard = GameObject.Find("[Scoreboard]");
+                if (scoreboard != null)
+                {
+                    Scoreboard = scoreboard.GetComponent<Scoreboard>();
+                    Scoreboard.Initialize(Score);
+                }
+            }
         }
 
-        public static void AddVirus(Virus v)
+        public static void ReportPacketDelivered(Packet p)
+        {
+            Score.PacketsDelivered++;
+            Score.BytesDelivered += p.Size;
+        }
+
+        public static void ReportVirusDelivered(Virus v)
         {
             Score.VirusAmount += v.Damage;
             Score.NumberOfVirusesInfected++;
@@ -120,12 +164,34 @@ namespace InternetGame
             score.BytesDelivered = 0;
             score.PacketsDelivered = 0;
             score.PacketsDropped = 0;
+            score.Time = 0.0f;
+            score.NumberOfVirusesInfected = 0;
+            score.NumberOfVirusesStopped = 0;
         }
 
-        // Update is called once per frame
-        void Update()
+        private void GameOver()
         {
-            
+            IsGameOver = true;
+            // TODO
+            SceneManager.LoadScene("LevelSelect", LoadSceneMode.Single);
+        }
+
+        public void Update()
+        {
+            if (!IsPaused)
+            {
+                Score.Time += Time.deltaTime;
+
+                if (Scoreboard != null)
+                {
+                    Scoreboard.UpdateScore(Score);
+                }
+
+                if (Score.PacketsDropped > LevelParameters.NumDroppedPacketsAllowed && !IsGameOver)
+                {
+                    GameOver();
+                }
+            }
         }
     }
 }

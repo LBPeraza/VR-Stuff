@@ -266,10 +266,16 @@ namespace InternetGame
             }
         }
 
-        private void LinkSegment_OnSever(SeverCause cause, float totalLength)
+        private void LinkSegment_OnSever(Link severed, SeverCause cause, float totalLength)
         {
             if (cause == SeverCause.Player)
             {
+                if (!(severed.Packet is Virus))
+                {
+                    // Report dropped packet.
+                    GameManager.ReportPacketDropped(severed.Packet);
+                }
+
                 PlayClip(LinkSoundEffect.LinkSevered);
 
                 // Rumble controller on sever.

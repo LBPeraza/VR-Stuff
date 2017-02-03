@@ -41,7 +41,7 @@ namespace InternetGame
         public virtual void OnTransmissionStarted(Link l)
         {
             // Listen for sever events.
-            l.OnSever += (SeverCause cause, float totalLength) =>
+            l.OnSever += (Link severed, SeverCause cause, float totalLength) =>
             {
                 OnTransmissionSevered(cause, l);
             };

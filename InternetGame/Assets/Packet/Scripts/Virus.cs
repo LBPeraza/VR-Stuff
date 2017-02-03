@@ -15,14 +15,14 @@ namespace InternetGame
             l.OnSever += OnSever;
         }
 
-        public virtual void OnSever(SeverCause cause, float totalLength)
+        public virtual void OnSever(Link severerd, SeverCause cause, float totalLength)
         {
             GameManager.ReportStoppedVirus(this);
         }
         
         public override void OnDequeuedFromLink(Link l, PacketSink p)
         {
-            GameManager.AddVirus(this);
+            GameManager.ReportVirusDelivered(this);
         }
     }
 }

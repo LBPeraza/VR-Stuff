@@ -111,7 +111,7 @@ namespace InternetGame
             {
                 cursor.OnEnterCut(new CursorEventArgs
                 {
-                    senderId = this.GetInstanceID()
+                    senderId = this.ParentLink.GetInstanceID()
                 });
             }
         }
@@ -123,7 +123,7 @@ namespace InternetGame
             {
                 cursor.OnExitCut(new CursorEventArgs
                 {
-                    senderId = this.GetInstanceID()
+                    senderId = this.ParentLink.GetInstanceID()
                 });
             }
         }

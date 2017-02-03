@@ -32,7 +32,7 @@ namespace InternetGame
         public GameObject LinkSegmentPrefab;
         public Transform Pointer;
 
-        public delegate void SeverHandler(SeverCause cause, float totalLength);
+        public delegate void SeverHandler(Link severed, SeverCause cause, float totalLength);
         public event SeverHandler OnSever;
 
         public delegate void OnConstructionProgressHandler(float deltaLength, float totalLengthSoFar);
@@ -238,7 +238,7 @@ namespace InternetGame
 
             if (OnSever != null)
             {
-                OnSever.Invoke(cause, TotalLength);
+                OnSever.Invoke(this, cause, TotalLength);
             }
 
             AnimateAndDestroy(cause, severedSegment);
