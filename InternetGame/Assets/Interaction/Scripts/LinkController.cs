@@ -11,11 +11,25 @@ namespace InternetGame
         DrawingLink
     }
 
+    public enum LinkSoundEffect
+    {
+        LinkSevered,
+        LinkCompleted,
+        LinkDrawing,
+        LinkBandwidthExceeded
+    }
+
     public class LinkController : MonoBehaviour
     {
         public bool IsRightHand;
         public Player Player;
         public Cursor Cursor;
+        public AudioSource AudioSource;
+        public AudioSource AuxillaryAudioSource;
+        public AudioClip LinkSevered;
+        public AudioClip LinkDrawing;
+        public AudioClip LinkConnected;
+        public AudioClip LinkDepleted;
         public int ObjectId;
 
         public float DrawingLinkRumbleBaseLength = 0.01f;
@@ -59,6 +73,41 @@ namespace InternetGame
                 InputManager.LeftTriggerClicked += TriggerDown;
                 InputManager.LeftTriggerUnclicked += TriggerUp;
             }
+
+            LoadAudioClips();
+        }
+
+        private void LoadAudioClips()
+        {
+            if (AudioSource == null)
+            {
+                AudioSource = transform.GetComponentInChildren<AudioSource>();
+            }
+
+            if (AuxillaryAudioSource == null)
+            {
+                AuxillaryAudioSource = this.gameObject.AddComponent<AudioSource>();
+            }
+
+            if (LinkConnected == null)
+            {
+                LinkConnected = Resources.Load<AudioClip>("link_connect");
+            }
+
+            if (LinkDepleted == null)
+            {
+                LinkDepleted = Resources.Load<AudioClip>("link_depleted");
+            }
+
+            if (LinkSevered == null)
+            {
+                LinkSevered = Resources.Load<AudioClip>("link_sever");
+            }
+
+            if (LinkDrawing == null)
+            {
+                LinkDrawing = Resources.Load<AudioClip>("link_drawing");
+            }
         }
 
         private void AddLink()
@@ -84,6 +133,8 @@ namespace InternetGame
                 && !Player.IsOutOfBandwidth()
                 && NearSource.QueuedPackets.Count > 0)
             {
+                PlayClip(LinkSoundEffect.LinkDrawing);
+
                 AddLink();
             }
         }
@@ -94,18 +145,74 @@ namespace InternetGame
             {
                 // End the current link in the air.
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
-                currentLinkComponent.End();
 
-                GameManager.ReportPacketDropped(currentLinkComponent.Source.DequeuePacket());
+                if (currentLinkComponent != null)
+                {
+                    currentLinkComponent.End();
+                    currentLinkComponent.Source.OnPacketDropped(currentLinkComponent.Packet);
+                    GameManager.ReportPacketDropped(currentLinkComponent.Source.DequeuePacket());
 
-                var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
-                currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
+                    if (currentLinkComponent.Segments.Count > 0)
+                    {
+                        var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
+                        currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Link Controller: 'current link component' is null on a trigger up event.");
+                }
 
                 State = LinkControllerState.Inactive;
                 Cursor.OnExit(cursorEventArgs);
 
+                StopClips();
+
                 DestroyLink();
             }
+        }
+
+        public void StopClips()
+        {
+            AudioSource.Stop();
+        }
+
+        public void PlayClip(LinkSoundEffect effect)
+        {
+            AudioSource source = AudioSource;
+            AudioClip clip = LinkSevered;
+            bool repeat = false;
+            float volume = 0.5f;
+
+            switch (effect)
+            {
+                case LinkSoundEffect.LinkBandwidthExceeded:
+                    clip = LinkDepleted;
+                    break;
+                case LinkSoundEffect.LinkCompleted:
+                    volume = 1.0f;
+                    clip = LinkConnected;
+                    break;
+                case LinkSoundEffect.LinkDrawing:
+                    repeat = true;
+                    clip = LinkDrawing;
+                    break;
+                case LinkSoundEffect.LinkSevered:
+                    source = AuxillaryAudioSource;
+                    volume = 1.0f;
+                    clip = LinkSevered;
+                    break;
+            }
+
+            if (clip != null)
+            {
+                source.Stop();
+                source.volume = volume;
+                source.clip = clip;
+                source.loop = repeat;
+                source.Play();
+            }
+            
         }
 
         public void OnTriggerEnter(Collider other)
@@ -129,6 +236,8 @@ namespace InternetGame
                 // Only finish the link if the destination matches the packet from the source.
                 if (currentLinkComponent.Source.Peek().Destination == NearSink.Address)
                 {
+                    PlayClip(LinkSoundEffect.LinkCompleted);
+
                     currentLinkComponent.End(NearSink);
 
                     DestroyLink();
@@ -161,6 +270,8 @@ namespace InternetGame
         {
             if (cause == SeverCause.Player)
             {
+                PlayClip(LinkSoundEffect.LinkSevered);
+
                 // Rumble controller on sever.
                 StartCoroutine(RumbleWithDecay(SeverLinkRumbleLength, SeverLinkRumbleDecay));
             }
@@ -177,6 +288,8 @@ namespace InternetGame
                 Player.TotalBandwidth -= deltaLength;
                 if (Player.IsOutOfBandwidth())
                 {
+                    PlayClip(LinkSoundEffect.LinkBandwidthExceeded);
+
                     CurrentLink.GetComponent<Link>().End();
 
                     Cursor.OnExit(cursorEventArgs);

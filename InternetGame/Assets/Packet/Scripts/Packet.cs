@@ -13,6 +13,7 @@ namespace InternetGame
         public string Destination;
 
         public bool IsWaitingAtPort;
+        public bool IsNextForPendingLink;
         public float EnqueuedTime;
         public float Patience;
         public float AlertTime;
@@ -63,6 +64,10 @@ namespace InternetGame
         {
 
         }
+        public virtual void OnFutureLinkStarted(Link l)
+        {
+            IsNextForPendingLink = true;
+        }
 
         public virtual void Alert()
         {
@@ -75,6 +80,7 @@ namespace InternetGame
             Source.DequeuePacket(Source.QueuedPackets.FindIndex(
                 packet => packet.GetInstanceID() == this.GetInstanceID()));
 
+            Source.OnPacketDropped(this);
             GameManager.ReportPacketDropped(this);
 
             Destroy(this.gameObject);
@@ -82,7 +88,7 @@ namespace InternetGame
 
         public virtual void Update()
         {
-            if (IsWaitingAtPort)
+            if (IsWaitingAtPort && !IsNextForPendingLink)
             {
                 if (!HasAlerted && Time.fixedTime > EnqueuedTime + AlertTime)
                 {

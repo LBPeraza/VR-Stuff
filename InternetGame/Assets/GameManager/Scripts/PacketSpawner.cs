@@ -11,7 +11,7 @@ namespace InternetGame
 
         public static Hashtable AddressToColor;
 
-        public float SpawnInterval = 6.0f;
+        public float SpawnInterval = 10.0f;
         public float VirusProbability = 0.2f;
         public float LastSpawn;
 

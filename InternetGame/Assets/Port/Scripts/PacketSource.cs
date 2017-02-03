@@ -5,6 +5,13 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    public enum PacketSourceSoundEffect
+    {
+        PacketWarning,
+        PacketDropped,
+        PacketEnqueued
+    }
+
     public class PacketSource : MonoBehaviour
 	{
 		public PortInfo info;
@@ -14,6 +21,11 @@ namespace InternetGame
         public PacketSourceIndicator Indicator;
         public int Capacity = 5;
         public PacketSourceInfo Info;
+
+        public AudioSource AudioSource;
+        public AudioClip PacketWarningClip;
+        public AudioClip PacketDroppedClip;
+        public AudioClip PacketEnqueuedClip;
 
         public bool HasUnfinishedLink()
         {
@@ -42,7 +54,61 @@ namespace InternetGame
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
 
+            LoadAudioClips();
+
             Indicator.Initialize(Info);
+        }
+
+        public void LoadAudioClips()
+        {
+            if (AudioSource == null)
+            {
+                AudioSource = GetComponent<AudioSource>();
+            }
+
+            if (PacketWarningClip == null)
+            {
+                PacketWarningClip = Resources.Load<AudioClip>("packet_alert");
+            }
+
+            if (PacketDroppedClip == null)
+            {
+                PacketDroppedClip = Resources.Load<AudioClip>("packet_dropped");
+            }
+
+            if (PacketEnqueuedClip == null)
+            {
+                PacketEnqueuedClip = Resources.Load<AudioClip>("packet_enqueued");
+            }
+        }
+
+        public void PlayClip(PacketSourceSoundEffect effect)
+        {
+            float volume = 0.5f;
+            AudioClip clip = PacketEnqueuedClip;
+            bool repeat = false;
+
+            switch (effect)
+            {
+                case PacketSourceSoundEffect.PacketDropped:
+                    clip = PacketDroppedClip;
+                    volume = 1.0f;
+                    break;
+                case PacketSourceSoundEffect.PacketEnqueued:
+                    clip = PacketEnqueuedClip;
+                    volume = .75f;
+                    break;
+                case PacketSourceSoundEffect.PacketWarning:
+                    clip = PacketWarningClip;
+                    volume = 1.0f;
+                    break;
+            }
+
+            AudioSource.Stop();
+            AudioSource.clip = clip;
+            AudioSource.volume = volume;
+            AudioSource.loop = repeat;
+            AudioSource.Play();
         }
 
         public bool IsEmpty()
@@ -63,6 +129,8 @@ namespace InternetGame
 
                 OnNewPacketEnqued(p);
                 p.OnEnqueuedToPort(this);
+
+                PlayClip(PacketSourceSoundEffect.PacketEnqueued);
             }
         }
 
@@ -117,6 +185,9 @@ namespace InternetGame
         {
             ActiveLinks.Add(l);
 
+            // Notify the next packet that it is staged for a link.
+            Peek().OnFutureLinkStarted(l);
+
             // Listen for sever events.
             l.OnSever += (SeverCause cause, float totalLength) =>
             {
@@ -127,6 +198,11 @@ namespace InternetGame
         public virtual void OnLinkEstablished(Link l, PacketSink t)
         {
             FindAndSendPacketTo(l, t);
+        }
+
+        public virtual void OnPacketDropped(Packet p)
+        {
+            PlayClip(PacketSourceSoundEffect.PacketDropped);
         }
 
         protected virtual void OnEmptied()
@@ -161,9 +237,6 @@ namespace InternetGame
             Indicator.UpdatePacketSourceInfo(Info);
         }
 
-        protected virtual void OnPacketDropped(Packet p)
-        {
-
-        }
+        
     }
 }
