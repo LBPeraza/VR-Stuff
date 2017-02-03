@@ -22,7 +22,10 @@ namespace InternetGame
         public int Capacity = 5;
         public PacketSourceInfo Info;
 
-        public AudioSource AudioSource;
+        public AudioSource EnqueuedAudioSource;
+        public AudioSource PacketDroppedAudioSource;
+        public AudioSource PacketWarningAudioSource;
+
         public AudioClip PacketWarningClip;
         public AudioClip PacketDroppedClip;
         public AudioClip PacketEnqueuedClip;
@@ -54,17 +57,16 @@ namespace InternetGame
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
 
-            LoadAudioClips();
+            InitializeAudio();
 
             Indicator.Initialize(Info);
         }
 
-        public void LoadAudioClips()
+        public void InitializeAudio()
         {
-            if (AudioSource == null)
-            {
-                AudioSource = GetComponent<AudioSource>();
-            }
+            EnqueuedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            PacketDroppedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            PacketWarningAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
 
             if (PacketWarningClip == null)
             {
@@ -84,31 +86,35 @@ namespace InternetGame
 
         public void PlayClip(PacketSourceSoundEffect effect)
         {
-            float volume = 0.5f;
+            float volume = AudioMix.GeneralSoundEffectVolume;
             AudioClip clip = PacketEnqueuedClip;
+            AudioSource source = PacketWarningAudioSource;
             bool repeat = false;
 
             switch (effect)
             {
                 case PacketSourceSoundEffect.PacketDropped:
+                    source = PacketDroppedAudioSource;
                     clip = PacketDroppedClip;
-                    volume = 1.0f;
+                    volume = AudioMix.PacketExpiresSoundEffectVolume;
                     break;
                 case PacketSourceSoundEffect.PacketEnqueued:
+                    source = EnqueuedAudioSource;
                     clip = PacketEnqueuedClip;
-                    volume = .75f;
+                    volume = AudioMix.PacketArrivesSoundEffectVolume;
                     break;
                 case PacketSourceSoundEffect.PacketWarning:
+                    source = PacketWarningAudioSource;
                     clip = PacketWarningClip;
-                    volume = 1.0f;
+                    volume = AudioMix.PacketNearingExpirationSoundEffectVolume;
                     break;
             }
 
-            AudioSource.Stop();
-            AudioSource.clip = clip;
-            AudioSource.volume = volume;
-            AudioSource.loop = repeat;
-            AudioSource.Play();
+            source.Stop();
+            source.clip = clip;
+            source.volume = volume;
+            source.loop = repeat;
+            source.Play();
         }
 
         public bool IsEmpty()

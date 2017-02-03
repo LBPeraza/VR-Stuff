@@ -36,6 +36,7 @@ namespace InternetGame
             emailVirus.Patience = DEFAULT_PACKET_PATIENCE;
             emailVirus.AlertTime = DEFAULT_PACKET_ALERT_TIME;
             emailVirus.ColorChangePercentageOffset = 0.1f; // 10%
+            emailVirus.VirusAlertPercentage = 0.6f; // 60%
 
             emailVirus.Initialize();
 

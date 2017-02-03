@@ -15,7 +15,7 @@ namespace InternetGame
         public float VirusProbability = 0.2f;
         public float LastSpawn;
 
-        public float IncreaseSpawnRateInterval = 15.0f;
+        public float IncreaseSpawnRateInterval = 20.0f;
         public float IncreaseSpawnRateAmount = 1.0f;
         public float LastSpawnRateIncrease;
         public float IncreaseVirusRateInterval = 15.0f;

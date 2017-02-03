@@ -15,6 +15,7 @@ namespace InternetGame
         public bool IsWaitingAtPort;
         public bool IsNextForPendingLink;
         public float EnqueuedTime;
+        public float DequeuedTime;
         public float Patience;
         public float AlertTime;
 
@@ -55,6 +56,9 @@ namespace InternetGame
         public virtual void OnDequeuedFromPort(PacketSource p, Link l)
         {
             l.OnTransmissionProgress += OnTransmissionProgress;
+
+            DequeuedTime = Time.fixedTime;
+            IsWaitingAtPort = false;
         }
         public virtual void OnDequeuedFromLink(Link l, PacketSink p)
         {

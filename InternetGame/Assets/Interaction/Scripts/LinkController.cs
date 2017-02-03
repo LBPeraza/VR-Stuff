@@ -182,24 +182,26 @@ namespace InternetGame
             AudioSource source = AudioSource;
             AudioClip clip = LinkSevered;
             bool repeat = false;
-            float volume = 0.5f;
+            float volume = AudioMix.GeneralSoundEffectVolume;
 
             switch (effect)
             {
                 case LinkSoundEffect.LinkBandwidthExceeded:
+                    volume = AudioMix.LinkDepletedSoundEffectVolume;
                     clip = LinkDepleted;
                     break;
                 case LinkSoundEffect.LinkCompleted:
-                    volume = 1.0f;
+                    volume = AudioMix.LinkCompletedSoundEffectVolume;
                     clip = LinkConnected;
                     break;
                 case LinkSoundEffect.LinkDrawing:
+                    volume = AudioMix.LinkDrawingSoundEffectVolume;
                     repeat = true;
                     clip = LinkDrawing;
                     break;
                 case LinkSoundEffect.LinkSevered:
                     source = AuxillaryAudioSource;
-                    volume = 1.0f;
+                    volume = AudioMix.LinkSeveredSoundEffectVolume;
                     clip = LinkSevered;
                     break;
             }

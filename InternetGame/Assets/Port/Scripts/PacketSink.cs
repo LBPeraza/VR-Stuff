@@ -4,11 +4,19 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    public enum PacketSinkSoundEffect
+    {
+        VirusStrikes
+    }
+
     public class PacketSink : MonoBehaviour
     {
         public string Address;
         public Link ActiveLink;
 		public PortInfo info;
+
+        public AudioSource VirusStrikesAudioSource;
+        public AudioClip VirusStrikesAudioClip;
 
         private void Start()
         {
@@ -22,6 +30,37 @@ namespace InternetGame
                 this.transform.position,
                 this.transform.rotation
             );
+
+            InitializeAudio();
+        }
+
+        private void InitializeAudio()
+        {
+            VirusStrikesAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            VirusStrikesAudioClip = Resources.Load<AudioClip>("virus_strikes");
+        }
+
+        public void PlayAudioClip(PacketSinkSoundEffect effect)
+        {
+            AudioSource source = VirusStrikesAudioSource;
+            AudioClip clip = VirusStrikesAudioClip;
+            float volume = AudioMix.GeneralSoundEffectVolume;
+            bool repeat = false; 
+
+            switch (effect)
+            {
+                case PacketSinkSoundEffect.VirusStrikes:
+                    volume = AudioMix.VirusStrikesSoundEffectVolume;
+                    clip = VirusStrikesAudioClip;
+                    source = VirusStrikesAudioSource;
+                    repeat = false;
+                    break;
+            }
+
+            source.Stop();
+            source.clip = clip;
+            source.loop = repeat;
+            source.Play();
         }
 
         public virtual void OnBecameOptionForLink(Link l)
