@@ -150,8 +150,6 @@ namespace InternetGame
                 {
                     currentLinkComponent.End();
 
-                    GameManager.ReportPacketDropped(currentLinkComponent.Source.DequeuePacket());
-
                     if (currentLinkComponent.Segments.Count > 0)
                     {
                         var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];

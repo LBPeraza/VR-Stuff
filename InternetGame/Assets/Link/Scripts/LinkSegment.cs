@@ -64,6 +64,7 @@ namespace InternetGame
             return (
                 !IsNumb 
                 && !(l.State == LinkState.UnderConstruction)
+                && !(l.State == LinkState.EarlyTerminated)
                 && Time.fixedTime > ParentLink.FinishedTime + SeverGracePeriod) ;
         }
         

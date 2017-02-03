@@ -79,7 +79,8 @@ namespace InternetGame
             {
                 StopCoroutine(resizingCoroutine);
             }
-            resizingCoroutine = StartCoroutine(GraduallyAdjustRadius(radius + initialExtraRadius, radius, disappearAfter));
+            resizingCoroutine = StartCoroutine(
+                GraduallyAdjustRadius(radius + initialExtraRadius, radius, disappearAfter));
         }
 
         public void OnExpireWarning(Packet p)

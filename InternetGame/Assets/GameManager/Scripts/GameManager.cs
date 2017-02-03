@@ -19,7 +19,7 @@ namespace InternetGame
     public struct LevelParameters
     {
         public int NumDroppedPacketsAllowed;
-        public string SoundtrackName;
+        public Soundtrack BackgroundSoundtrack;
     }
 
     public class GameManager : MonoBehaviour
@@ -34,6 +34,8 @@ namespace InternetGame
         public Player Player;
         public InputManager InputManager;
 		public PortLoader PortLoader;
+        public BackgroundMusic BackgroundMusic;
+        public Room Room;
 
         public static GameScore Score;
         public static Scoreboard Scoreboard;
@@ -55,7 +57,7 @@ namespace InternetGame
         {
             // TODO
             LevelParameters.NumDroppedPacketsAllowed = 5;
-            LevelParameters.SoundtrackName = "deep_dream_machine";
+            LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
         }
 
         public void Initialize()
@@ -138,10 +140,18 @@ namespace InternetGame
                 }
             }
 
-            // TODO refactor this into a Music class.
-            var musicAudioSource = GameObject.Find("/Music").GetComponent<AudioSource>();
-            musicAudioSource.clip = Resources.Load<AudioClip>(LevelParameters.SoundtrackName);
-            musicAudioSource.Play();
+            if (BackgroundMusic != null)
+            {
+                BackgroundMusic.Initialize();
+
+                BackgroundMusic.SetBackgroundSoundtrack(
+                    LevelParameters.BackgroundSoundtrack);
+            }
+
+            if (Room != null)
+            {
+                Room.Initialize(BackgroundMusic.BackgroundMusicSource);
+            }
         }
 
         public static void ReportPacketDelivered(Packet p)
@@ -179,6 +189,7 @@ namespace InternetGame
         private void GameOver()
         {
             IsGameOver = true;
+            Debug.Log("Time: " + Score.Time + "  Number of packets delivered: " + Score.PacketsDelivered);
             // TODO
             SceneManager.LoadScene("LevelSelect", LoadSceneMode.Single);
         }

@@ -239,10 +239,15 @@ namespace InternetGame
 
             UndoAlertPacketSinksOfPacket();
 
-            if (cause == SeverCause.Player && Packet is Virus)
+            if (cause == SeverCause.Player)
             {
-                // Add some additional information if the player prevented a virus, specifically.
-                cause = SeverCause.PlayerPreventedVirus;
+                if (Packet is Virus)
+                {
+                    // Add some additional information if the player prevented a virus, specifically.
+                    cause = SeverCause.PlayerPreventedVirus;
+                }
+
+                Packet.OnDropped(PacketDroppedCause.Severed);
             }
 
             if (OnSever != null)
@@ -287,8 +292,10 @@ namespace InternetGame
                 {
                     // End somewhere other than a sink.
                     State = LinkState.EarlyTerminated;
-
-                    // TODO: move the packet drop logic from link controller into here.
+                    
+                    GameManager.ReportPacketDropped(Packet);
+                    Packet.OnDropped(PacketDroppedCause.EarlyTermination);
+                    Packet = null;
                 }
 
                 UndoAlertPacketSinksOfPacket();

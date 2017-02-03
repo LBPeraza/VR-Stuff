@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    public enum PacketDroppedCause
+    {
+        EarlyTermination,
+        Severed,
+        Expired
+    }
+
     public abstract class Packet : MonoBehaviour
     {
         public int Size; // In "bytes".
@@ -88,7 +95,12 @@ namespace InternetGame
 
         }
 
-        public virtual void ExpireWarning()
+        public virtual void OnDropped(PacketDroppedCause cause)
+        {
+            Destroy(this.gameObject);
+        }
+
+        protected virtual void ExpireWarning()
         {
             if (OnExpireWarning != null)
             {
@@ -98,7 +110,7 @@ namespace InternetGame
             Source.PlayClip(PacketSourceSoundEffect.PacketWarning);
         }
 
-        public virtual void Expire()
+        protected virtual void Expire()
         {
             // Dequeue packet.
             Source.DequeuePacket(Source.QueuedPackets.FindIndex(
@@ -106,7 +118,7 @@ namespace InternetGame
 
             Source.OnPacketHasExpired(this);
 
-            Destroy(this.gameObject);
+            this.OnDropped(PacketDroppedCause.Expired);
         }
 
         public virtual void Update()

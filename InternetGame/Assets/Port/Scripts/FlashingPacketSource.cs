@@ -40,6 +40,17 @@ namespace InternetGame
             }
         }
 
+        protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
+        {
+            base.OnTransmissionSevered(cause, severedLink);
+
+            if (cause == SeverCause.UnfinishedLink)
+            {
+                // When the player doesnt finish a link, we need to stop flashing.
+                EndFlashing();
+            }
+        }
+
         protected override void OnTransmissionStarted(Link l, Packet p)
         {
             base.OnTransmissionStarted(l, p);

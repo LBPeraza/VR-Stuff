@@ -72,7 +72,7 @@ namespace InternetGame
 
             outer.Initialize(NeutralMaterialCopy, ActiveMaterial,
                     radius + RingRadiusIncrement, RingThickness);
-            outer.AdjustRadius(radius, RingRadiusIncrement);
+            outer.AdjustRadius(radius, 3*RingRadiusIncrement);
             outer.SetPacket(p);
 
             Rings.Add(outer);
@@ -81,10 +81,15 @@ namespace InternetGame
         public void ShiftRingsDown()
         {
             int i = 0;
+            float radius = InitialRingRadius - RingRadiusIncrement;
+            
+            // Size each ring as the next lower radius.
             foreach (Hexagon ring in Rings)
             {
                 bool disappearAfter = (i == 0);
-                ring.AdjustRadius(ring.Radius - RingRadiusIncrement, RingRadiusIncrement, disappearAfter);
+                ring.AdjustRadius(radius, RingRadiusIncrement, disappearAfter);
+
+                radius += RingRadiusIncrement;
 
                 i++;
             }
