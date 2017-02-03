@@ -17,6 +17,8 @@ namespace InternetGame
         public float IntensityThreshold = 0.7f;
         public float IntensityDropOff = 0.005f;
 
+        public float Intensity = 0.0f;
+
         private Material materialCopy;
         private float lastSetIntensity;
         private float[] frequencyData;
@@ -33,6 +35,11 @@ namespace InternetGame
             {
                 accent.GetComponent<Renderer>().material = materialCopy;
             }
+
+            SoundtrackMetadata metadata = SoundtrackUtility.GetMetadata(Audio.clip);
+            Low = metadata.BeginLowBand;
+            High = metadata.EndLowBand;
+            MaxIntensity = metadata.MaxIntensity;
 
             frequencyData = new float[numSamples];
             frequencyMax = AudioSettings.outputSampleRate / 2;
@@ -76,9 +83,10 @@ namespace InternetGame
         // Update is called once per frame
         void Update()
         {
-            float intensity = GetBandVol(Audio, Low, High);
+            Intensity = GetBandVol(Audio, Low, High);
             float volumeScalar = Audio.volume;
-            SetGlowIntensity(intensity / (MaxIntensity * volumeScalar));
+            float scaledIntensity = Intensity / (MaxIntensity * volumeScalar);
+            SetGlowIntensity(scaledIntensity);
         }
     }
 }
