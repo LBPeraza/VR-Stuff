@@ -6,7 +6,7 @@ namespace InternetGame
 {
     public class AudioMix : MonoBehaviour
     {
-        public static float BackgroundMusicVolume = 0.5f;
+        public static float BackgroundMusicVolume = 0.4f;
         public static float GeneralSoundEffectVolume = 0.75f;
 
         public static float VirusApproachingSoundEffectVolume = 1.0f;

@@ -59,7 +59,6 @@ namespace InternetGame
         {
             var ringGameObject = new GameObject("ring");
             ringGameObject.transform.parent = this.transform;
-            ringGameObject.transform.localPosition = Vector3.zero;
             var ring = ringGameObject.AddComponent<Hexagon>();
             ring.EnableFlashing = (NumInnerPacketsToExclude == 0);
 

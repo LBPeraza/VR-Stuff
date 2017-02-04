@@ -220,7 +220,14 @@ namespace InternetGame
             if (CurrentLink == null && other.CompareTag("Source"))
             {
                 // In close proximity of packet source.
-                NearSource = other.GetComponent<PacketSource>();
+                if (other.GetComponent<PacketSource>() != null)
+                {
+                    NearSource = other.GetComponent<PacketSource>();
+                }
+                else if (other.transform.parent.GetComponent<PacketSource>())
+                {
+                    NearSource = other.transform.parent.GetComponent<PacketSource>();
+                }
 
                 State = LinkControllerState.OverSource;
                 Cursor.OnEnter(cursorEventArgs);
