@@ -23,25 +23,20 @@ namespace InternetGame
             return Color.HSVToRGB(h, (s - saturationPenalty), v);
         }
 
-        public void Start()
+        public override void Initialize()
         {
+            base.Initialize();
+
             NeutralColor = GetComponent<Renderer>().material.color;
         }
 
-        public override void OnLinkStarted(Link l)
+        protected override void OnNewPacketOnDeck(Packet p)
         {
-            base.OnLinkStarted(l);
+            base.OnNewPacketOnDeck(p);
 
-            EndFlashing();
-        }
-
-        public override void OnLinkEstablished(Link l, PacketSink t)
-        {
-            base.OnLinkEstablished(l, t);
-
-            if (this.QueuedPackets.Count > 0)
+            if (!HasUnfinishedLink())
             {
-                StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
+                StartFlashing((Color)PacketSpawner.AddressToColor[p.Destination]);
             }
         }
 
@@ -49,32 +44,38 @@ namespace InternetGame
         {
             base.OnTransmissionSevered(cause, severedLink);
 
-            if (this.QueuedPackets.Count > 0)
+            if (cause == SeverCause.UnfinishedLink)
             {
-                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
+                // When the player doesnt finish a link, we need to stop flashing.
+                EndFlashing();
             }
         }
 
-        protected override void OnNewPacketEnqued(Packet p)
+        protected override void OnTransmissionStarted(Link l, Packet p)
         {
-            base.OnNewPacketEnqued(p);
+            base.OnTransmissionStarted(l, p);
 
-            if (!HasUnfinishedLink())
+            if (IsEmpty())
             {
-                StartFlashing((Color) PacketSpawner.AddressToColor[Peek().Destination]);
+                EndFlashing();
+            } else
+            {
+                StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
         private void StartFlashing(Color flashColor)
         {
-            if (!IsFlashing)
+            if (IsFlashing)
             {
-                StartColor = MakeLighter(flashColor);
-                flashingCoroutine = Flash(flashColor);
-                StartCoroutine(flashingCoroutine);
-
-                IsFlashing = true;
+                EndFlashing();
             }
+
+            StartColor = MakeLighter(flashColor);
+            flashingCoroutine = Flash(flashColor);
+            StartCoroutine(flashingCoroutine);
+
+            IsFlashing = true;
         }
 
         private void EndFlashing()

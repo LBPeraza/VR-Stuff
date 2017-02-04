@@ -9,7 +9,7 @@ namespace InternetGame
         Inactive,
         Grabbing,
         Hovering,
-		Snipping
+        CutHover
     }
 
     public struct CursorEventArgs
@@ -31,7 +31,7 @@ namespace InternetGame
         public GameObject ArrowModel;
         public GameObject HandModel;
         public GameObject GrabModel;
-		public GameObject ScissorModel;
+        public GameObject ScissorsModel;
 
         public static CursorEventArgs DefaultCursorEventArgs;
 
@@ -58,6 +58,32 @@ namespace InternetGame
             }
 
             UpdateState(CursorState.Inactive);
+        }
+
+        public void OnEnterCut(CursorEventArgs args)
+        {
+            if (trackedInteractionId == null)
+            {
+                if (!args.preventCursorModelChange)
+                {
+                    UpdateState(CursorState.CutHover);
+                }
+
+                trackedInteractionId = args.senderId;
+            }
+        }
+
+        public void OnExitCut(CursorEventArgs args)
+        {
+            if (trackedInteractionId == args.senderId)
+            {
+                if (!args.preventCursorModelChange)
+                {
+                    UpdateState(CursorState.Inactive);
+                }
+
+                trackedInteractionId = null;
+            }
         }
 
         public void OnEnter(CursorEventArgs args)
@@ -112,23 +138,29 @@ namespace InternetGame
         {
             switch (newState)
             {
-				case CursorState.Inactive:
-					ArrowModel.SetActive (true);
-					HandModel.SetActive (false);
-					GrabModel.SetActive (false);
-					ScissorModel.SetActive (false);
+                case CursorState.Inactive:
+                    ArrowModel.SetActive(true);
+                    HandModel.SetActive(false);
+                    GrabModel.SetActive(false);
+                    ScissorsModel.SetActive(false);
                     break;
                 case CursorState.Hovering:
                     ArrowModel.SetActive(false);
                     HandModel.SetActive(true);
-					GrabModel.SetActive(false);
-					ScissorModel.SetActive (false);
+                    GrabModel.SetActive(false);
+                    ScissorsModel.SetActive(false);
+                    break;
+                case CursorState.CutHover:
+                    ArrowModel.SetActive(false);
+                    HandModel.SetActive(false);
+                    GrabModel.SetActive(false);
+                    ScissorsModel.SetActive(true);
                     break;
                 case CursorState.Grabbing:
                     ArrowModel.SetActive(false);
                     HandModel.SetActive(false);
-					GrabModel.SetActive(true);
-					ScissorModel.SetActive (false);
+                    GrabModel.SetActive(true);
+                    ScissorsModel.SetActive(false);
                     break;
 				case CursorState.Snipping:
 					ArrowModel.SetActive (false);

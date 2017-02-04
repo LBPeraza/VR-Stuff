@@ -18,8 +18,11 @@ namespace InternetGame
 
         public override void UpdateRemainingBandwidth(float percentage)
         {
-            Text textDisplay = this.GetComponent<Text>();
-            textDisplay.text = Output.Substring(0, (int) (percentage * MAX_NUM_BARS));
+            if (percentage <= 100.0f && percentage >= 0.0f)
+            {
+                Text textDisplay = this.GetComponent<Text>();
+                textDisplay.text = Output.Substring(0, (int)(percentage * MAX_NUM_BARS));
+            }
         }
     }
 }

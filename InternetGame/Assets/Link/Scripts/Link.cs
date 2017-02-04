@@ -19,6 +19,7 @@ namespace InternetGame
     public enum SeverCause
     {
         Player,
+        PlayerPreventedVirus,
         TransmissionFinished,
         UnfinishedLink,
         VirusTransmitted
@@ -32,11 +33,14 @@ namespace InternetGame
         public GameObject LinkSegmentPrefab;
         public Transform Pointer;
 
-        public delegate void SeverHandler(SeverCause cause, float totalLength);
+        public delegate void SeverHandler(Link severed, SeverCause cause, float totalLength);
         public event SeverHandler OnSever;
 
         public delegate void OnConstructionProgressHandler(float deltaLength, float totalLengthSoFar);
         public event OnConstructionProgressHandler OnConstructionProgress;
+
+        public delegate void OnTransmissionStartedHandler(Link l, Packet p);
+        public event OnTransmissionStartedHandler OnTransmissionStarted;
 
         public delegate void OnTransmissionProgressHandler(float percentage);
         public event OnTransmissionProgressHandler OnTransmissionProgress;
@@ -101,10 +105,9 @@ namespace InternetGame
             
             // Finds and alerts all ports that might be destination for
             // the current link.
-            Packet p = source.Peek();
-            if (p != null)
+            if (Packet != null)
             {
-                AlertPacketSinksOfPacket(p);
+                AlertPacketSinksOfPacket(Packet);
             }
 
             State = LinkState.UnderConstruction;
@@ -191,19 +194,25 @@ namespace InternetGame
 
                 var segment = Instantiate(LinkSegmentPrefab);
 
-                var linkSegment = segment.AddComponent<LinkSegment>();
+                LinkSegment linkSegment;
+                linkSegment = segment.AddComponent<LinkSegment>();
+
+                // Make as long as the pointer has traveled.
+                segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
+
+                // Rotate the link to align with the gap between the two points.
+                segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
+
                 linkSegment.ParentLink = this;
                 linkSegment.Length = segmentLength;
 
                 segment.transform.parent = linkSegmentContainer.transform;
                 segment.transform.position = (lastSegmentEnd + currentPointerPos) / 2;
-                // Make as long as the pointer has traveled.
-                segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
-                // Rotate the link to align with the gap between the two points.
-                segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
+
+                linkSegment.Initialize();
 
                 // Set initial color to be desaturated.
-                linkSegment.Desaturate(Source.Peek().Destaturated);
+                linkSegment.Desaturate(Packet.Destaturated);
 
                 Segments.Add(linkSegment);
 
@@ -230,9 +239,20 @@ namespace InternetGame
 
             UndoAlertPacketSinksOfPacket();
 
+            if (cause == SeverCause.Player)
+            {
+                if (Packet is Virus)
+                {
+                    // Add some additional information if the player prevented a virus, specifically.
+                    cause = SeverCause.PlayerPreventedVirus;
+                }
+
+                Packet.OnDropped(PacketDroppedCause.Severed);
+            }
+
             if (OnSever != null)
             {
-                OnSever.Invoke(cause, TotalLength);
+                OnSever.Invoke(this, cause, TotalLength);
             }
 
             AnimateAndDestroy(cause, severedSegment);
@@ -261,15 +281,21 @@ namespace InternetGame
 
                     Sink = t;
 
+                    MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
+
+                    StartTransmission();
+
                     Source.OnLinkEstablished(this, Sink);
                     Sink.OnLinkEstablished(this, Source);
-
-                    MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
                 }
                 else
                 {
                     // End somewhere other than a sink.
                     State = LinkState.EarlyTerminated;
+                    
+                    GameManager.ReportPacketDropped(Packet);
+                    Packet.OnDropped(PacketDroppedCause.EarlyTermination);
+                    Packet = null;
                 }
 
                 UndoAlertPacketSinksOfPacket();
@@ -282,18 +308,30 @@ namespace InternetGame
         }
 
         /// <summary>
-        /// Adds a packet to the link.
+        /// Adds a packet to the link, but does not start transmission.
         /// </summary>
         /// <param name="p">The Packet to add.</param>
         public void EnqueuePacket(Packet p)
         {
-            if (State == LinkState.AwaitingPacket && !IsTransmittingPacket)
+            Packet = p;
+        }
+
+        /// <summary>
+        /// Begins the transmission of the packet that was enqueued.
+        /// </summary>
+        public void StartTransmission()
+        {
+            if (Packet != null)
             {
-                Packet = p;
-                IsTransmittingPacket = true;
+                State = LinkState.TransmittingPacket;
                 TransmissionProgress = SeedTransmissionProgress;
                 NeededProgress = (Packet.Size * TotalLength);
-                State = LinkState.TransmittingPacket;
+                IsTransmittingPacket = true;
+
+                if (OnTransmissionStarted != null)
+                {
+                    OnTransmissionStarted.Invoke(this, Packet);
+                }
             }
         }
 

@@ -8,6 +8,8 @@ namespace InternetGame
     {
         public static float SEGMENT_ADD_INTERVAL = 0.05f;
         public static float LINK_BANDWIDTH = 200.0f;
+        public static float LINK_MIN_LENGTH = 0.05f;
+        public static bool USE_CYLINDRICAL_LINK_SEGMENT = false;
 
         public static GameObject CreateLink(PacketSource s)
         {
@@ -16,9 +18,18 @@ namespace InternetGame
 
             link.Source = s;
             link.SegmentAddInterval = SEGMENT_ADD_INTERVAL;
+            link.SegmentMinLength = LINK_MIN_LENGTH;
             link.Bandwidth = LINK_BANDWIDTH;
-            link.LinkSegmentPrefab = (GameObject) Resources.Load("LinkSegment");
-            
+
+            if (USE_CYLINDRICAL_LINK_SEGMENT)
+            {
+                link.LinkSegmentPrefab = (GameObject)Resources.Load("CylindricalLinkSegment");
+            }
+            else
+            {
+                link.LinkSegmentPrefab = (GameObject)Resources.Load("LinkSegment");
+            }
+
             return linkContainer;
         }
     }

@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 33631949717344510}
   - component: {fileID: 135172866581866582}
   - component: {fileID: 23098228782148322}
-  - component: {fileID: 114632761475007850}
+  - component: {fileID: 114739875183857676}
   m_Layer: 0
   m_Name: Source
   m_TagString: Source
@@ -54,14 +54,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1484489606833718}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.3063, z: 1.113}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0.497, y: 0.2516681, z: 1.269}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children:
   - {fileID: 4551582035236168}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4551582035236168
 Transform:
   m_ObjectHideFlags: 1
@@ -151,7 +151,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1413487774578528}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114632761475007850
+--- !u!114 &114739875183857676
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -159,7 +159,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1484489606833718}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8875202a0237841899b2eb9759b0d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 53554ee22e8573f4ba97085519a2f740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   info:
@@ -167,9 +167,17 @@ MonoBehaviour:
     location: {x: 0, y: 0, z: 0}
     orientation: {x: 0, y: 0, z: 0, w: 0}
   QueuedPackets: []
-  ActiveLink: {fileID: 0}
+  ActiveLinks: []
   Indicator: {fileID: 0}
   Capacity: 5
+  AudioSource: {fileID: 0}
+  PacketWarningClip: {fileID: 0}
+  PacketDroppedClip: {fileID: 0}
+  PacketEnqueuedClip: {fileID: 0}
+  FlashRate: 1.2
+  NeutralColor: {r: 0, g: 0, b: 0, a: 0}
+  StartColor: {r: 0.8235294, g: 0.8235294, b: 0.8235294, a: 0}
+  IsFlashing: 0
 --- !u!135 &135172866581866582
 SphereCollider:
   m_ObjectHideFlags: 1

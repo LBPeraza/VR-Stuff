@@ -11,9 +11,16 @@ namespace InternetGame
 
         public static Hashtable AddressToColor;
 
-        public float SpawnInterval = 6.0f;
+        public float SpawnInterval = 10.0f;
         public float VirusProbability = 0.2f;
         public float LastSpawn;
+
+        public float IncreaseSpawnRateInterval = 20.0f;
+        public float IncreaseSpawnRateAmount = 1.0f;
+        public float LastSpawnRateIncrease;
+        public float IncreaseVirusRateInterval = 15.0f;
+        public float IncreaseVirusRateAmount = .05f;
+        public float LastVirusRateIncrease;
 
         private System.Random random;
         private static Color[] AddressColors = { Color.green, Color.blue, Color.magenta, Color.yellow };
@@ -27,6 +34,8 @@ namespace InternetGame
             BuildAddressToColorTable(Sinks);
 
             LastSpawn = Time.fixedTime;
+            LastSpawnRateIncrease = Time.fixedTime;
+            LastVirusRateIncrease = Time.fixedTime;
 
             random = new System.Random();
         }
@@ -48,16 +57,19 @@ namespace InternetGame
                 var sourceIndex = random.Next(Sources.Count);
                 var sinkIndex = random.Next(Sinks.Count);
 
-                if (random.NextDouble() > VirusProbability)
+                if (!Sources[sourceIndex].IsFull())
                 {
-                    Packet p = PacketFactory.CreateEmail(Sources[sourceIndex], Sinks[sinkIndex]);
-                }
-                else
-                {
-                    Packet p = PacketFactory.CreateEmailVirus(Sources[sourceIndex], Sinks[sinkIndex]);
-                }
+                    if (random.NextDouble() > VirusProbability)
+                    {
+                        Packet p = PacketFactory.CreateEmail(Sources[sourceIndex], Sinks[sinkIndex]);
+                    }
+                    else
+                    {
+                        Packet p = PacketFactory.CreateEmailVirus(Sources[sourceIndex], Sinks[sinkIndex]);
+                    }
 
-                LastSpawn = Time.fixedTime;
+                    LastSpawn = Time.fixedTime;
+                }
             }
         }
 
@@ -71,6 +83,20 @@ namespace InternetGame
                 {
                     SpawnPacket();
                 }
+            }
+
+            if (Time.fixedTime > LastSpawnRateIncrease + IncreaseSpawnRateInterval)
+            {
+                LastSpawnRateIncrease = Time.fixedTime;
+
+                SpawnInterval -= IncreaseSpawnRateAmount;
+            }
+
+            if (Time.fixedTime > LastVirusRateIncrease + IncreaseVirusRateInterval)
+            {
+                LastVirusRateIncrease = Time.fixedTime;
+
+                VirusProbability += IncreaseVirusRateAmount;
             }
         }
     }

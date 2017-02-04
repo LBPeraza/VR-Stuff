@@ -10,12 +10,14 @@ namespace InternetGame
         public Color LitColor;
         public Color UnlitColor = Color.black;
 
-        public AudioSource Audio;
+        public AudioSource AudioSource;
         public int Low = 0;
         public int High = 100;
         public float MaxIntensity = 0.2f;
         public float IntensityThreshold = 0.7f;
         public float IntensityDropOff = 0.005f;
+
+        public float Intensity = 0.0f;
 
         private Material materialCopy;
         private float lastSetIntensity;
@@ -23,8 +25,10 @@ namespace InternetGame
         private int numSamples = 1024;
         private float frequencyMax;
 
-        void Start()
+        public void Initialize(AudioSource soundtrackSource)
         {
+            AudioSource = soundtrackSource;
+
             // Make a copy of the material.
             materialCopy = new Material(Material);
 
@@ -33,6 +37,11 @@ namespace InternetGame
             {
                 accent.GetComponent<Renderer>().material = materialCopy;
             }
+
+            SoundtrackMetadata metadata = SoundtrackUtility.GetMetadata(AudioSource.clip);
+            Low = metadata.BeginLowBand;
+            High = metadata.EndLowBand;
+            MaxIntensity = metadata.MaxIntensity;
 
             frequencyData = new float[numSamples];
             frequencyMax = AudioSettings.outputSampleRate / 2;
@@ -76,8 +85,13 @@ namespace InternetGame
         // Update is called once per frame
         void Update()
         {
-            float intensity = GetBandVol(Audio, Low, High);
-            SetGlowIntensity(intensity / MaxIntensity);
+            if (AudioSource != null)
+            {
+                Intensity = GetBandVol(AudioSource, Low, High);
+                float volumeScalar = AudioSource.volume;
+                float scaledIntensity = Intensity / (MaxIntensity * volumeScalar);
+                SetGlowIntensity(scaledIntensity);
+            }
         }
     }
 }

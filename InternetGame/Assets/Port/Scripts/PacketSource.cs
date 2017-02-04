@@ -5,6 +5,13 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    public enum PacketSourceSoundEffect
+    {
+        PacketWarning,
+        PacketDropped,
+        PacketEnqueued
+    }
+
     public class PacketSource : MonoBehaviour
 	{
 		public PortInfo info;
@@ -15,16 +22,35 @@ namespace InternetGame
         public int Capacity = 5;
         public PacketSourceInfo Info;
 
+        public delegate void OnPacketEnqueuedHandler(Packet p);
+        public event OnPacketEnqueuedHandler OnPacketEnqueued;
+        public delegate void OnPacketDequeuedHandler(Packet p);
+        public event OnPacketDequeuedHandler OnPacketDequeued;
+        public delegate void OnLinkStartedHandler(Link l);
+        public event OnLinkStartedHandler OnPendingLinkStarted;
+        public delegate void OnPacketExpiredHandler(Packet p);
+        public event OnPacketExpiredHandler OnPacketExpired;
+
+        public AudioSource EnqueuedAudioSource;
+        public AudioSource PacketDroppedAudioSource;
+        public AudioSource PacketWarningAudioSource;
+
+        public AudioClip PacketWarningClip;
+        public AudioClip PacketDroppedClip;
+        public AudioClip PacketEnqueuedClip;
+
         public bool HasUnfinishedLink()
         {
             return ActiveLinks.Exists(link => !link.Finished);
         }
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             ActiveLinks = new List<Link>();
+            QueuedPackets = new List<Packet>();
 
             Info.Capacity = Capacity;
+            Info.QueuedPackets = QueuedPackets;
             Info.NumQueuedPackets = 0;
 
             this.info = new PortInfo(
@@ -34,13 +60,80 @@ namespace InternetGame
 
             if (Indicator == null)
             {
-                var prefab = Resources.Load<GameObject>("PacketSourceIndicator");
+                var prefab = Resources.Load<GameObject>("RingIndicator");
                 var indicator = Instantiate(prefab, this.transform, false);
 
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
 
-            Indicator.UpdatePacketSourceInfo(Info);
+            InitializeAudio();
+
+            Indicator.Initialize(this);
+        }
+
+        public void InitializeAudio()
+        {
+            EnqueuedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            PacketDroppedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            PacketWarningAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+
+            if (PacketWarningClip == null)
+            {
+                PacketWarningClip = Resources.Load<AudioClip>("packet_alert");
+            }
+
+            if (PacketDroppedClip == null)
+            {
+                PacketDroppedClip = Resources.Load<AudioClip>("packet_dropped");
+            }
+
+            if (PacketEnqueuedClip == null)
+            {
+                PacketEnqueuedClip = Resources.Load<AudioClip>("packet_enqueued");
+            }
+        }
+
+        public void PlayClip(PacketSourceSoundEffect effect)
+        {
+            float volume = AudioMix.GeneralSoundEffectVolume;
+            AudioClip clip = PacketEnqueuedClip;
+            AudioSource source = PacketWarningAudioSource;
+            bool repeat = false;
+
+            switch (effect)
+            {
+                case PacketSourceSoundEffect.PacketDropped:
+                    source = PacketDroppedAudioSource;
+                    clip = PacketDroppedClip;
+                    volume = AudioMix.PacketExpiresSoundEffectVolume;
+                    break;
+                case PacketSourceSoundEffect.PacketEnqueued:
+                    source = EnqueuedAudioSource;
+                    clip = PacketEnqueuedClip;
+                    volume = AudioMix.PacketArrivesSoundEffectVolume;
+                    break;
+                case PacketSourceSoundEffect.PacketWarning:
+                    source = PacketWarningAudioSource;
+                    clip = PacketWarningClip;
+                    volume = AudioMix.PacketNearingExpirationSoundEffectVolume;
+                    break;
+            }
+
+            source.Stop();
+            source.clip = clip;
+            source.volume = volume;
+            source.loop = repeat;
+            source.Play();
+        }
+
+        public bool IsEmpty()
+        {
+            return QueuedPackets.Count == 0;
+        }
+
+        public bool IsFull()
+        {
+            return QueuedPackets.Count == Capacity;
         }
 
         public void EnqueuePacket(Packet p)
@@ -50,13 +143,15 @@ namespace InternetGame
                 QueuedPackets.Add(p);
 
                 OnNewPacketEnqued(p);
-            }
-            else
-            {
-                // Drop packet.
-                GameManager.ReportPacketDropped(p);
+                p.OnEnqueuedToPort(this);
 
-                OnPacketDropped(p);
+                if (QueuedPackets.Count == 1)
+                {
+                    // Initial packet.
+                    OnNewPacketOnDeck(Peek());
+                }
+
+                PlayClip(PacketSourceSoundEffect.PacketEnqueued);
             }
         }
 
@@ -71,6 +166,16 @@ namespace InternetGame
                 {
                     OnEmptied();
                 }
+                OnDequeued(popped);
+
+                // New packet is 'on deck'.
+                if (i == 0 && !IsEmpty())
+                {
+                    OnNewPacketOnDeck(Peek());
+                }
+
+                Info.NumQueuedPackets--;
+                Info.QueuedPackets = QueuedPackets;
 
                 return popped;
             }
@@ -89,61 +194,91 @@ namespace InternetGame
             return null;
         }
 
-        private void FindAndSendPacketTo(Link l, PacketSink t)
-        {
-            Packet p = Peek();
-            if (p != null && p.Destination == t.Address)
-            {
-                var packet = DequeuePacket();
-                l.EnqueuePacket(packet);
-                packet.OnDequeuedFromPort(this, l);
-                OnTransmissionStarted(l);
-            }   
-        }
-
         public virtual void OnLinkStarted(Link l)
         {
             ActiveLinks.Add(l);
+            
+            if (!IsEmpty())
+            {
+                // Dequeue packet and load it onto link.
+                var packet = DequeuePacket();
+                l.EnqueuePacket(packet);
+
+                packet.OnDequeuedFromPort(this, l);
+            }
 
             // Listen for sever events.
-            l.OnSever += (SeverCause cause, float totalLength) =>
+            l.OnSever += (Link severed, SeverCause cause, float totalLength) =>
             {
                 OnTransmissionSevered(cause, l);
             };
+
+            l.OnTransmissionStarted += OnTransmissionStarted;
+
+            if (OnPendingLinkStarted != null)
+            {
+                OnPendingLinkStarted.Invoke(l);
+            }
         }
 
         public virtual void OnLinkEstablished(Link l, PacketSink t)
         {
-            FindAndSendPacketTo(l, t);
+
+        }
+
+        public virtual void OnPacketHasExpired(Packet p)
+        {
+            PlayClip(PacketSourceSoundEffect.PacketDropped);
+
+            if (OnPacketExpired != null)
+            {
+                OnPacketExpired.Invoke(p);
+            }
+
+            GameManager.ReportPacketDropped(p);
         }
 
         protected virtual void OnEmptied()
         {
         }
 
-        protected virtual void OnTransmissionStarted(Link l)
+        protected virtual void OnTransmissionStarted(Link l, Packet p)
         {
-            Info.NumQueuedPackets--;
-
-            Indicator.UpdatePacketSourceInfo(Info);
+            
         }
 
         protected virtual void OnTransmissionSevered(SeverCause cause, Link severedLink)
         {
-            ActiveLinks.RemoveAt(ActiveLinks.FindIndex(
-                link => link.GetInstanceID() == severedLink.GetInstanceID()));
+            var index = ActiveLinks.FindIndex(
+                link => link.GetInstanceID() == severedLink.GetInstanceID());
+            if (index != -1)
+            {
+                ActiveLinks.RemoveAt(index);
+            }
+        }
+
+        protected virtual void OnDequeued(Packet p)
+        {
+            if (OnPacketDequeued != null)
+            {
+                OnPacketDequeued.Invoke(p);
+            }
         }
 
         protected virtual void OnNewPacketEnqued(Packet p)
         {
             Info.NumQueuedPackets++;
+            Info.QueuedPackets = QueuedPackets;
 
-            Indicator.UpdatePacketSourceInfo(Info);
+            if (OnPacketEnqueued != null)
+            {
+                OnPacketEnqueued.Invoke(p);
+            }
         }
-
-        protected virtual void OnPacketDropped(Packet p)
+        
+        protected virtual void OnNewPacketOnDeck(Packet p)
         {
-
+            p.OnDeckAtPort(this);
         }
     }
 }

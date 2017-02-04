@@ -20,18 +20,22 @@ namespace InternetGame
 
         public override void OnDequeuedFromLink(Link l, PacketSink p)
         {
+            base.OnDequeuedFromLink(l, p);
         }
 
         public override void OnDequeuedFromPort(PacketSource p, Link l)
         {
+            base.OnDequeuedFromPort(p, l);
         }
 
         public override void OnEnqueuedToPort(PacketSource p)
         {
+            base.OnEnqueuedToPort(p);
         }
 
         public override void OnTransmissionProgress(float percentageDone)
         {
+            base.OnTransmissionProgress(percentageDone);
         }
     }
 }
