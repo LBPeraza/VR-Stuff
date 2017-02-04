@@ -20,6 +20,7 @@ namespace InternetGame
 
         public bool IsFlashing;
         public float FlashRate;
+        public bool EnableFlashing;
         public Color OriginalColor;
         public float RingColorChangeDuration = 1.0f;
 
@@ -70,7 +71,11 @@ namespace InternetGame
             colorChangingCoroutine = StartCoroutine(GraduallyAdjustColor(NeutralMaterial.color, p.Color));
             
             AssociatedPacket = p;
-            p.OnExpireWarning += OnExpireWarning;
+            
+            if (EnableFlashing)
+            {
+                p.OnExpireWarning += OnExpireWarning;
+            }
         }
 
         public void AdjustRadius(float radius, float initialExtraRadius, bool disappearAfter = false)
