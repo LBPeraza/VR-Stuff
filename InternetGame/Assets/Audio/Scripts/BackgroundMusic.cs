@@ -22,6 +22,7 @@ namespace InternetGame
             BackgroundMusicSource = this.gameObject.AddComponent<AudioSource>();
             BackgroundMusicSource.loop = true;
             BackgroundMusicSource.spatialBlend = 0.0f; // 2D.
+            BackgroundMusicSource.volume = AudioMix.BackgroundMusicVolume;
 
             LoadAudioAssets();
         }

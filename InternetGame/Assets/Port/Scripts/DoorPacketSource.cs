@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    enum DoorSoundEffect
+    {
+        DoorOpen,
+        DoorClosed
+    }
+
     public class DoorPacketSource : PacketSource
     {
         public GameObject Backlight;
@@ -12,9 +18,25 @@ namespace InternetGame
 
         public Color BacklightOffColor = Color.black;
 
+        public AudioSource DoorSounds;
+        public AudioClip DoorOpenedSoundEffect;
+        public AudioClip DoorClosedSoundEffect;
+
+        public bool IsOpen = false;
+
         private float currentDoorSetting;
 
         Coroutine doorAnimation;
+
+        public override void InitializeAudio()
+        {
+            base.InitializeAudio();
+
+            DoorSounds = AudioMix.AddAudioSourceTo(this.gameObject);
+
+            DoorOpenedSoundEffect = Resources.Load<AudioClip>("door_opened");
+            DoorClosedSoundEffect = Resources.Load<AudioClip>("door_closed");
+        }
 
         public override void Initialize()
         {
@@ -40,7 +62,12 @@ namespace InternetGame
         {
             if (other.CompareTag("Player"))
             {
-                StartOpenDoor();
+                if (!IsOpen)
+                {
+                    StartOpenDoor();
+
+                    IsOpen = true;
+                }
             }
         }
 
@@ -48,7 +75,12 @@ namespace InternetGame
         {
             if (other.CompareTag("Player") && other.name == "FingersHitbox")
             {
-                StartCloseDoor();
+                if (IsOpen)
+                {
+                    StartCloseDoor();
+
+                    IsOpen = false;
+                }
             }
         }
 
@@ -75,6 +107,34 @@ namespace InternetGame
             {
                SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
+        }
+
+        private void PlayDoorSoundEffect(DoorSoundEffect soundEffect)
+        {
+            AudioSource source = DoorSounds;
+            float volume = AudioMix.GeneralSoundEffectVolume;
+            AudioClip clip = DoorClosedSoundEffect;
+            float offset = 0.0f;
+
+            switch (soundEffect)
+            {
+                case DoorSoundEffect.DoorClosed:
+                    clip = DoorClosedSoundEffect;
+                    volume = AudioMix.PortDoorClosesSoundEffectVolume;
+                    offset = AudioMix.PortDoorClosesSoundEffectOffset;
+                    break;
+                case DoorSoundEffect.DoorOpen:
+                    clip = DoorOpenedSoundEffect;
+                    volume = AudioMix.PortDoorOpensSoundEffectVolume;
+                    offset = AudioMix.PortDoorOpensSoundEffectOffset;
+                    break;
+            }
+
+            source.Stop();
+            source.clip = clip;
+            source.volume = volume;
+            source.time = offset;
+            source.Play();
         }
 
         private void SetBacklight(Color c)
@@ -107,6 +167,8 @@ namespace InternetGame
             }
 
             doorAnimation = StartCoroutine(OpenDoor());
+
+            PlayDoorSoundEffect(DoorSoundEffect.DoorOpen);
         }
 
         private IEnumerator OpenDoor()
@@ -129,6 +191,8 @@ namespace InternetGame
             }
 
             doorAnimation = StartCoroutine(CloseDoor());
+
+            PlayDoorSoundEffect(DoorSoundEffect.DoorClosed);
         }
 
         private IEnumerator CloseDoor()
