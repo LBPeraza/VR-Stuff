@@ -6,7 +6,6 @@ namespace InternetGame
 {
     public class GlowWithRoom : MonoBehaviour
     {
-        public Material Material;
         public Color LitColor;
         public Color UnlitColor = Color.black;
 
@@ -16,7 +15,6 @@ namespace InternetGame
         public float MaxIntensity = 0.2f;
         public float IntensityThreshold = 0.7f;
         public float IntensityDropOff = 0.005f;
-
         public float Intensity = 0.0f;
 
         private Material materialCopy;
@@ -25,12 +23,12 @@ namespace InternetGame
         private int numSamples = 1024;
         private float frequencyMax;
 
-        public void Initialize(AudioSource soundtrackSource)
+        public void Initialize(AudioSource soundtrackSource, Material accentMaterial)
         {
             AudioSource = soundtrackSource;
 
             // Make a copy of the material.
-            materialCopy = new Material(Material);
+            materialCopy = new Material(accentMaterial);
 
             // Set the accents of all the children to this copy.
             foreach (Transform accent in transform)
@@ -46,7 +44,7 @@ namespace InternetGame
             frequencyData = new float[numSamples];
             frequencyMax = AudioSettings.outputSampleRate / 2;
 
-            LitColor = Material.GetColor("_EmissionColor");
+            LitColor = materialCopy.GetColor("_EmissionColor");
         }
 
         private float GetBandVol(AudioSource audio, float low, float high)

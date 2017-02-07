@@ -162,12 +162,6 @@ namespace InternetGame
                     GrabModel.SetActive(true);
                     ScissorsModel.SetActive(false);
                     break;
-				case CursorState.Snipping:
-					ArrowModel.SetActive (false);
-					HandModel.SetActive (false);
-					GrabModel.SetActive (false);
-					ScissorModel.SetActive (true);
-					break;
             }
 
             State = newState;

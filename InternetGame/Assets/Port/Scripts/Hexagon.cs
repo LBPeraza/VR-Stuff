@@ -20,6 +20,7 @@ namespace InternetGame
 
         public bool IsFlashing;
         public float FlashRate;
+        public bool EnableFlashing;
         public Color OriginalColor;
         public float RingColorChangeDuration = 1.0f;
 
@@ -35,6 +36,9 @@ namespace InternetGame
             Radius = radius;
             RingThickness = thickness;
             FlashRate = 1.0f;
+
+            this.transform.localPosition = Vector3.zero;
+            this.transform.localRotation = Quaternion.Euler(0, 90.0f, 0);
 
             NeutralMaterial = new Material(neutralMaterial);
             ActiveMaterial = new Material(activeMaterial);
@@ -70,7 +74,11 @@ namespace InternetGame
             colorChangingCoroutine = StartCoroutine(GraduallyAdjustColor(NeutralMaterial.color, p.Color));
             
             AssociatedPacket = p;
-            p.OnExpireWarning += OnExpireWarning;
+            
+            if (EnableFlashing)
+            {
+                p.OnExpireWarning += OnExpireWarning;
+            }
         }
 
         public void AdjustRadius(float radius, float initialExtraRadius, bool disappearAfter = false)
@@ -176,37 +184,37 @@ namespace InternetGame
             RightUpper.transform.localPosition = Vector3.zero;
             RightUpper.transform.rotation = Quaternion.identity;
             RightUpper.transform.localPosition += new Vector3(halfRingThickness, 0);
-            RightUpper.transform.RotateAround(transform.parent.position, Vector3.forward, -30.0f);
+            RightUpper.transform.RotateAround(transform.parent.position, transform.forward, -30.0f);
             RightUpper.transform.localPosition += new Vector3(-threeFourthsR, rRoot3Over4, 0.0f);
 
             RightLower.transform.localPosition = Vector3.zero;
             RightLower.transform.rotation = Quaternion.identity;
             RightLower.transform.localPosition += new Vector3(halfRingThickness, 0);
-            RightLower.transform.RotateAround(transform.parent.position, Vector3.forward, 30.0f);
+            RightLower.transform.RotateAround(transform.parent.position, transform.forward, 30.0f);
             RightLower.transform.localPosition += new Vector3(-threeFourthsR, -rRoot3Over4, 0.0f);
 
             LeftUpper.transform.localPosition = Vector3.zero;
             LeftUpper.transform.rotation = Quaternion.identity;
             LeftUpper.transform.localPosition += new Vector3(-halfRingThickness, 0);
-            LeftUpper.transform.RotateAround(transform.parent.position, Vector3.forward, 30.0f);
+            LeftUpper.transform.RotateAround(transform.parent.position, transform.forward, 30.0f);
             LeftUpper.transform.localPosition += new Vector3(threeFourthsR, rRoot3Over4, 0.0f);
 
             LeftLower.transform.localPosition = Vector3.zero;
             LeftLower.transform.rotation = Quaternion.identity;
             LeftLower.transform.localPosition += new Vector3(-halfRingThickness, 0);
-            LeftLower.transform.RotateAround(transform.parent.position, Vector3.forward, -30.0f);
+            LeftLower.transform.RotateAround(transform.parent.position, transform.forward, -30.0f);
             LeftLower.transform.localPosition += new Vector3(threeFourthsR, -rRoot3Over4, 0.0f);
 
             Top.transform.localPosition = Vector3.zero;
             Top.transform.rotation = Quaternion.identity;
             Top.transform.localPosition += new Vector3(-halfRingThickness, 0);
-            Top.transform.RotateAround(transform.parent.position, Vector3.forward, 90.0f);
+            Top.transform.RotateAround(transform.parent.position, transform.forward, 90.0f);
             Top.transform.localPosition += new Vector3(0, rRoot3Over2, 0);
 
             Bottom.transform.localPosition = Vector3.zero;
             Bottom.transform.rotation = Quaternion.identity;
             Bottom.transform.localPosition += new Vector3(halfRingThickness, 0);
-            Bottom.transform.RotateAround(transform.parent.position, Vector3.forward, 90.0f);
+            Bottom.transform.RotateAround(transform.parent.position, transform.forward, 90.0f);
             Bottom.transform.localPosition += new Vector3(0, -rRoot3Over2, 0);
 
             foreach (Transform t in this.transform)

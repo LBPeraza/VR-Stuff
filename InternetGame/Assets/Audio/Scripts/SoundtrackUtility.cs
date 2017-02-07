@@ -22,7 +22,7 @@ namespace InternetGame
                 case "deep_dream_machine":
                     metadata.BeginLowBand = 0;
                     metadata.EndLowBand = 200;
-                    metadata.MaxIntensity = 0.06f;
+                    metadata.MaxIntensity = 0.08f;
                     break;
                 case "ethereal_colosseum":
                     metadata.BeginLowBand = 0;

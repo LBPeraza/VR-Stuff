@@ -15,6 +15,8 @@ namespace InternetGame
 
         public int NumRings;
         public List<Hexagon> Rings;
+        public int NumPackets;
+        public int NumInnerPacketsToExclude = 1; 
         public float InitialRingRadius = 0.25f;
         public float RingRadiusIncrement = 0.05f;
         public float RingThickness = 0.015f;
@@ -36,6 +38,7 @@ namespace InternetGame
             ActiveMaterialCopy = new Material(ActiveMaterial);
 
             NumRings = Source.Capacity;
+            NumPackets = 0;
 
             Rings = new List<Hexagon>();
             var ringRadius = InitialRingRadius;
@@ -56,8 +59,8 @@ namespace InternetGame
         {
             var ringGameObject = new GameObject("ring");
             ringGameObject.transform.parent = this.transform;
-            ringGameObject.transform.localPosition = Vector3.zero;
             var ring = ringGameObject.AddComponent<Hexagon>();
+            ring.EnableFlashing = (NumInnerPacketsToExclude == 0);
 
             return ring;
         }
@@ -67,7 +70,7 @@ namespace InternetGame
             // First, create a new hexagon to replace the outer one.
             Hexagon outer = AddRing();
 
-            int numRings = Rings.Count;
+            int numRings = Rings.Count - NumInnerPacketsToExclude + 1;
             float radius = numRings * RingRadiusIncrement + InitialRingRadius;
 
             outer.Initialize(NeutralMaterialCopy, ActiveMaterial,
@@ -102,21 +105,34 @@ namespace InternetGame
         {
             base.OnPacketDequeued(p);
 
-            ShiftRingsDown();
+            if (NumPackets > NumInnerPacketsToExclude)
+            {
+                ShiftRingsDown();
+            }
+            NumPackets--;
         }
 
         public override void OnPacketEnqueued(Packet p)
         {
             base.OnPacketEnqueued(p);
 
-            AddAndActivateNewRing(p);
+            NumPackets++;
+
+            if (NumPackets > NumInnerPacketsToExclude)
+            {
+                AddAndActivateNewRing(p);
+            }
         }
 
         public override void OnLinkStarted(Link l)
         {
             base.OnLinkStarted(l);
 
-            ShiftRingsDown();
+            if (NumPackets > NumInnerPacketsToExclude)
+            {
+                ShiftRingsDown();
+            }
+            NumPackets--;
         }
     }
 }

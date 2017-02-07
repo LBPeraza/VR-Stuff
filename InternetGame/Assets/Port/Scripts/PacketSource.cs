@@ -71,11 +71,14 @@ namespace InternetGame
             Indicator.Initialize(this);
         }
 
-        public void InitializeAudio()
+        public virtual void InitializeAudio()
         {
             EnqueuedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            EnqueuedAudioSource.name = "EnqueuedPacket";
             PacketDroppedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            PacketDroppedAudioSource.name = "DroppedPacket";
             PacketWarningAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
+            PacketWarningAudioSource.name = "ExpiringPacket";
 
             if (PacketWarningClip == null)
             {
