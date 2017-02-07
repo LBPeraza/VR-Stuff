@@ -235,6 +235,11 @@ namespace InternetGame
 
         }
 
+        public virtual void OnPacketWarning(Packet p)
+        {
+
+        }
+
         public virtual void OnPacketHasExpired(Packet p)
         {
             PlayClip(PacketSourceSoundEffect.PacketDropped);
@@ -278,6 +283,9 @@ namespace InternetGame
         {
             Info.NumQueuedPackets++;
             Info.QueuedPackets = QueuedPackets;
+
+            // Subscribe to packet expiration warning events.
+            p.OnExpireWarning += OnPacketWarning;
 
             if (OnPacketEnqueued != null)
             {

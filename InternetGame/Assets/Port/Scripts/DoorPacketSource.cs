@@ -22,11 +22,18 @@ namespace InternetGame
         public AudioClip DoorOpenedSoundEffect;
         public AudioClip DoorClosedSoundEffect;
 
+        public Light WarningLight;
+        public float WarningLightMaxIntensity = 5.0f;
+        public Color WarningLightColor = Color.red;
+        public GameObject WarningBulb;
+
         public bool IsOpen = false;
+        public bool IsFlashing = false;
 
         private float currentDoorSetting;
 
         Coroutine doorAnimation;
+        Coroutine flashingAnimation;
 
         public override void InitializeAudio()
         {
@@ -52,10 +59,31 @@ namespace InternetGame
         {
             base.OnNewPacketOnDeck(p);
 
+            p.OnSaved += OnPacketSaved;
+
             if (!HasUnfinishedLink())
             {
                 SetBacklight(p.Color);
             }
+        }
+
+        public override void OnPacketWarning(Packet p)
+        {
+            base.OnPacketWarning(p);
+
+            // SetFlashing(true);
+        }
+
+        public override void OnPacketHasExpired(Packet p)
+        {
+            base.OnPacketHasExpired(p);
+
+            // SetFlashing(false);
+        }
+
+        public void OnPacketSaved(Packet p)
+        {
+            // SetFlashing(false);
         }
 
         protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
@@ -142,6 +170,40 @@ namespace InternetGame
             source.volume = volume;
             source.time = offset;
             source.Play();
+        }
+
+        private void SetFlashing(bool flashing)
+        {
+            if (flashing != IsFlashing)
+            {
+                if (flashing)
+                {
+                    flashingAnimation = StartCoroutine(Flash(WarningLightColor));
+
+                    IsFlashing = true;
+                }
+                else
+                {
+                    StopCoroutine(flashingAnimation);
+
+                    IsFlashing = false;
+                }
+            }
+        }
+
+        private IEnumerator Flash(Color c)
+        {
+            while (true)
+            {
+                float t = Mathf.PingPong(Time.fixedTime, 1.0f);
+                Color toSet = Color.Lerp(Color.black, c, t);
+                float intensity = t * WarningLightMaxIntensity;
+
+                WarningLight.intensity = intensity;
+                WarningBulb.GetComponent<Renderer>().material.SetColor("_EmissionColor", toSet);
+
+                yield return null;
+            }
         }
 
         private void SetBacklight(Color c)

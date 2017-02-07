@@ -32,6 +32,9 @@ namespace InternetGame
         public delegate void OnExpireWarningHandler(Packet p);
         public OnExpireWarningHandler OnExpireWarning;
 
+        public delegate void OnSavedHandler(Packet p);
+        public OnSavedHandler OnSaved;
+
         protected bool HasAlerted = false;
         protected bool HasDropped = false;
 
@@ -76,6 +79,11 @@ namespace InternetGame
             DequeuedTime = Time.fixedTime;
             IsWaitingAtPort = false;
             IsOnDeck = false;
+
+            if (HasAlerted && OnSaved != null)
+            {
+                OnSaved.Invoke(this);
+            }
 
             l.OnTransmissionStarted += OnTransmissionStarted;
         }
