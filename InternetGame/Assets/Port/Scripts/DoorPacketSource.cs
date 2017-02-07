@@ -58,6 +58,38 @@ namespace InternetGame
             }
         }
 
+        protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
+        {
+            base.OnTransmissionSevered(cause, severedLink);
+
+            if (cause == SeverCause.UnfinishedLink)
+            {
+                // When the player doesnt finish a link, we need to stop flashing, or
+                // start flashing the next packet's color.
+                if (!HasUnfinishedLink())
+                {
+                    SetBacklight(Peek().Color);
+                } else
+                {
+                    DisableBacklight();
+                }
+            }
+        }
+
+        protected override void OnTransmissionStarted(Link l, Packet p)
+        {
+            base.OnTransmissionStarted(l, p);
+
+            if (IsEmpty())
+            {
+                DisableBacklight();
+            }
+            else
+            {
+               SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
+            }
+        }
+
         public void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
@@ -81,31 +113,6 @@ namespace InternetGame
 
                     IsOpen = false;
                 }
-            }
-        }
-
-        protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
-        {
-            base.OnTransmissionSevered(cause, severedLink);
-
-            if (cause == SeverCause.UnfinishedLink)
-            {
-                // When the player doesnt finish a link, we need to stop flashing.
-                DisableBacklight();
-            }
-        }
-
-        protected override void OnTransmissionStarted(Link l, Packet p)
-        {
-            base.OnTransmissionStarted(l, p);
-
-            if (IsEmpty())
-            {
-                DisableBacklight();
-            }
-            else
-            {
-               SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 

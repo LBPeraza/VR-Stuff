@@ -18,6 +18,9 @@ namespace InternetGame
         public GameObject CutBoxContainer;
         public GameObject Model;
 
+        public Vector3 From;
+        public Vector3 To;
+
         public void Initialize()
         {
             var cutBoxTransform = this.transform.FindChild("CutBox");
@@ -37,6 +40,33 @@ namespace InternetGame
             {
                 Model = this.gameObject;
             }
+        }
+
+        public virtual void SetBetween(Vector3 from, Vector3 to, float segmentThickness, float segmentLength = -1.0f)
+        {
+            if (segmentLength < 0)
+            {
+                segmentLength = Vector3.Distance(from, to);
+            }
+
+            // Make as long as the pointer has traveled.
+            transform.localScale = new Vector3(segmentThickness, segmentThickness, segmentLength);
+            // Rotate the link to align with the gap between the two points.
+            transform.rotation = Quaternion.LookRotation(to - from);
+            // Position in between the two points.
+            transform.position = (from + to) / 2;
+
+            Length = segmentLength;
+            From = from;
+            To = to;
+        }
+
+        public virtual void GraduallyMoveToBetween(Vector3 from, Vector3 to)
+        {
+            float segmentLength = Vector3.Distance(from, to);
+            float segmentThickness = transform.localScale.x;
+
+            SetBetween(from, to, segmentThickness, segmentLength);
         }
 
         public virtual void Saturate(Material m)

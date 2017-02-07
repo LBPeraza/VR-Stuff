@@ -114,6 +114,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1590240273409464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4363140437392096}
+  m_Layer: 0
+  m_Name: LinkConnectionPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1639013608261646
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,7 +183,7 @@ Transform:
   m_GameObject: {fileID: 1157712024640400}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children: []
   m_Father: {fileID: 4380225238381058}
   m_RootOrder: 1
@@ -190,22 +205,36 @@ Transform:
   m_Father: {fileID: 4380225238381058}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: 0}
+--- !u!4 &4363140437392096
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1590240273409464}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.025, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4380225238381058}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4380225238381058
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1455894369629288}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.6645887, y: -0.08363193, z: 2.2678678}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.452, y: 0.148, z: 1.296}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4204177299406568}
   - {fileID: 4048189200259464}
   - {fileID: 4687372902767058}
+  - {fileID: 4363140437392096}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!4 &4518741293127892
 Transform:
   m_ObjectHideFlags: 1
@@ -499,6 +528,7 @@ MonoBehaviour:
   ActiveLinks: []
   Indicator: {fileID: 0}
   Capacity: 5
+  LinkConnectionPoint: {fileID: 4363140437392096}
   EnqueuedAudioSource: {fileID: 0}
   PacketDroppedAudioSource: {fileID: 0}
   PacketWarningAudioSource: {fileID: 0}
@@ -508,6 +538,11 @@ MonoBehaviour:
   Backlight: {fileID: 1846847805555378}
   Shutter: {fileID: 1405761683703614}
   DoorOpenRate: 5
+  BacklightOffColor: {r: 0, g: 0, b: 0, a: 1}
+  DoorSounds: {fileID: 0}
+  DoorOpenedSoundEffect: {fileID: 0}
+  DoorClosedSoundEffect: {fileID: 0}
+  IsOpen: 0
 --- !u!135 &135440412466541512
 SphereCollider:
   m_ObjectHideFlags: 1

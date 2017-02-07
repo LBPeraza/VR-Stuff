@@ -21,6 +21,7 @@ namespace InternetGame
         public PacketSourceIndicator Indicator;
         public int Capacity = 5;
         public PacketSourceInfo Info;
+        public Transform LinkConnectionPoint;
 
         public delegate void OnPacketEnqueuedHandler(Packet p);
         public event OnPacketEnqueuedHandler OnPacketEnqueued;
@@ -52,6 +53,11 @@ namespace InternetGame
             Info.Capacity = Capacity;
             Info.QueuedPackets = QueuedPackets;
             Info.NumQueuedPackets = 0;
+
+            if (LinkConnectionPoint == null)
+            {
+                LinkConnectionPoint = this.transform;
+            }
 
             this.info = new PortInfo(
                 this.transform.position,
