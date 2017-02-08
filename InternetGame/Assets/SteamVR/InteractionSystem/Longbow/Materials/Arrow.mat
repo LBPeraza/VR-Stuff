@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Arrow
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 908b379d4818cd64184b95a21123d909, type: 3}
   m_ShaderKeywords: S_OCCLUSION S_RECEIVE_SHADOWS S_SPECULAR_METALLIC _EMISSION _METALLICGLOSSMAP
     _NORMALMAP
   m_LightmapFlags: 1
@@ -88,6 +88,9 @@ Material:
         name: _BumpScale
       second: 1
     - first:
+        name: _Cull
+      second: 2
+    - first:
         name: _Cutoff
       second: 0.5
     - first:
@@ -153,6 +156,9 @@ Material:
     - first:
         name: g_bReceiveShadows
       second: 1
+    - first:
+        name: g_bRenderBackfaces
+      second: 0
     - first:
         name: g_bUnlit
       second: 0

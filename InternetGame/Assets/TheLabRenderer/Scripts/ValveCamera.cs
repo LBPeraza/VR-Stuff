@@ -443,15 +443,15 @@ public class ValveCamera : MonoBehaviour
 	//       running start when WaitGetPoses() returns. This helps ensure there are no GPU bubbles at the top of the frame.
 	void LateUpdate()
 	{
-		//Debug.Log( "LateUpdate() " + this.name + "\n\n" );
-		//MyEditorUpdate();
-		//if ( m_renderShadowsInLateUpdate )
-		//{
-		//	ValveShadowBufferRender();
-		//}
-
-		// Adaptive quality debug quad
-		if ( Application.isPlaying )
+        //Debug.Log( "LateUpdate() " + this.name + "\n\n" );
+        //MyEditorUpdate();
+        //if ( m_renderShadowsInLateUpdate )
+        //{
+        //	ValveShadowBufferRender();
+        //}
+        UpdateAdaptiveQuality();
+        // Adaptive quality debug quad
+        if ( Application.isPlaying )
 		{
 			// Toggle debug quad on shift-F1
 			if ( Input.GetKeyDown( KeyCode.F1 ) && ( Input.GetKey( KeyCode.LeftShift ) || Input.GetKey( KeyCode.RightShift ) ) )
@@ -522,7 +522,7 @@ public class ValveCamera : MonoBehaviour
 	//---------------------------------------------------------------------------------------------------------------------------------------------------
 	void OnPreCull()
 	{
-		UpdateAdaptiveQuality();
+		//UpdateAdaptiveQuality();
 		//if ( !m_renderShadowsInLateUpdate )
 		{
 			ValveShadowBufferRender();

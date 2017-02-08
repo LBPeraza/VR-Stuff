@@ -7,6 +7,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using UnityEditor.Rendering;
 
 [InitializeOnLoad]
 public class TheLabRenderer_Settings : EditorWindow
@@ -67,7 +68,7 @@ public class TheLabRenderer_Settings : EditorWindow
 			(!EditorPrefs.HasKey(ignore + buildTarget) &&
 				EditorUserBuildSettings.activeBuildTarget != recommended_BuildTarget) ||
 			(!EditorPrefs.HasKey(ignore + showUnitySplashScreen) &&
-				PlayerSettings.showUnitySplashScreen != recommended_ShowUnitySplashScreen) ||
+				PlayerSettings.SplashScreen.show != recommended_ShowUnitySplashScreen) ||
 			(!EditorPrefs.HasKey(ignore + defaultIsFullScreen) &&
 				PlayerSettings.defaultIsFullScreen != recommended_DefaultIsFullScreen) ||
 			(!EditorPrefs.HasKey(ignore + defaultScreenSize) &&
@@ -84,7 +85,7 @@ public class TheLabRenderer_Settings : EditorWindow
 			(!EditorPrefs.HasKey(ignore + visibleInBackground) &&
 				PlayerSettings.visibleInBackground != recommended_VisibleInBackground) ||
 			(!EditorPrefs.HasKey(ignore + renderingPath) &&
-				PlayerSettings.renderingPath != recommended_RenderPath) ||
+                EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier).renderingPath != recommended_RenderPath) ||
 			(!EditorPrefs.HasKey(ignore + colorSpace) &&
 				PlayerSettings.colorSpace != recommended_ColorSpace) ||
 			(!EditorPrefs.HasKey(ignore + gpuSkinning) &&
@@ -115,7 +116,7 @@ public class TheLabRenderer_Settings : EditorWindow
 			updated = true;
 		}
 
-		var devices = UnityEditorInternal.VR.VREditor.GetVREnabledDevices(BuildTargetGroup.Standalone);
+		var devices = UnityEditorInternal.VR.VREditor.GetVREnabledDevicesOnTargetGroup(BuildTargetGroup.Standalone);
 		var hasOpenVR = false;
 		foreach (var device in devices)
 			if (device.ToLower() == "openvr")
@@ -136,7 +137,7 @@ public class TheLabRenderer_Settings : EditorWindow
 				newDevices[devices.Length] = "OpenVR";
 				updated = true;
 			}
-			UnityEditorInternal.VR.VREditor.SetVREnabledDevices(BuildTargetGroup.Standalone, newDevices);
+			UnityEditorInternal.VR.VREditor.SetVREnabledDevicesOnTargetGroup(BuildTargetGroup.Standalone, newDevices);
 		}
 
 		if (updated)
@@ -214,17 +215,17 @@ public class TheLabRenderer_Settings : EditorWindow
 		}
 
 		if (!EditorPrefs.HasKey(ignore + showUnitySplashScreen) &&
-			PlayerSettings.showUnitySplashScreen != recommended_ShowUnitySplashScreen)
+			PlayerSettings.SplashScreen.show != recommended_ShowUnitySplashScreen)
 		{
 			++numItems;
 
-			GUILayout.Label(showUnitySplashScreen + string.Format(currentValue, PlayerSettings.showUnitySplashScreen));
+			GUILayout.Label(showUnitySplashScreen + string.Format(currentValue, PlayerSettings.SplashScreen.show));
 
 			GUILayout.BeginHorizontal();
 
 			if (GUILayout.Button(string.Format(useRecommended, recommended_ShowUnitySplashScreen)))
 			{
-				PlayerSettings.showUnitySplashScreen = recommended_ShowUnitySplashScreen;
+				PlayerSettings.SplashScreen.show = recommended_ShowUnitySplashScreen;
 			}
 
 			GUILayout.FlexibleSpace();
@@ -408,18 +409,21 @@ public class TheLabRenderer_Settings : EditorWindow
 		}
 
 		if (!EditorPrefs.HasKey(ignore + renderingPath) &&
-			PlayerSettings.renderingPath != recommended_RenderPath)
+            EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier).renderingPath != recommended_RenderPath)
 		{
 			++numItems;
 
-			GUILayout.Label(renderingPath + string.Format(currentValue, PlayerSettings.renderingPath));
+			GUILayout.Label(renderingPath + string.Format(currentValue, EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier).renderingPath));
 
 			GUILayout.BeginHorizontal();
 
 			if (GUILayout.Button(string.Format(useRecommended, recommended_RenderPath) + " - required for MSAA"))
 			{
-				PlayerSettings.renderingPath = recommended_RenderPath;
-			}
+                TierSettings settings = EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier);
+                settings.renderingPath = recommended_RenderPath;
+
+                EditorGraphicsSettings.SetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier, settings);
+            }
 
 			GUILayout.FlexibleSpace();
 
@@ -594,7 +598,7 @@ public class TheLabRenderer_Settings : EditorWindow
 				if (!EditorPrefs.HasKey(ignore + buildTarget))
 					EditorUserBuildSettings.SwitchActiveBuildTarget(recommended_BuildTarget);
 				if (!EditorPrefs.HasKey(ignore + showUnitySplashScreen))
-					PlayerSettings.showUnitySplashScreen = recommended_ShowUnitySplashScreen;
+					PlayerSettings.SplashScreen.show = recommended_ShowUnitySplashScreen;
 				if (!EditorPrefs.HasKey(ignore + defaultIsFullScreen))
 					PlayerSettings.defaultIsFullScreen = recommended_DefaultIsFullScreen;
 				if (!EditorPrefs.HasKey(ignore + defaultScreenSize))
@@ -612,8 +616,13 @@ public class TheLabRenderer_Settings : EditorWindow
 					PlayerSettings.d3d11FullscreenMode = recommended_FullscreenMode;
 				if (!EditorPrefs.HasKey(ignore + visibleInBackground))
 					PlayerSettings.visibleInBackground = recommended_VisibleInBackground;
-				if (!EditorPrefs.HasKey(ignore + renderingPath))
-					PlayerSettings.renderingPath = recommended_RenderPath;
+			    if (!EditorPrefs.HasKey(ignore + renderingPath))
+			    {
+                    TierSettings settings = EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier);
+                    settings.renderingPath = recommended_RenderPath;
+
+                    EditorGraphicsSettings.SetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier, settings);
+                }
 				if (!EditorPrefs.HasKey(ignore + colorSpace))
 					PlayerSettings.colorSpace = recommended_ColorSpace;
 				if (!EditorPrefs.HasKey(ignore + gpuSkinning))
@@ -639,7 +648,7 @@ public class TheLabRenderer_Settings : EditorWindow
 					// Only ignore those that do not currently match our recommended settings.
 					if (EditorUserBuildSettings.activeBuildTarget != recommended_BuildTarget)
 						EditorPrefs.SetBool(ignore + buildTarget, true);
-					if (PlayerSettings.showUnitySplashScreen != recommended_ShowUnitySplashScreen)
+					if (PlayerSettings.SplashScreen.show != recommended_ShowUnitySplashScreen)
 						EditorPrefs.SetBool(ignore + showUnitySplashScreen, true);
 					if (PlayerSettings.defaultIsFullScreen != recommended_DefaultIsFullScreen)
 						EditorPrefs.SetBool(ignore + defaultIsFullScreen, true);
@@ -656,7 +665,7 @@ public class TheLabRenderer_Settings : EditorWindow
 						EditorPrefs.SetBool(ignore + fullscreenMode, true);
 					if (PlayerSettings.visibleInBackground != recommended_VisibleInBackground)
 						EditorPrefs.SetBool(ignore + visibleInBackground, true);
-					if (PlayerSettings.renderingPath != recommended_RenderPath)
+					if (EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.Standalone, Graphics.activeTier).renderingPath != recommended_RenderPath)
 						EditorPrefs.SetBool(ignore + renderingPath, true);
 					if (PlayerSettings.colorSpace != recommended_ColorSpace)
 						EditorPrefs.SetBool(ignore + colorSpace, true);

@@ -7,11 +7,12 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: ControllerTextHintLine
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: S_SPECULAR_NONE S_UNLIT _EMISSION
+  m_Shader: {fileID: 4800000, guid: 908b379d4818cd64184b95a21123d909, type: 3}
+  m_ShaderKeywords: S_RECEIVE_SHADOWS S_SPECULAR_METALLIC S_UNLIT _EMISSION
   m_LightmapFlags: 1
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    OriginalShader: Standard
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:
@@ -89,6 +90,9 @@ Material:
         name: _BumpScale
       second: 1
     - first:
+        name: _Cull
+      second: 2
+    - first:
         name: _Cutoff
       second: 0.5
     - first:
@@ -141,7 +145,7 @@ Material:
       second: 1
     - first:
         name: _SpecularMode
-      second: 1
+      second: 2
     - first:
         name: _SrcBlend
       second: 1
@@ -154,6 +158,9 @@ Material:
     - first:
         name: g_bReceiveShadows
       second: 1
+    - first:
+        name: g_bRenderBackfaces
+      second: 0
     - first:
         name: g_bUnlit
       second: 1
