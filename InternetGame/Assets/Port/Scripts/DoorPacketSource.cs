@@ -16,6 +16,8 @@ namespace InternetGame
         public GameObject Shutter;
         public float DoorOpenRate;
 
+		public DoorPacketSourceParticles Particles;
+
         public Color BacklightOffColor = Color.black;
 
         public AudioSource DoorSounds;
@@ -43,6 +45,8 @@ namespace InternetGame
 
             DoorOpenedSoundEffect = Resources.Load<AudioClip>("door_opened");
             DoorClosedSoundEffect = Resources.Load<AudioClip>("door_closed");
+
+			Particles.Initialize ();
         }
 
         public override void Initialize()
@@ -211,11 +215,13 @@ namespace InternetGame
             var mat = Backlight.GetComponent<Renderer>().material;
             mat.color = c;
             mat.SetColor("_EmissionColor", c);
+			Particles.StartParticles (c);
         }
 
         private void DisableBacklight()
         {
             SetBacklight(BacklightOffColor);
+			Particles.StopParticles ();
         }
 
         /// <summary>
