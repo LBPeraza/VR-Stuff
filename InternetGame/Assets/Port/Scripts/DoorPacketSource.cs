@@ -26,8 +26,10 @@ namespace InternetGame
 
         public Light WarningLight;
         public float WarningLightMaxIntensity = 5.0f;
+        public float WarningLightMinIntensity = 1.0f;
         public Color WarningLightColor = Color.red;
         public GameObject WarningBulb;
+        public float FlashRate = 2.0f;
 
         public bool IsOpen = false;
         public bool IsFlashing = false;
@@ -56,6 +58,12 @@ namespace InternetGame
             currentDoorSetting = 100.0f; // Completely closed.
             SetApertureClose(currentDoorSetting);
 
+            if (WarningBulb != null)
+            {
+                Material copy = new Material(WarningBulb.GetComponent<Renderer>().material);
+                WarningBulb.GetComponent<Renderer>().material = copy;
+            }
+
             DisableBacklight();
         }
 
@@ -75,19 +83,23 @@ namespace InternetGame
         {
             base.OnPacketWarning(p);
 
-            // SetFlashing(true);
+            SetFlashing(true);
         }
 
         public override void OnPacketHasExpired(Packet p)
         {
             base.OnPacketHasExpired(p);
 
-            // SetFlashing(false);
+            if (IsEmpty())
+            {
+                DisableBacklight();
+            } 
+            SetFlashing(false);
         }
 
         public void OnPacketSaved(Packet p)
         {
-            // SetFlashing(false);
+            SetFlashing(false);
         }
 
         protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
@@ -189,22 +201,28 @@ namespace InternetGame
                 else
                 {
                     StopCoroutine(flashingAnimation);
+                    SetBulb(Color.black, 0.0f);
 
                     IsFlashing = false;
                 }
             }
+        }
+        
+        private void SetBulb(Color c, float intensity)
+        {
+            WarningLight.intensity = intensity;
+            WarningBulb.GetComponent<Renderer>().material.SetColor("_EmissionColor", c);
         }
 
         private IEnumerator Flash(Color c)
         {
             while (true)
             {
-                float t = Mathf.PingPong(Time.fixedTime, 1.0f);
+                float t = 0.5f * Mathf.Cos(Time.fixedTime * FlashRate) + 0.5f;
                 Color toSet = Color.Lerp(Color.black, c, t);
-                float intensity = t * WarningLightMaxIntensity;
+                float intensity = WarningLightMinIntensity + (t * (WarningLightMaxIntensity - WarningLightMinIntensity));
 
-                WarningLight.intensity = intensity;
-                WarningBulb.GetComponent<Renderer>().material.SetColor("_EmissionColor", toSet);
+                SetBulb(toSet, intensity);
 
                 yield return null;
             }

@@ -38,7 +38,7 @@ namespace InternetGame
             FlashRate = 1.0f;
 
             this.transform.localPosition = Vector3.zero;
-            this.transform.localRotation = Quaternion.Euler(0, 90.0f, 0);
+            this.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
             NeutralMaterial = new Material(neutralMaterial);
             ActiveMaterial = new Material(activeMaterial);
