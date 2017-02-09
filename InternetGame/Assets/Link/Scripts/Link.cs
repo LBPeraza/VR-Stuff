@@ -188,24 +188,23 @@ namespace InternetGame
             return Vector3.Lerp(Vector3.Lerp(p0, p1, t), Vector3.Lerp(p1, p2, t), t);
         }
 
-        private void AdjustInitialLinkSegments(LinkSegment lastAdjustedSegment)
+        private void AdjustInitialLinkSegments(LinkSegment lastAdjustedSegment, int numSegmentsToAdjust)
         {
             AdjustedInitialSegments = true;
 
             Vector3 start = Source.LinkConnectionPoint.position;
             Vector3 center = Segments[Segments.Count / 2].transform.position;
             Vector3 end = lastAdjustedSegment.To;
-            float gapSize = Vector3.Distance(start, end);
 
-            float totalLength = 0.0f;
+            int adjustedSegments = 0;
             foreach (LinkSegment segment in Segments)
             {
-                Vector3 from = QuadraticLerp(start, center, end, totalLength / gapSize);
-                Vector3 to = QuadraticLerp(start, center, end, (totalLength + segment.Length) / gapSize);
+                Vector3 from = QuadraticLerp(start, center, end, adjustedSegments / numSegmentsToAdjust);
+                Vector3 to = QuadraticLerp(start, center, end, (adjustedSegments + 1) / numSegmentsToAdjust);
 
                 segment.GraduallyMoveToBetween(from, to);
 
-                totalLength += segment.Length;
+                adjustedSegments++;
 
                 if (segment == lastAdjustedSegment)
                 {
@@ -438,7 +437,7 @@ namespace InternetGame
 
                     if (!AdjustedInitialSegments && TotalLength > InitialLinkLength)
                     {
-                        AdjustInitialLinkSegments(Segments[Segments.Count - 1]);
+                        AdjustInitialLinkSegments(Segments[Segments.Count - 1], Segments.Count);
                     }
                     break;
                 case LinkState.TransmittingPacket:

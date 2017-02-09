@@ -110,7 +110,7 @@ namespace InternetGame
             {
                 // When the player doesnt finish a link, we need to stop flashing, or
                 // start flashing the next packet's color.
-                if (!HasUnfinishedLink())
+                if (!HasUnfinishedLink() && !IsEmpty())
                 {
                     SetBacklight(Peek().Color);
                 } else
