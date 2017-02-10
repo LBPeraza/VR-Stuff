@@ -21,6 +21,7 @@ namespace InternetGame {
 	public class PortLoader : MonoBehaviour {
 
 		public string levelName = "default_level";
+		public bool SaveOnRun = false;
 
 		public PacketSource[] SourceObjects;
 		public PacketSink[] SinkObjects;
@@ -31,7 +32,7 @@ namespace InternetGame {
 		public GameObject SourcePrefab;
 		public GameObject SinkPrefab;
 
-		public void Initialize() {
+		public void Initialize(LevelParameters levelParams) {
 			if (SourceHolder == null) {
 				SourceHolder = GameObject.Find ("Sources");
 			}
@@ -45,6 +46,11 @@ namespace InternetGame {
 			if (SinkPrefab == null) {
 				SinkPrefab = Resources.Load<GameObject> ("Sink");
 			}
+
+			if (SaveOnRun)
+				SavePorts ();
+
+			LoadPorts (levelParams.LevelName);
 		}
 
 		void GetSrcList() {
@@ -76,7 +82,19 @@ namespace InternetGame {
 			}
 		}
 
+		void ClearChildren(GameObject holder) {
+			foreach (Transform child in holder.transform) {
+				GameObject.Destroy (child.gameObject);
+			}
+		}
+
+		void ClearPorts() {
+			ClearChildren (SourceHolder);
+			ClearChildren (SinkHolder);
+		}
+
 		public void LoadPorts(string levelName) {
+			ClearPorts ();
 			string json;
 			using (FileStream fs = new FileStream (
 				                       "Assets/Levels/PortMaps/" + levelName + ".json",

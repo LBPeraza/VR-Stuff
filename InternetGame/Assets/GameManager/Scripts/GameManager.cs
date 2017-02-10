@@ -57,6 +57,7 @@ namespace InternetGame
         public void LoadLevelData()
         {
             // TODO
+			LevelParameters.LevelName = "default_level";
             LevelParameters.NumDroppedPacketsAllowed = 5;
             LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
         }
@@ -108,7 +109,7 @@ namespace InternetGame
 
             if (PortLoader != null)
             {
-                PortLoader.Initialize();
+				PortLoader.Initialize(LevelParameters);
             }
             else
             {
