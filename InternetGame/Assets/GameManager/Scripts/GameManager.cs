@@ -63,14 +63,15 @@ namespace InternetGame
             LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
         }
 
-        public void Initialize()
+        public void LoadPorts()
         {
-            LoadLevelData();
-
-            if (SceneLoader == null)
+            if (PortLoader != null)
             {
-                SceneLoader = gameObject.AddComponent<SceneLoader>();
-                SceneLoader.Initialize();
+                PortLoader.Initialize(LevelParameters);
+            }
+            else
+            {
+                Debug.Log("No PortLoader found. Skipping initialization.");
             }
 
             // Try to find Sinks and Sources gameobject in scene, if not already set.
@@ -104,6 +105,17 @@ namespace InternetGame
                     // sink.Initialize();
                 }
             }
+        }
+
+        public void Initialize()
+        {
+            LoadLevelData();
+
+            if (SceneLoader == null)
+            {
+                SceneLoader = gameObject.AddComponent<SceneLoader>();
+                SceneLoader.Initialize();
+            }
 
             if (InputManager != null)
             {
@@ -114,14 +126,7 @@ namespace InternetGame
                 Debug.Log("No InputManager found. Skipping initialization.");
             }
 
-            if (PortLoader != null)
-            {
-				PortLoader.Initialize(LevelParameters);
-            }
-            else
-            {
-                Debug.Log("No PortLoader found. Skipping initialization.");
-            }
+            LoadPorts();
 
             if (Player != null)
             {

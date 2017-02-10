@@ -20,7 +20,7 @@ namespace InternetGame
 
     public class Cursor : MonoBehaviour
     {
-        public Transform follow;
+        public GameObject Controller;
         public Player Player;
 
         public bool HasLinkController;
@@ -33,9 +33,26 @@ namespace InternetGame
         public GameObject GrabModel;
         public GameObject ScissorsModel;
 
+        public VRTK.VRTK_ControllerEvents Input;
+
         public static CursorEventArgs DefaultCursorEventArgs;
 
         private int? trackedInteractionId;
+
+        private void TryFindController()
+        {
+            if (Controller == null)
+            {
+                Controller = IsRightHand ?
+                    GameObject.FindGameObjectWithTag("RightController") :
+                    GameObject.FindGameObjectWithTag("LeftController");
+            }
+
+            if (Controller != null)
+            {
+                Input = Controller.GetComponent<VRTK.VRTK_ControllerEvents>();
+            }
+        }
 
         public void Initialize(Player p, bool isRightHand)
         {
@@ -43,6 +60,8 @@ namespace InternetGame
 
             Player = p;
             IsRightHand = isRightHand;
+
+            TryFindController();
 
             if (HasLinkController)
             {
@@ -170,10 +189,13 @@ namespace InternetGame
         // Update is called once per frame
         void Update()
         {
-            if (follow != null)
+            if (Controller != null)
             {
-                this.transform.position = follow.transform.position;
-                this.transform.rotation = follow.transform.rotation;
+                this.transform.position = Controller.transform.position;
+                this.transform.rotation = Controller.transform.rotation;
+            } else
+            {
+                TryFindController();
             }
         }
     }

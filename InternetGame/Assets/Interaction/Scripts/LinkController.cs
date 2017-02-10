@@ -63,16 +63,8 @@ namespace InternetGame
 
             State = LinkControllerState.Inactive;
 
-            if (IsRightHand)
-            {
-                InputManager.RightTriggerClicked += TriggerDown;
-                InputManager.RightTriggerUnclicked += TriggerUp;
-            }
-            else
-            {
-                InputManager.LeftTriggerClicked += TriggerDown;
-                InputManager.LeftTriggerUnclicked += TriggerUp;
-            }
+            Cursor.Input.TriggerPressed += TriggerUp;
+            Cursor.Input.TriggerReleased += TriggerDown;
 
             LoadAudioClips();
         }
@@ -126,8 +118,9 @@ namespace InternetGame
             Cursor.OnGrab(cursorEventArgs);
         }
 
-        public void TriggerDown(object sender, ClickedEventArgs args)
+        public void TriggerDown(object sender, VRTK.ControllerInteractionEventArgs e)
         {
+            Debug.Log("Trigger down");
             if (CurrentLink == null 
                 && NearSource != null
                 && !Player.IsOutOfBandwidth()
@@ -139,8 +132,10 @@ namespace InternetGame
             }
         }
 
-        public void TriggerUp(object sender, ClickedEventArgs args)
+        public void TriggerUp(object sender, VRTK.ControllerInteractionEventArgs e)
         {
+            Debug.Log("Trigger up");
+
             if (CurrentLink != null && NearSink == null)
             {
                 // End the current link in the air.
