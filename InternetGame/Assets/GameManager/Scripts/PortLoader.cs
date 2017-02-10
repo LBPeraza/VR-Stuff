@@ -20,6 +20,8 @@ namespace InternetGame {
 
 	public class PortLoader : MonoBehaviour {
 
+		public string levelName = "default_level";
+
 		public PacketSource[] SourceObjects;
 		public PacketSink[] SinkObjects;
 
@@ -37,32 +39,36 @@ namespace InternetGame {
 				SinkHolder = GameObject.Find ("Sinks");
 			}
 
-			SourcePrefab = Resources.Load<GameObject> ("Source");
-			SinkPrefab = Resources.Load<GameObject> ("Sink");
-		}
-
-		void InitSrcList() {
-			SourceObjects = FindObjectsOfType<PacketSource> ();
-		}
-
-		void InitSinkList() {
-			SinkObjects = FindObjectsOfType<PacketSink> ();
-		}
-
-		void SavePorts(string levelName) {
-			Ports toSave = new Ports ();
-			InitSrcList ();
-			foreach (PacketSource src in SourceObjects) {
-				toSave.sources.Add (src.info);
+			if (SourcePrefab == null) {
+				SourcePrefab = Resources.Load<GameObject> ("Source");
 			}
-			InitSinkList ();
+			if (SinkPrefab == null) {
+				SinkPrefab = Resources.Load<GameObject> ("Sink");
+			}
+		}
+
+		void GetSrcList() {
+			SourceObjects = SourceHolder.transform.GetComponentsInChildren<PacketSource> ();
+		}
+
+		void GetSinkList() {
+			SinkObjects = SourceHolder.transform.GetComponentsInChildren<PacketSink> ();
+		}
+
+		public void SavePorts() {
+			Ports toSave = new Ports ();
+			GetSrcList ();
+			foreach (PacketSource src in SourceObjects) {
+				toSave.sources.Add (src.portInfo);
+			}
+			GetSinkList ();
 			foreach (PacketSink sink in SinkObjects) {
-				toSave.sinks.Add (sink.info);
+				toSave.sinks.Add (sink.portInfo);
 			}
 
 			string json = JsonUtility.ToJson (toSave, true);
 			using (FileStream fs = new FileStream (
-									   "Assets/Levels/" + levelName + ".json",
+									   "Assets/Levels/PortMaps/" + levelName + ".json",
 						 			   FileMode.Create)) {
 				using (StreamWriter writer = new StreamWriter (fs)) {
 					writer.Write (json);
@@ -70,10 +76,10 @@ namespace InternetGame {
 			}
 		}
 
-		void LoadPorts(string levelName) {
+		public void LoadPorts(string levelName) {
 			string json;
 			using (FileStream fs = new FileStream (
-				                       "Assets/Levels/" + levelName + ".json",
+				                       "Assets/Levels/PortMaps/" + levelName + ".json",
 				                       FileMode.Open)) {
 				using (StreamReader reader = new StreamReader (fs)) {
 					json = reader.ReadToEnd ();

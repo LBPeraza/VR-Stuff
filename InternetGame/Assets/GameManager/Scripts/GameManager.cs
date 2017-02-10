@@ -20,6 +20,7 @@ namespace InternetGame
     {
         public int NumDroppedPacketsAllowed;
         public Soundtrack BackgroundSoundtrack;
+		public string LevelName;
     }
 
     public class GameManager : MonoBehaviour
