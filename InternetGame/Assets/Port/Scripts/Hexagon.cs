@@ -20,6 +20,7 @@ namespace InternetGame
 
         public bool IsFlashing;
         public float FlashRate;
+        public bool EnableEmission;
         public bool EnableFlashing;
         public Color OriginalColor;
         public float RingColorChangeDuration = 1.0f;
@@ -120,20 +121,33 @@ namespace InternetGame
         private IEnumerator GraduallyAdjustColor(Color from, Color to)
         {
             Material mat = IsActive ? ActiveMaterial : NeutralMaterial;
-            
+
+            if (!EnableEmission)
+            {
+                mat.SetColor("_EmissionColor", Color.black);
+            }
+
             float startTime = Time.fixedTime;
             float t = startTime;
             while (t - startTime <= RingColorChangeDuration)
             {
                 Color c = Color.Lerp(from, to, t / RingColorChangeDuration);
                 mat.color = c;
-                mat.SetColor("_EmissionColor", c);
+
+                if (EnableEmission)
+                {
+                    mat.SetColor("_EmissionColor", c);
+                }
 
                 yield return null;
             }
 
             mat.color = to;
-            mat.SetColor("_EmissionColor", to);
+
+            if (EnableEmission)
+            {
+                mat.SetColor("_EmissionColor", to);
+            }
         }
 
         private IEnumerator Flash(Color from, Color to)

@@ -138,7 +138,11 @@ namespace InternetGame
         {
             if (other.CompareTag("Player"))
             {
-                if (!IsOpen)
+                // Don't open if the player is drawing a link.
+                Cursor cursor = other.transform.parent.GetComponent<Cursor>();
+                bool cursorIsDrawingLink = cursor.HasLinkController
+                    && cursor.GetComponent<LinkController>().State == LinkControllerState.DrawingLink;
+                if (!cursorIsDrawingLink && !IsOpen)
                 {
                     StartOpenDoor();
 

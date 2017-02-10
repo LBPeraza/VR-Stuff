@@ -51,12 +51,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5c8e26db602f3f428f97a255619c94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Source: {fileID: 0}
   NeutralMaterial: {fileID: 0}
   ActiveMaterial: {fileID: 0}
   NeutralMaterialCopy: {fileID: 0}
   ActiveMaterialCopy: {fileID: 0}
   NumRings: 0
   Rings: []
+  NumPackets: 0
+  NumInnerPacketsToExclude: 1
   InitialRingRadius: 0.17
-  RingRadiusIncrement: 0.02
-  RingThickness: 0.01
+  RingRadiusIncrement: 0.03
+  RingThickness: 0.02
+  EnableEmission: 0
