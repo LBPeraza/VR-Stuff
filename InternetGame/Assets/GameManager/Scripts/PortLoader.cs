@@ -58,10 +58,11 @@ namespace InternetGame {
 		}
 
 		void GetSinkList() {
-			SinkObjects = SourceHolder.transform.GetComponentsInChildren<PacketSink> ();
+			SinkObjects = SinkHolder.transform.GetComponentsInChildren<PacketSink> ();
 		}
 
 		public void SavePorts() {
+			Debug.Log ("Saving ports into Assets/Levels/PortMaps/" + levelName + ".json");
 			Ports toSave = new Ports ();
 			GetSrcList ();
 			foreach (PacketSource src in SourceObjects) {
