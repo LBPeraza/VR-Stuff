@@ -10,13 +10,14 @@ namespace InternetGame
     }
 
     public class PacketSink : MonoBehaviour
-    {
+	{
         public string Address;
         public Link ActiveLink;
-		public PortInfo info;
 
         public AudioSource VirusStrikesAudioSource;
-        public AudioClip VirusStrikesAudioClip;
+		public AudioClip VirusStrikesAudioClip;
+
+		private PortInfo info;
 
         private void Start()
         {
@@ -26,10 +27,6 @@ namespace InternetGame
 
         public virtual void Initialize()
         {
-            this.info = new PortInfo(
-                this.transform.position,
-                this.transform.rotation
-            );
 
             InitializeAudio();
         }
@@ -90,6 +87,14 @@ namespace InternetGame
         {
             ActiveLink = null;
         }
+
+		public PortInfo portInfo {
+			get {
+				return new PortInfo (
+					transform.position,
+					transform.rotation);
+			}
+		}
     }
 }
 

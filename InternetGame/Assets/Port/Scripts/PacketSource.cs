@@ -14,8 +14,6 @@ namespace InternetGame
 
     public class PacketSource : MonoBehaviour
 	{
-		public PortInfo info;
-
         public GameObject PacketContainer;
         public List<Packet> QueuedPackets;
         public List<Link> ActiveLinks;
@@ -39,7 +37,9 @@ namespace InternetGame
 
         public AudioClip PacketWarningClip;
         public AudioClip PacketDroppedClip;
-        public AudioClip PacketEnqueuedClip;
+		public AudioClip PacketEnqueuedClip;
+
+		private PortInfo info;
 
         public bool HasUnfinishedLink()
         {
@@ -64,12 +64,7 @@ namespace InternetGame
             if (LinkConnectionPoint == null)
             {
                 LinkConnectionPoint = this.transform;
-            }
-
-            this.info = new PortInfo(
-                this.transform.position,
-                this.transform.rotation
-            );
+            } 
 
             if (Indicator == null)
             {
@@ -301,5 +296,13 @@ namespace InternetGame
         {
             p.OnDeckAtPort(this);
         }
+
+		public PortInfo portInfo {
+			get {
+				return new PortInfo (
+					transform.position,
+					transform.rotation);
+			}
+		}
     }
 }
