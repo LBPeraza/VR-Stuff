@@ -199,8 +199,8 @@ namespace InternetGame
             int adjustedSegments = 0;
             foreach (LinkSegment segment in Segments)
             {
-                Vector3 from = QuadraticLerp(start, center, end, adjustedSegments / numSegmentsToAdjust);
-                Vector3 to = QuadraticLerp(start, center, end, (adjustedSegments + 1) / numSegmentsToAdjust);
+                Vector3 from = QuadraticLerp(start, center, end, (float) (adjustedSegments) / numSegmentsToAdjust);
+                Vector3 to = QuadraticLerp(start, center, end, (float) (adjustedSegments + 1.0f) / numSegmentsToAdjust);
 
                 segment.GraduallyMoveToBetween(from, to);
 

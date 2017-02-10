@@ -12,6 +12,7 @@ namespace InternetGame
         public bool Saturated;
         public bool IsUnseverableSegment;
         public bool IsNumb = false;
+        public float GraduallyMoveRate = 1.0f;
 
         public float SeverGracePeriod = 1.0f; // In seconds.
 
@@ -61,12 +62,33 @@ namespace InternetGame
             To = to;
         }
 
-        public virtual void GraduallyMoveToBetween(Vector3 from, Vector3 to)
+        private IEnumerator AnimateMoveToBetween(Vector3 start, Vector3 end)
         {
-            float segmentLength = Vector3.Distance(from, to);
+            float startTime = Time.fixedTime;
+            float t = 0.0f;
+            Vector3 originalStart = From;
+            Vector3 originalEnd = To;
             float segmentThickness = transform.localScale.x;
 
-            SetBetween(from, to, segmentThickness, segmentLength);
+            while (t < 1.0f)
+            {
+                // Move the segment along from its original position to the intended destination.
+                t = (Time.fixedTime - startTime) * GraduallyMoveRate;
+                Vector3 intermediateStart = Vector3.Lerp(originalStart, start, t);
+                Vector3 intermediateEnd = Vector3.Lerp(originalEnd, end, t);
+
+                SetBetween(intermediateStart, intermediateEnd, segmentThickness);
+
+                yield return null;
+            }
+
+            // Finally set at the intended destination.
+            SetBetween(start, end, segmentThickness);
+        }
+
+        public virtual void GraduallyMoveToBetween(Vector3 from, Vector3 to)
+        {
+            StartCoroutine(AnimateMoveToBetween(from, to));
         }
 
         public virtual void Saturate(Material m)
