@@ -12,11 +12,15 @@ namespace InternetGame
         public bool Saturated;
         public bool IsUnseverableSegment;
         public bool IsNumb = false;
+        public float GraduallyMoveRate = 1.0f;
 
         public float SeverGracePeriod = 1.0f; // In seconds.
 
         public GameObject CutBoxContainer;
         public GameObject Model;
+
+        public Vector3 From;
+        public Vector3 To;
 
         public void Initialize()
         {
@@ -37,6 +41,54 @@ namespace InternetGame
             {
                 Model = this.gameObject;
             }
+        }
+
+        public virtual void SetBetween(Vector3 from, Vector3 to, float segmentThickness, float segmentLength = -1.0f)
+        {
+            if (segmentLength < 0)
+            {
+                segmentLength = Vector3.Distance(from, to);
+            }
+
+            // Make as long as the pointer has traveled.
+            transform.localScale = new Vector3(segmentThickness, segmentThickness, segmentLength);
+            // Rotate the link to align with the gap between the two points.
+            transform.rotation = Quaternion.LookRotation(to - from);
+            // Position in between the two points.
+            transform.position = (from + to) / 2;
+
+            Length = segmentLength;
+            From = from;
+            To = to;
+        }
+
+        private IEnumerator AnimateMoveToBetween(Vector3 start, Vector3 end)
+        {
+            float startTime = Time.fixedTime;
+            float t = 0.0f;
+            Vector3 originalStart = From;
+            Vector3 originalEnd = To;
+            float segmentThickness = transform.localScale.x;
+
+            while (t < 1.0f)
+            {
+                // Move the segment along from its original position to the intended destination.
+                t = (Time.fixedTime - startTime) * GraduallyMoveRate;
+                Vector3 intermediateStart = Vector3.Lerp(originalStart, start, t);
+                Vector3 intermediateEnd = Vector3.Lerp(originalEnd, end, t);
+
+                SetBetween(intermediateStart, intermediateEnd, segmentThickness);
+
+                yield return null;
+            }
+
+            // Finally set at the intended destination.
+            SetBetween(start, end, segmentThickness);
+        }
+
+        public virtual void GraduallyMoveToBetween(Vector3 from, Vector3 to)
+        {
+            StartCoroutine(AnimateMoveToBetween(from, to));
         }
 
         public virtual void Saturate(Material m)

@@ -11,7 +11,8 @@ Material:
   m_ShaderKeywords: S_RECEIVE_SHADOWS S_SPECULAR_BLINNPHONG
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    OriginalShader: Standard (Specular setup)
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:

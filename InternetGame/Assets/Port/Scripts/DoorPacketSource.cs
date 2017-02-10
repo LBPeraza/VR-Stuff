@@ -24,11 +24,20 @@ namespace InternetGame
         public AudioClip DoorOpenedSoundEffect;
         public AudioClip DoorClosedSoundEffect;
 
+        public Light WarningLight;
+        public float WarningLightMaxIntensity = 5.0f;
+        public float WarningLightMinIntensity = 1.0f;
+        public Color WarningLightColor = Color.red;
+        public GameObject WarningBulb;
+        public float FlashRate = 2.0f;
+
         public bool IsOpen = false;
+        public bool IsFlashing = false;
 
         private float currentDoorSetting;
 
         Coroutine doorAnimation;
+        Coroutine flashingAnimation;
 
         public override void InitializeAudio()
         {
@@ -49,6 +58,12 @@ namespace InternetGame
             currentDoorSetting = 100.0f; // Completely closed.
             SetApertureClose(currentDoorSetting);
 
+            if (WarningBulb != null)
+            {
+                Material copy = new Material(WarningBulb.GetComponent<Renderer>().material);
+                WarningBulb.GetComponent<Renderer>().material = copy;
+            }
+
             DisableBacklight();
         }
 
@@ -56,9 +71,66 @@ namespace InternetGame
         {
             base.OnNewPacketOnDeck(p);
 
+            p.OnSaved += OnPacketSaved;
+
             if (!HasUnfinishedLink())
             {
                 SetBacklight(p.Color);
+            }
+        }
+
+        public override void OnPacketWarning(Packet p)
+        {
+            base.OnPacketWarning(p);
+
+            SetFlashing(true);
+        }
+
+        public override void OnPacketHasExpired(Packet p)
+        {
+            base.OnPacketHasExpired(p);
+
+            if (IsEmpty())
+            {
+                DisableBacklight();
+            } 
+            SetFlashing(false);
+        }
+
+        public void OnPacketSaved(Packet p)
+        {
+            SetFlashing(false);
+        }
+
+        protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
+        {
+            base.OnTransmissionSevered(cause, severedLink);
+
+            if (cause == SeverCause.UnfinishedLink)
+            {
+                // When the player doesnt finish a link, we need to stop flashing, or
+                // start flashing the next packet's color.
+                if (!HasUnfinishedLink() && !IsEmpty())
+                {
+                    SetBacklight(Peek().Color);
+                } else
+                {
+                    DisableBacklight();
+                }
+            }
+        }
+
+        protected override void OnTransmissionStarted(Link l, Packet p)
+        {
+            base.OnTransmissionStarted(l, p);
+
+            if (IsEmpty())
+            {
+                DisableBacklight();
+            }
+            else
+            {
+               SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
@@ -66,7 +138,11 @@ namespace InternetGame
         {
             if (other.CompareTag("Player"))
             {
-                if (!IsOpen)
+                // Don't open if the player is drawing a link.
+                Cursor cursor = other.transform.parent.GetComponent<Cursor>();
+                bool cursorIsDrawingLink = cursor.HasLinkController
+                    && cursor.GetComponent<LinkController>().State == LinkControllerState.DrawingLink;
+                if (!cursorIsDrawingLink && !IsOpen)
                 {
                     StartOpenDoor();
 
@@ -85,31 +161,6 @@ namespace InternetGame
 
                     IsOpen = false;
                 }
-            }
-        }
-
-        protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
-        {
-            base.OnTransmissionSevered(cause, severedLink);
-
-            if (cause == SeverCause.UnfinishedLink)
-            {
-                // When the player doesnt finish a link, we need to stop flashing.
-                DisableBacklight();
-            }
-        }
-
-        protected override void OnTransmissionStarted(Link l, Packet p)
-        {
-            base.OnTransmissionStarted(l, p);
-
-            if (IsEmpty())
-            {
-                DisableBacklight();
-            }
-            else
-            {
-               SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
@@ -139,6 +190,46 @@ namespace InternetGame
             source.volume = volume;
             source.time = offset;
             source.Play();
+        }
+
+        private void SetFlashing(bool flashing)
+        {
+            if (flashing != IsFlashing)
+            {
+                if (flashing)
+                {
+                    flashingAnimation = StartCoroutine(Flash(WarningLightColor));
+
+                    IsFlashing = true;
+                }
+                else
+                {
+                    StopCoroutine(flashingAnimation);
+                    SetBulb(Color.black, 0.0f);
+
+                    IsFlashing = false;
+                }
+            }
+        }
+        
+        private void SetBulb(Color c, float intensity)
+        {
+            WarningLight.intensity = intensity;
+            WarningBulb.GetComponent<Renderer>().material.SetColor("_EmissionColor", c);
+        }
+
+        private IEnumerator Flash(Color c)
+        {
+            while (true)
+            {
+                float t = 0.5f * Mathf.Cos(Time.fixedTime * FlashRate) + 0.5f;
+                Color toSet = Color.Lerp(Color.black, c, t);
+                float intensity = WarningLightMinIntensity + (t * (WarningLightMaxIntensity - WarningLightMinIntensity));
+
+                SetBulb(toSet, intensity);
+
+                yield return null;
+            }
         }
 
         private void SetBacklight(Color c)

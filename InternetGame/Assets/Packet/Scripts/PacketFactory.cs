@@ -12,7 +12,7 @@ namespace InternetGame
         public static Packet CreateEmail(PacketSource s, PacketSink t)
         {
             GameObject emailContainer = new GameObject("Email");
-            emailContainer.transform.parent = s.transform;
+            emailContainer.transform.parent = s.PacketContainer.transform;
 
             Email email = emailContainer.AddComponent<Email>();
             email.Destination = t.Address;
@@ -29,7 +29,7 @@ namespace InternetGame
         public static Virus CreateEmailVirus(PacketSource s, PacketSink t)
         {
             GameObject emailContainer = new GameObject("EmailVirus");
-            emailContainer.transform.parent = s.transform;
+            emailContainer.transform.parent = s.PacketContainer.transform;
 
             ChameleonVirus emailVirus = emailContainer.AddComponent<ChameleonVirus>();
             emailVirus.Destination = t.Address;

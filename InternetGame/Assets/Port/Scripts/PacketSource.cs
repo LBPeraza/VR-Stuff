@@ -16,11 +16,13 @@ namespace InternetGame
 	{
 		public PortInfo info;
 
+        public GameObject PacketContainer;
         public List<Packet> QueuedPackets;
         public List<Link> ActiveLinks;
         public PacketSourceIndicator Indicator;
         public int Capacity = 5;
         public PacketSourceInfo Info;
+        public Transform LinkConnectionPoint;
 
         public delegate void OnPacketEnqueuedHandler(Packet p);
         public event OnPacketEnqueuedHandler OnPacketEnqueued;
@@ -53,6 +55,17 @@ namespace InternetGame
             Info.QueuedPackets = QueuedPackets;
             Info.NumQueuedPackets = 0;
 
+            if (PacketContainer == null)
+            {
+                PacketContainer = new GameObject("PacketContainer");
+                PacketContainer.transform.parent = this.transform;
+            }
+
+            if (LinkConnectionPoint == null)
+            {
+                LinkConnectionPoint = this.transform;
+            }
+
             this.info = new PortInfo(
                 this.transform.position,
                 this.transform.rotation
@@ -74,11 +87,8 @@ namespace InternetGame
         public virtual void InitializeAudio()
         {
             EnqueuedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            EnqueuedAudioSource.name = "EnqueuedPacket";
             PacketDroppedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            PacketDroppedAudioSource.name = "DroppedPacket";
             PacketWarningAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            PacketWarningAudioSource.name = "ExpiringPacket";
 
             if (PacketWarningClip == null)
             {
@@ -229,6 +239,11 @@ namespace InternetGame
 
         }
 
+        public virtual void OnPacketWarning(Packet p)
+        {
+
+        }
+
         public virtual void OnPacketHasExpired(Packet p)
         {
             PlayClip(PacketSourceSoundEffect.PacketDropped);
@@ -272,6 +287,9 @@ namespace InternetGame
         {
             Info.NumQueuedPackets++;
             Info.QueuedPackets = QueuedPackets;
+
+            // Subscribe to packet expiration warning events.
+            p.OnExpireWarning += OnPacketWarning;
 
             if (OnPacketEnqueued != null)
             {

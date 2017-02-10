@@ -29,8 +29,15 @@ namespace InternetGame
     {
         // Public state.
         public float SegmentAddInterval;
-        public float SegmentMinLength = 0.005f;
+        public float SegmentMinLength = 0.01f; // Meters
         public GameObject LinkSegmentPrefab;
+        public float SeedTransmissionProgress = 5.0f;
+        // Ends of link are unseverable because they are in close proximity to other links.
+        public float UnseverableSegmentThreshold = 0.4f; // Meters
+        public float InitialLinkLength = 0.3f; // Meters
+        public float TaperDelay = 0.2f;
+        public float TaperLength = .75f; // Meters
+        public float TaperedDiameter = 0.01f; // Meters
         public Transform Pointer;
 
         public delegate void SeverHandler(Link severed, SeverCause cause, float totalLength);
@@ -57,14 +64,11 @@ namespace InternetGame
         public bool Severed;
         public float TotalLength;
 
+        public bool AdjustedInitialSegments = false;
         public bool IsTransmittingPacket;
         public Packet Packet;
         public float TransmissionProgress;
         public LinkState State;
-
-        public float SeedTransmissionProgress = 5.0f;
-        // Ends of link are unseverable because they are in close proximity to other links.
-        public float UnseverableSegmentThreshold = 0.4f; // Meters
 
         // Private state.
         private GameObject linkSegmentContainer;
@@ -99,7 +103,7 @@ namespace InternetGame
             possibleDestinations = new List<PacketSink>();
 
             lastSegmentAddTime = Time.fixedTime;
-            lastSegmentEnd = pointer.position;
+            lastSegmentEnd = source.LinkConnectionPoint.position;
 
             source.OnLinkStarted(this);
             
@@ -178,38 +182,77 @@ namespace InternetGame
             }
             
         }
-             
+
+        public static Vector3 QuadraticLerp(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+        {
+            return Vector3.Lerp(Vector3.Lerp(p0, p1, t), Vector3.Lerp(p1, p2, t), t);
+        }
+
+        private void AdjustInitialLinkSegments(LinkSegment lastAdjustedSegment, int numSegmentsToAdjust)
+        {
+            AdjustedInitialSegments = true;
+
+            Vector3 start = Source.LinkConnectionPoint.position;
+            Vector3 center = Segments[Segments.Count / 2].transform.position;
+            Vector3 end = lastAdjustedSegment.To;
+
+            int adjustedSegments = 0;
+            foreach (LinkSegment segment in Segments)
+            {
+                Vector3 from = QuadraticLerp(start, center, end, (float) (adjustedSegments) / numSegmentsToAdjust);
+                Vector3 to = QuadraticLerp(start, center, end, (float) (adjustedSegments + 1.0f) / numSegmentsToAdjust);
+
+                segment.GraduallyMoveToBetween(from, to);
+
+                adjustedSegments++;
+
+                if (segment == lastAdjustedSegment)
+                {
+                    return;
+                }
+            }
+        }
+
+        private LinkSegment MakeSegmentBetween(Vector3 from, Vector3 to)
+        {
+            var segment = Instantiate(LinkSegmentPrefab);
+            float segmentLength = Vector3.Distance(from, to);
+
+            LinkSegment linkSegment;
+            linkSegment = segment.AddComponent<LinkSegment>();
+
+            float segmentThickness = segment.transform.localScale.x;
+            if (TotalLength < TaperLength)
+            {
+                // Make segment progressively thicker.
+                segmentThickness = Mathf.Lerp(TaperedDiameter, segmentThickness,
+                    (TotalLength - TaperDelay) / TaperLength);
+            }
+
+            linkSegment.SetBetween(from, to, segmentThickness, segmentLength);
+
+            linkSegment.ParentLink = this;
+
+            segment.transform.parent = linkSegmentContainer.transform;
+
+            linkSegment.Initialize();
+
+            return linkSegment;
+        }
+
         /// <summary>
         /// Adds a new segment to the current Link.
         /// </summary>
-        private void AddNewSegment()
+        private void AddNewSegment(Vector3 nextPosition)
         {
             // Time to add a new interval.
-            var currentPointerPos = Pointer.position;
-            var segmentLength = Vector3.Distance(lastSegmentEnd, currentPointerPos);
+            var segmentLength = Vector3.Distance(lastSegmentEnd, nextPosition);
 
             if (segmentLength >= SegmentMinLength)
             {
                 TotalLength += segmentLength;
 
-                var segment = Instantiate(LinkSegmentPrefab);
-
-                LinkSegment linkSegment;
-                linkSegment = segment.AddComponent<LinkSegment>();
-
-                // Make as long as the pointer has traveled.
-                segment.transform.localScale = new Vector3(segment.transform.localScale.x, segment.transform.localScale.y, segmentLength);
-
-                // Rotate the link to align with the gap between the two points.
-                segment.transform.rotation = Quaternion.LookRotation(currentPointerPos - lastSegmentEnd);
-
-                linkSegment.ParentLink = this;
-                linkSegment.Length = segmentLength;
-
-                segment.transform.parent = linkSegmentContainer.transform;
-                segment.transform.position = (lastSegmentEnd + currentPointerPos) / 2;
-
-                linkSegment.Initialize();
+                LinkSegment linkSegment = MakeSegmentBetween(lastSegmentEnd, nextPosition);
 
                 // Set initial color to be desaturated.
                 linkSegment.Desaturate(Packet.Destaturated);
@@ -217,7 +260,7 @@ namespace InternetGame
                 Segments.Add(linkSegment);
 
                 lastSegmentAddTime = Time.fixedTime;
-                lastSegmentEnd = currentPointerPos;
+                lastSegmentEnd = nextPosition;
 
                 // Notify handlers of progress.
                 if (OnConstructionProgress != null)
@@ -274,8 +317,7 @@ namespace InternetGame
                 if (t != null)
                 {
                     // End at a sink.
-                    Pointer = t.transform;
-                    AddNewSegment();
+                    AddNewSegment(t.transform.position);
 
                     State = LinkState.AwaitingPacket;
 
@@ -390,7 +432,12 @@ namespace InternetGame
                 case LinkState.UnderConstruction:
                     if (Time.fixedTime - lastSegmentAddTime >= SegmentAddInterval)
                     {
-                        AddNewSegment();
+                        AddNewSegment(Pointer.transform.position);
+                    }
+
+                    if (!AdjustedInitialSegments && TotalLength > InitialLinkLength)
+                    {
+                        AdjustInitialLinkSegments(Segments[Segments.Count - 1], Segments.Count);
                     }
                     break;
                 case LinkState.TransmittingPacket:

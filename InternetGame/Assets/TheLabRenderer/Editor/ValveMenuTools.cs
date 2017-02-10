@@ -6,6 +6,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.VersionControl;
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -400,9 +401,11 @@ public class ValveMenuTools
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------------
 	[UnityEditor.MenuItem( "Valve/Shader Dev/Convert All Materials Back to Unity Shaders", false, 101 )]
-	private static void ValveToStandard( bool bConvertAllMaterials )
+	private static void ValveToStandard( MenuCommand command )
 	{
-		int nNumMaterialsConverted = 0;
+	    bool bConvertAllMaterials = command.userData != 0;
+
+        int nNumMaterialsConverted = 0;
 		Debug.Log( "Begin Convert to Unity Shaders\n\n" + Time.realtimeSinceStartup );
 
 		Shader destShaderStandard = Shader.Find( "Standard" );
@@ -542,13 +545,17 @@ public class ValveMenuTools
 	[UnityEditor.MenuItem( "Valve/Shader Dev/Convert Active Materials Back to Unity Shaders", false, 51 )]
 	private static void ValveToStandardCurrent()
 	{
-		ValveToStandard( false );
+        var command = new MenuCommand(null, 0);
+
+		ValveToStandard( command );
 	}
 
 	[UnityEditor.MenuItem( "Valve/Shader Dev/Convert All Materials Back to Unity Shaders", false, 101 )]
 	private static void ValveToStandardAll()
 	{
-		ValveToStandard( true );
+        var command = new MenuCommand(null, 1);
+
+        ValveToStandard(command);
 	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------------

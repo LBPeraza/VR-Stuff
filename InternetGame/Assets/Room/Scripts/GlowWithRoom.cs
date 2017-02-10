@@ -39,6 +39,8 @@ namespace InternetGame
             SoundtrackMetadata metadata = SoundtrackUtility.GetMetadata(AudioSource.clip);
             Low = metadata.BeginLowBand;
             High = metadata.EndLowBand;
+            IntensityDropOff = metadata.IntensityDropoff;
+            IntensityThreshold = metadata.IntensityThreshold;
             MaxIntensity = metadata.MaxIntensity;
 
             frequencyData = new float[numSamples];

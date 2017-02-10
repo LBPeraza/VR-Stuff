@@ -45,8 +45,11 @@ namespace InternetGame
             int i = 0;
             foreach (var sink in Sinks)
             {
-                AddressToColor.Add(sink.Address, AddressColors[i]);
-                i++;
+                if (!AddressToColor.ContainsKey(sink.Address))
+                {
+                    AddressToColor.Add(sink.Address, AddressColors[i]);
+                    i++;
+                }
             }
         }
 

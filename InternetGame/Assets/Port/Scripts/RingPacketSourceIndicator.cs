@@ -18,8 +18,9 @@ namespace InternetGame
         public int NumPackets;
         public int NumInnerPacketsToExclude = 1; 
         public float InitialRingRadius = 0.25f;
-        public float RingRadiusIncrement = 0.05f;
+        public float RingRadiusIncrement = 0.1f;
         public float RingThickness = 0.015f;
+        public bool EnableEmission;
 
         public override void Initialize(PacketSource source)
         {
@@ -42,17 +43,6 @@ namespace InternetGame
 
             Rings = new List<Hexagon>();
             var ringRadius = InitialRingRadius;
-
-            //// Make NumRings Hexagons.
-            //for (int i = 0; i < NumRings; i ++)
-            //{
-            //    var ring = AddRing();
-
-            //    ring.Initialize(ringRadius, RingThickness);
-            //    Rings.Add(ring);
-
-            //    ringRadius += RingRadiusIncrement;
-            //}
         }
 
         private Hexagon AddRing()
@@ -61,6 +51,7 @@ namespace InternetGame
             ringGameObject.transform.parent = this.transform;
             var ring = ringGameObject.AddComponent<Hexagon>();
             ring.EnableFlashing = (NumInnerPacketsToExclude == 0);
+            ring.EnableEmission = EnableEmission;
 
             return ring;
         }
