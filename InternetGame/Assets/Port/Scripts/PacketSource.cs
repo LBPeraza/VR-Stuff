@@ -16,6 +16,7 @@ namespace InternetGame
 	{
 		public PortInfo info;
 
+        public GameObject PacketContainer;
         public List<Packet> QueuedPackets;
         public List<Link> ActiveLinks;
         public PacketSourceIndicator Indicator;
@@ -54,6 +55,12 @@ namespace InternetGame
             Info.QueuedPackets = QueuedPackets;
             Info.NumQueuedPackets = 0;
 
+            if (PacketContainer == null)
+            {
+                PacketContainer = new GameObject("PacketContainer");
+                PacketContainer.transform.parent = this.transform;
+            }
+
             if (LinkConnectionPoint == null)
             {
                 LinkConnectionPoint = this.transform;
@@ -80,11 +87,8 @@ namespace InternetGame
         public virtual void InitializeAudio()
         {
             EnqueuedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            EnqueuedAudioSource.name = "EnqueuedPacket";
             PacketDroppedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            PacketDroppedAudioSource.name = "DroppedPacket";
             PacketWarningAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            PacketWarningAudioSource.name = "ExpiringPacket";
 
             if (PacketWarningClip == null)
             {

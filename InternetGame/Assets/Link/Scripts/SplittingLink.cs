@@ -50,8 +50,15 @@ namespace InternetGame
                         burnColor = Packet.Color;
                     }
 
+
+                    // Since we are burning all at once, we need to set this
+                    // variable so that the link gets cleaned up even though the burning
+                    // is only going in one direction.
+                    leftSideFinishedBurning = true;
+
                     var burnAllAtOnce = BurnTag(0, true);
                     StartCoroutine(burnAllAtOnce);
+
                     break;
                 default:
                     segmentBurnDuration = (LinkBurnDuration / Segments.Count) / (1.0f - SegmentBurnOverlap);
@@ -101,6 +108,7 @@ namespace InternetGame
             segment.Numb();
 
             bool isEnd = isEndSegment(i, increasing);
+
             var dupMaterial = new Material(segment.Model.GetComponent<Renderer>().material);
             segment.Model.GetComponent<Renderer>().material = dupMaterial;
 
@@ -112,6 +120,7 @@ namespace InternetGame
 
             var burnTimeScalar = 1.0f / segmentBurnDuration;
             var tagThreshold = 1.0f - SegmentBurnOverlap;
+            // Whether this coroutine has tagged the next segment's.
             bool tagged = false;
 
             var burnTrail = Instantiate(BurnTrail, Segments[i].transform, false);
@@ -140,11 +149,11 @@ namespace InternetGame
                 if (!isEnd && !tagged && t > tagThreshold)
                 {
                     // Tag neighboring segment.
-                    if (increasing && i < Segments.Count - 1)
+                    if (increasing)
                     {
                         StartCoroutine(BurnTag(i + 1, true));
                     }
-                    else if (!increasing && i > 0)
+                    else if (!increasing)
                     {
                         StartCoroutine(BurnTag(i - 1, false));
                     }
@@ -158,22 +167,15 @@ namespace InternetGame
                 yield return null;
             }
 
-
-            var stopTrail = stopBurnTrail(segment, burnTrail.GetComponent<ParticleSystem>());
-            StartCoroutine(stopTrail);
+            // Stop the particle system, wait a second, then disable the link.
+            burnTrail.GetComponent<ParticleSystem>().Stop();
+            yield return new WaitUntil(() => burnTrailSystem.particleCount == 0);
+            segment.gameObject.SetActive(false);
 
             if (isEnd)
             {
-                yield return new WaitUntil(() => burnTrailSystem.particleCount == 0);
                 OnSegmentFinishedBuring(increasing);
             }
-        }
-
-        private IEnumerator stopBurnTrail(LinkSegment segment, ParticleSystem burnTrail)
-        {
-            burnTrail.Stop();
-            yield return new WaitForSeconds(1.0f);
-            segment.gameObject.SetActive(false);
         }
 
         #region Deprecated 
