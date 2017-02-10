@@ -33,7 +33,9 @@ namespace InternetGame
         public int ObjectId;
 
         public float DrawingLinkRumbleBaseLength = 0.01f;
-        public ushort DrawingLinkRumbleLength = 100;
+
+        public float DrawingLinkRumbleIntensity = 0.4f;
+        public float SeverLinkRumbleIntensity = 0.7f;
         public ushort SeverLinkRumbleLength = 3000;
         public ushort SeverLinkRumbleDecay = 300;
 
@@ -63,10 +65,15 @@ namespace InternetGame
 
             State = LinkControllerState.Inactive;
 
-            Cursor.Input.TriggerPressed += TriggerUp;
-            Cursor.Input.TriggerReleased += TriggerDown;
+            Cursor.OnControllerFound += InitializeInput;
 
             LoadAudioClips();
+        }
+
+        private void InitializeInput(VRTK.VRTK_ControllerEvents input)
+        {
+            input.TriggerPressed += TriggerDown;
+            input.TriggerReleased += TriggerUp;
         }
 
         private void LoadAudioClips()
@@ -120,7 +127,6 @@ namespace InternetGame
 
         public void TriggerDown(object sender, VRTK.ControllerInteractionEventArgs e)
         {
-            Debug.Log("Trigger down");
             if (CurrentLink == null 
                 && NearSource != null
                 && !Player.IsOutOfBandwidth()
@@ -134,8 +140,6 @@ namespace InternetGame
 
         public void TriggerUp(object sender, VRTK.ControllerInteractionEventArgs e)
         {
-            Debug.Log("Trigger up");
-
             if (CurrentLink != null && NearSink == null)
             {
                 // End the current link in the air.
@@ -303,10 +307,12 @@ namespace InternetGame
                     Cursor.OnExit(cursorEventArgs);
                     State = LinkControllerState.Inactive;
                 }
-                
+
                 // Trigger haptic feedback proportional to the deltaLength as we draw the link.
-                InputManager.RumbleController(IsRightHand, 
-                    (ushort) (DrawingLinkRumbleLength * (deltaLength / DrawingLinkRumbleBaseLength)));
+                if (Cursor.ControllerActions != null)
+                {
+                    Cursor.ControllerActions.TriggerHapticPulse(DrawingLinkRumbleIntensity);
+                }
             }
         }
 
@@ -315,7 +321,11 @@ namespace InternetGame
             ushort intensity = startIntensity;
             while (intensity > 0)
             {
-                InputManager.RumbleController(IsRightHand, intensity);
+                if (Cursor.ControllerActions != null)
+                {
+                    Cursor.ControllerActions.TriggerHapticPulse(SeverLinkRumbleIntensity);
+                }
+
                 if (decay > intensity)
                 {
                     intensity = 0;

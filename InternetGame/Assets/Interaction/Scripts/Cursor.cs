@@ -34,6 +34,9 @@ namespace InternetGame
         public GameObject ScissorsModel;
 
         public VRTK.VRTK_ControllerEvents Input;
+        public VRTK.VRTK_ControllerActions ControllerActions;
+        public delegate void OnControllerFoundHandler(VRTK.VRTK_ControllerEvents input);
+        public event OnControllerFoundHandler OnControllerFound;
 
         public static CursorEventArgs DefaultCursorEventArgs;
 
@@ -51,6 +54,12 @@ namespace InternetGame
             if (Controller != null)
             {
                 Input = Controller.GetComponent<VRTK.VRTK_ControllerEvents>();
+                ControllerActions = Controller.GetComponent<VRTK.VRTK_ControllerActions>();
+
+                if (OnControllerFound != null)
+                {
+                    OnControllerFound.Invoke(Input);
+                }
             }
         }
 
@@ -60,8 +69,6 @@ namespace InternetGame
 
             Player = p;
             IsRightHand = isRightHand;
-
-            TryFindController();
 
             if (HasLinkController)
             {
@@ -75,6 +82,8 @@ namespace InternetGame
 
                 linkController.Initialize(Player, IsRightHand);
             }
+
+            TryFindController();
 
             UpdateState(CursorState.Inactive);
         }

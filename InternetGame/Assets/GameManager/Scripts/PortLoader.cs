@@ -84,9 +84,16 @@ namespace InternetGame {
 		}
 
 		void ClearChildren(GameObject holder) {
+            List<GameObject> toDelete = new List<GameObject>();
+
 			foreach (Transform child in holder.transform) {
-				GameObject.Destroy (child.gameObject);
+                toDelete.Add(child.gameObject);
 			}
+
+            foreach (GameObject obj in toDelete)
+            {
+                DestroyImmediate (obj);
+            }
 		}
 
 		void ClearPorts() {
