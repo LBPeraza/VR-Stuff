@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,16 @@ namespace InternetGame
     {
         VirusStrikes
     }
+
+	[Serializable]
+	public class SinkInfo : PortInfo {
+		public string address;
+
+		public SinkInfo (Vector3 location, Quaternion orientation, string address)
+			: base(location, orientation) {
+			this.address = address;
+		}
+	}
 
     public class PacketSink : MonoBehaviour
 	{
@@ -88,11 +99,12 @@ namespace InternetGame
             ActiveLink = null;
         }
 
-		public PortInfo portInfo {
+		public SinkInfo portInfo {
 			get {
-				return new PortInfo (
+				return new SinkInfo (
 					transform.position,
-					transform.rotation);
+					transform.rotation,
+					Address);
 			}
 		}
     }

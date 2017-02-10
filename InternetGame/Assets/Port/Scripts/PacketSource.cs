@@ -12,6 +12,13 @@ namespace InternetGame
         PacketEnqueued
     }
 
+	[Serializable]
+	public class SourceInfo : PortInfo {
+		public SourceInfo (Vector3 location, Quaternion orientation)
+			: base (location, orientation) {
+		}
+	}
+
     public class PacketSource : MonoBehaviour
 	{
         public GameObject PacketContainer;
@@ -39,7 +46,7 @@ namespace InternetGame
         public AudioClip PacketDroppedClip;
 		public AudioClip PacketEnqueuedClip;
 
-		private PortInfo info;
+		private SourceInfo info;
 
         public bool HasUnfinishedLink()
         {
@@ -297,9 +304,9 @@ namespace InternetGame
             p.OnDeckAtPort(this);
         }
 
-		public PortInfo portInfo {
+		public SourceInfo portInfo {
 			get {
-				return new PortInfo (
+				return new SourceInfo (
 					transform.position,
 					transform.rotation);
 			}
