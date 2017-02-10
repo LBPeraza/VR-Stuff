@@ -30,6 +30,7 @@ namespace InternetGame
         public static List<PacketSource> AllPacketSources;
         public static List<PacketSink> AllPacketSinks;
 
+        public SceneLoader SceneLoader;
         public PacketSpawner PacketSpawner;
         public Player Player;
         public InputManager InputManager;
@@ -63,6 +64,12 @@ namespace InternetGame
         public void Initialize()
         {
             LoadLevelData();
+
+            if (SceneLoader == null)
+            {
+                SceneLoader = gameObject.AddComponent<SceneLoader>();
+                SceneLoader.Initialize();
+            }
 
             // Try to find Sinks and Sources gameobject in scene, if not already set.
             if (PacketSinks == null)
@@ -125,7 +132,7 @@ namespace InternetGame
 
             if (PacketSpawner != null)
             {
-                PacketSpawner.Initialize();
+                PacketSpawner.Initialize(this);
             }
 
             ResetScore(Score);

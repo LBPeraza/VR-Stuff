@@ -236,7 +236,6 @@ namespace InternetGame
         {
             var mat = Backlight.GetComponent<Renderer>().material;
             mat.color = c;
-            mat.SetColor("_EmissionColor", c);
 			Particles.StartParticles (c);
         }
 

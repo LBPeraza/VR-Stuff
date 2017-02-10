@@ -21,13 +21,19 @@ namespace InternetGame
         public Material WallMaterial;
         public Material AccentMaterial;
 
+        public bool EnableAccents;
+
         private float WallWidth = 0.1f;
         private bool Dirty = false;
 
         public void Initialize(AudioSource backgroundMusic)
         {
             BuildRoom();
-            BuildAccents();
+
+            if (EnableAccents)
+            {
+                BuildAccents();
+            }
 
             if (RoomGlow == null)
             {
@@ -46,7 +52,11 @@ namespace InternetGame
             if (!Application.isPlaying && Dirty)
             {
                 BuildRoom();
-                BuildAccents();
+
+                if (EnableAccents)
+                {
+                    BuildAccents();
+                }
 
                 Dirty = false;
             }
