@@ -21,6 +21,7 @@ namespace InternetGame
         public int Capacity = 5;
         public PacketSourceInfo Info;
         public Transform LinkConnectionPoint;
+        public Connector Connector;
 
         public delegate void OnPacketEnqueuedHandler(Packet p);
         public event OnPacketEnqueuedHandler OnPacketEnqueued;

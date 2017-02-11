@@ -93,6 +93,12 @@ namespace InternetGame
 
             Pointer = pointer;
 
+            //if (source.Connector)
+            //{
+            //    Connector = source.Connector;
+            //    Connector.Follow(Pointer);
+            //}
+
             StartTime = Time.fixedTime;
             Finished = false;
             FinishedTime = null;
@@ -282,6 +288,9 @@ namespace InternetGame
 
             UndoAlertPacketSinksOfPacket();
 
+            //// Make the connector stay at the end of the link.
+            //Connector.transform.parent = Segments[Segments.Count - 1].transform;
+
             if (cause == SeverCause.Player)
             {
                 if (Packet is Virus)
@@ -319,6 +328,12 @@ namespace InternetGame
                     // End at a sink.
                     AddNewSegment(t.transform.position);
 
+                    //if (Connector != null)
+                    //{
+                    //    // "Plug" the connector in.
+                    //    Connector.Follow(t.transform);
+                    //}
+
                     State = LinkState.AwaitingPacket;
 
                     Sink = t;
@@ -334,6 +349,12 @@ namespace InternetGame
                 {
                     // End somewhere other than a sink.
                     State = LinkState.EarlyTerminated;
+
+                    //if (Connector != null)
+                    //{
+                    //    // Make the connector stay at the end of the link.
+                    //    Connector.Follow(Segments[Segments.Count - 1].transform);
+                    //}
                     
                     GameManager.ReportPacketDropped(Packet);
                     Packet.OnDropped(PacketDroppedCause.EarlyTermination);

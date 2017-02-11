@@ -21,7 +21,6 @@ namespace InternetGame
 
     public class LinkController : MonoBehaviour
     {
-        public bool IsRightHand;
         public Player Player;
         public Cursor Cursor;
         public AudioSource AudioSource;
@@ -41,26 +40,38 @@ namespace InternetGame
 
         public LinkControllerState State;
 
+        private static GameObject linkControllerContainer;
+        private static LinkController linkController;
+
         private GameObject CurrentLink;
         private GameObject LastLink;
 
-        private PacketSource NearSource;
         private PacketSink NearSink;
 
         private CursorEventArgs cursorEventArgs;
 
+        public static LinkController GetInstance()
+        {
+            if (linkController == null)
+            {
+                var linkControllerContainer = new GameObject("[LinkController]");
+                linkController = linkControllerContainer.AddComponent<LinkController>(); 
+            }
+
+            return linkController;
+        }
+
         // Use this for initialization
-        public void Initialize(Player p, bool isRightHand)
+        public void Initialize(Player p)
         {
             Player = p;
-            IsRightHand = isRightHand;
 
             ObjectId = GetInstanceID();
             cursorEventArgs.senderId = ObjectId;
 
             if (Cursor == null)
             {
-                Cursor = GetComponent<Cursor>();
+                Cursor = p.LinkCursor;
             }
 
             State = LinkControllerState.Inactive;
@@ -80,12 +91,12 @@ namespace InternetGame
         {
             if (AudioSource == null)
             {
-                AudioSource = transform.GetComponentInChildren<AudioSource>();
+                AudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
             }
 
             if (AuxillaryAudioSource == null)
             {
-                AuxillaryAudioSource = this.gameObject.AddComponent<AudioSource>();
+                AuxillaryAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
             }
 
             if (LinkConnected == null)
@@ -109,33 +120,33 @@ namespace InternetGame
             }
         }
 
-        private void AddLink()
+        public void StartLink(PacketSource source, Transform linkPointer)
         {
-            GameObject LinkContainer = LinkFactory.CreateLink(NearSource);
-            var linkSegment = LinkContainer.GetComponent<Link>();
-            linkSegment.Initialize(NearSource, this.transform);
+            Debug.Log("Starting link!");
+            if (CurrentLink == null
+                && !Player.IsOutOfBandwidth()
+                && source.QueuedPackets.Count > 0)
+            {
+                PlayClip(LinkSoundEffect.LinkDrawing);
 
-            // Listen for sever events.
-            linkSegment.OnSever += LinkSegment_OnSever;
-            linkSegment.OnConstructionProgress += LinkSegment_OnConstructionProgress;
+                GameObject LinkContainer = LinkFactory.CreateLink(source);
+                var linkSegment = LinkContainer.GetComponent<Link>();
+                linkSegment.Initialize(source, linkPointer);
 
-            CurrentLink = LinkContainer;
+                // Listen for sever events.
+                linkSegment.OnSever += LinkSegment_OnSever;
+                linkSegment.OnConstructionProgress += LinkSegment_OnConstructionProgress;
 
-            State = LinkControllerState.DrawingLink;
-            Cursor.OnGrab(cursorEventArgs);
+                CurrentLink = LinkContainer;
+
+                State = LinkControllerState.DrawingLink;
+                Cursor.OnGrab(cursorEventArgs);
+            }
         }
 
         public void TriggerDown(object sender, VRTK.ControllerInteractionEventArgs e)
         {
-            if (CurrentLink == null 
-                && NearSource != null
-                && !Player.IsOutOfBandwidth()
-                && NearSource.QueuedPackets.Count > 0)
-            {
-                PlayClip(LinkSoundEffect.LinkDrawing);
-
-                AddLink();
-            }
+            
         }
 
         public void TriggerUp(object sender, VRTK.ControllerInteractionEventArgs e)
@@ -218,16 +229,6 @@ namespace InternetGame
         {
             if (CurrentLink == null && other.CompareTag("Source"))
             {
-                // In close proximity of packet source.
-                if (other.GetComponent<PacketSource>() != null)
-                {
-                    NearSource = other.GetComponent<PacketSource>();
-                }
-                else if (other.transform.parent.GetComponent<PacketSource>())
-                {
-                    NearSource = other.transform.parent.GetComponent<PacketSource>();
-                }
-
                 State = LinkControllerState.OverSource;
                 Cursor.OnEnter(cursorEventArgs);
             }
@@ -258,8 +259,6 @@ namespace InternetGame
         {
             if (other.CompareTag("Source"))
             {
-                NearSource = null;
-
                 if (State == LinkControllerState.OverSource)
                 {
                     State = LinkControllerState.Inactive;

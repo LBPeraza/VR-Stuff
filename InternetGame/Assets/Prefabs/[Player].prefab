@@ -183,7 +183,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4647948230783702}
   - component: {fileID: 54975848380208958}
-  - component: {fileID: 114383464114860704}
   - component: {fileID: 114070368894269156}
   m_Layer: 0
   m_Name: LeftCursor
@@ -461,7 +460,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4693672771261018}
   - component: {fileID: 54731648796233696}
-  - component: {fileID: 114974002580017648}
   - component: {fileID: 114782466052773708}
   m_Layer: 0
   m_Name: RightCursor
@@ -1508,15 +1506,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48abf03f89671c34dab13d3086d3600c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  follow: {fileID: 0}
+  Controller: {fileID: 0}
   Player: {fileID: 114570033374993850}
-  HasLinkController: 1
   IsRightHand: 0
+  ControllerInitialized: 0
   State: 0
   ArrowModel: {fileID: 1642448416217840}
   HandModel: {fileID: 1631033504670002}
   GrabModel: {fileID: 1074783131655412}
   ScissorsModel: {fileID: 1689011187545918}
+  Input: {fileID: 0}
+  ControllerActions: {fileID: 0}
 --- !u!114 &114094265726238752
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1579,32 +1579,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &114383464114860704
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1293317143392268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61a6b4a18f0428b46ab55086ccb47dd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsRightHand: 0
-  Player: {fileID: 114570033374993850}
-  Cursor: {fileID: 0}
-  AudioSource: {fileID: 82465060003776714}
-  AuxillaryAudioSource: {fileID: 0}
-  LinkSevered: {fileID: 0}
-  LinkDrawing: {fileID: 0}
-  LinkConnected: {fileID: 0}
-  LinkDepleted: {fileID: 0}
-  ObjectId: 0
-  DrawingLinkRumbleBaseLength: 0.01
-  DrawingLinkRumbleLength: 100
-  SeverLinkRumbleLength: 3000
-  SeverLinkRumbleDecay: 300
-  State: 0
 --- !u!114 &114570033374993850
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1618,6 +1592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LeftCursor: {fileID: 114070368894269156}
   RightCursor: {fileID: 114782466052773708}
+  LinkCursor: {fileID: 0}
   TotalBandwidth: 0
   MaxBandwidth: 20
   PlayerUI: {fileID: 114583458384281308}
@@ -1644,15 +1619,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48abf03f89671c34dab13d3086d3600c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  follow: {fileID: 0}
+  Controller: {fileID: 0}
   Player: {fileID: 114570033374993850}
-  HasLinkController: 1
   IsRightHand: 0
+  ControllerInitialized: 0
   State: 0
   ArrowModel: {fileID: 1600110283262378}
   HandModel: {fileID: 1045383783629942}
   GrabModel: {fileID: 1470664098391236}
   ScissorsModel: {fileID: 1505248289368614}
+  Input: {fileID: 0}
+  ControllerActions: {fileID: 0}
 --- !u!114 &114911525270741024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1680,32 +1657,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114974002580017648
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1819414952758234}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61a6b4a18f0428b46ab55086ccb47dd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsRightHand: 0
-  Player: {fileID: 114570033374993850}
-  Cursor: {fileID: 0}
-  AudioSource: {fileID: 82142470065031200}
-  AuxillaryAudioSource: {fileID: 0}
-  LinkSevered: {fileID: 0}
-  LinkDrawing: {fileID: 0}
-  LinkConnected: {fileID: 0}
-  LinkDepleted: {fileID: 0}
-  ObjectId: 0
-  DrawingLinkRumbleBaseLength: 0.01
-  DrawingLinkRumbleLength: 100
-  SeverLinkRumbleLength: 3000
-  SeverLinkRumbleDecay: 300
-  State: 0
 --- !u!114 &114985454195885394
 MonoBehaviour:
   m_ObjectHideFlags: 1

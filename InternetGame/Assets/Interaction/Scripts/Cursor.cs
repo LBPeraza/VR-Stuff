@@ -23,8 +23,8 @@ namespace InternetGame
         public GameObject Controller;
         public Player Player;
 
-        public bool HasLinkController;
         public bool IsRightHand;
+        public bool ControllerInitialized;
 
         public CursorState State;
 
@@ -56,9 +56,14 @@ namespace InternetGame
                 Input = Controller.GetComponent<VRTK.VRTK_ControllerEvents>();
                 ControllerActions = Controller.GetComponent<VRTK.VRTK_ControllerActions>();
 
-                if (OnControllerFound != null)
+                if (Input != null && ControllerActions != null)
                 {
-                    OnControllerFound.Invoke(Input);
+                    ControllerInitialized = true;
+
+                    if (OnControllerFound != null)
+                    {
+                        OnControllerFound.Invoke(Input);
+                    }
                 }
             }
         }
@@ -69,19 +74,6 @@ namespace InternetGame
 
             Player = p;
             IsRightHand = isRightHand;
-
-            if (HasLinkController)
-            {
-                // Try to find LinkController script, and create one if necessary.
-                var linkController = GetComponent<LinkController>();
-                if (linkController == null)
-                {
-                    linkController = new LinkController();
-                    linkController.transform.parent = this.transform.parent;
-                }
-
-                linkController.Initialize(Player, IsRightHand);
-            }
 
             TryFindController();
 
@@ -198,13 +190,15 @@ namespace InternetGame
         // Update is called once per frame
         void Update()
         {
+            if (!ControllerInitialized)
+            {
+                TryFindController();
+            }
+
             if (Controller != null)
             {
                 this.transform.position = Controller.transform.position;
                 this.transform.rotation = Controller.transform.rotation;
-            } else
-            {
-                TryFindController();
             }
         }
     }

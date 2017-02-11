@@ -15,8 +15,12 @@ namespace InternetGame
         public GameObject Backlight;
         public GameObject Shutter;
         public float DoorOpenRate;
+        public bool EnableConnector = true;
 
 		public DoorPacketSourceParticles Particles;
+
+        public Transform ConnectorHidden;
+        public Transform ConnectorExposed;
 
         public Color BacklightOffColor = Color.black;
 
@@ -51,9 +55,20 @@ namespace InternetGame
 			Particles.Initialize ();
         }
 
+        private void InstantiateConnector()
+        {
+            Connector = ConnectorFactory.CreateDefaultConnector(this, transform);
+            Connector.transform.localPosition = ConnectorHidden.localPosition;
+        }
+
         public override void Initialize()
         {
             base.Initialize();
+
+            if (EnableConnector)
+            {
+                InstantiateConnector();
+            }
 
             currentDoorSetting = 100.0f; // Completely closed.
             SetApertureClose(currentDoorSetting);
@@ -120,6 +135,16 @@ namespace InternetGame
             }
         }
 
+        public override void OnLinkStarted(Link l)
+        {
+            base.OnLinkStarted(l);
+
+            if (EnableConnector)
+            {
+                InstantiateConnector();
+            }
+        }
+
         protected override void OnTransmissionStarted(Link l, Packet p)
         {
             base.OnTransmissionStarted(l, p);
@@ -140,8 +165,7 @@ namespace InternetGame
             {
                 // Don't open if the player is drawing a link.
                 Cursor cursor = other.transform.parent.GetComponent<Cursor>();
-                bool cursorIsDrawingLink = cursor.HasLinkController
-                    && cursor.GetComponent<LinkController>().State == LinkControllerState.DrawingLink;
+                bool cursorIsDrawingLink = LinkController.GetInstance().State == LinkControllerState.DrawingLink;
                 if (!cursorIsDrawingLink && !IsOpen)
                 {
                     StartOpenDoor();
@@ -255,6 +279,14 @@ namespace InternetGame
             meshRenderer.SetBlendShapeWeight(0, currentDoorSetting);
         }
 
+        private void SetConnectorHidden(float percentHidden)
+        {
+            Connector.transform.localPosition = Vector3.Lerp(
+                ConnectorExposed.localPosition,
+                ConnectorHidden.localPosition,
+                percentHidden / 100.0f);
+        }
+
         private void StartOpenDoor()
         {
             if (doorAnimation != null)
@@ -273,6 +305,10 @@ namespace InternetGame
             {
                 currentDoorSetting -= DoorOpenRate;
 
+                if (EnableConnector)
+                {
+                    SetConnectorHidden(currentDoorSetting);
+                }
                 SetApertureClose(currentDoorSetting);
 
                 yield return null;
@@ -297,6 +333,10 @@ namespace InternetGame
             {
                 currentDoorSetting += DoorOpenRate;
 
+                if (EnableConnector)
+                {
+                    SetConnectorHidden(currentDoorSetting);
+                }
                 SetApertureClose(currentDoorSetting);
 
                 yield return null;

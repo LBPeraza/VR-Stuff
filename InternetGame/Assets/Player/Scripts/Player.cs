@@ -14,6 +14,7 @@ namespace InternetGame
     {
         public Cursor LeftCursor;
         public Cursor RightCursor;
+        public Cursor LinkCursor;
 
         public float TotalBandwidth;
         public float MaxBandwidth;
@@ -33,12 +34,16 @@ namespace InternetGame
             if (LeftCursor != null)
             {
                 LeftCursor.Initialize(this, false /* is right hand */);
+                LinkCursor = LeftCursor;
             }
 
             if (RightCursor != null)
             {
                 RightCursor.Initialize(this, true /* is right hand */);
+                LinkCursor = RightCursor;
             }
+
+            LinkController.GetInstance().Initialize(this);
         }
 
         public void Update()
