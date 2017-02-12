@@ -83,6 +83,7 @@ namespace VRTK
             {
                 return list.Find(obj);
             }
+
             return false;
         }
 

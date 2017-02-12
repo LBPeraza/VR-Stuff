@@ -25,8 +25,24 @@ namespace InternetGame
 
             Debug.Log("Connector is grabbed!");
             SetHeld();
-
+            
             LinkController.GetInstance().StartLink(Source, LinkPointer);
+        }
+
+        public override void OnInteractableObjectUngrabbed(InteractableObjectEventArgs e)
+        {
+            base.OnInteractableObjectUngrabbed(e);
+
+            if (snappedInSnapDropZone)
+            {
+                var sink = storedSnapDropZone.transform.parent.GetComponent<PacketSink>();
+                LinkController.GetInstance().EndLink(sink);
+            }
+            else
+            {
+                LinkController.GetInstance().EndLink();
+            }
+            Debug.Log("Connector is ungrabbed");
         }
 
         public void SetHeld()
@@ -37,7 +53,7 @@ namespace InternetGame
 
         public void Follow(Transform t)
         {
-            transform.parent = t;
+            //transform.parent = t;
         }
     }
 }

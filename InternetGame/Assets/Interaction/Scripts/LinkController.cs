@@ -144,6 +144,55 @@ namespace InternetGame
             }
         }
 
+        public void EndLink(PacketSink sink = null)
+        {
+            if (sink == null)
+            {
+                // End the current link in the air.
+                var currentLinkComponent = CurrentLink.GetComponent<Link>();
+
+                if (currentLinkComponent != null)
+                {
+                    currentLinkComponent.End();
+
+                    if (currentLinkComponent.Segments.Count > 0)
+                    {
+                        var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
+                        currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Link Controller: 'current link component' is null on a trigger up event.");
+                }
+
+                State = LinkControllerState.Inactive;
+                Cursor.OnExit(cursorEventArgs);
+
+                StopClips();
+
+                DestroyLink();
+            }
+            else
+            {
+                // End the current link at the sink.
+                var currentLinkComponent = CurrentLink.GetComponent<Link>();
+
+                // Only finish the link if the destination matches the packet from the source.
+                if (currentLinkComponent.Packet.Destination == sink.Address)
+                {
+                    PlayClip(LinkSoundEffect.LinkCompleted);
+
+                    currentLinkComponent.End(sink);
+
+                    DestroyLink();
+
+                    State = LinkControllerState.Inactive;
+                    Cursor.OnExit(cursorEventArgs);
+                }
+            }
+        }
+
         public void TriggerDown(object sender, VRTK.ControllerInteractionEventArgs e)
         {
             

@@ -110,6 +110,7 @@ namespace VRTK
 
         public virtual void OnObjectEnteredSnapDropZone(SnapDropZoneEventArgs e)
         {
+            Debug.Log("Object entered snap zone!");
             if (ObjectEnteredSnapDropZone != null)
             {
                 ObjectEnteredSnapDropZone(this, e);
@@ -241,6 +242,7 @@ namespace VRTK
             //if there is no current valid snappable object and the zone isn't being snapped then attempt to highlight
             if (!isSnapped && currentValidSnapObject == null)
             {
+                Debug.Log("on trigger enter");
                 ToggleHighlight(collider, true);
             }
         }
@@ -259,6 +261,7 @@ namespace VRTK
             //Do sanity check to see if there should be a snappable object
             if (!isSnapped && currentValidSnapObject == null && ValidSnapObject(collider.gameObject, true))
             {
+                //Debug.Log("on trigger stay");
                 currentValidSnapObject = collider.gameObject;
             }
 
@@ -271,6 +274,8 @@ namespace VRTK
                     ToggleHighlight(collider, true);
                 }
 
+                //Debug.Log("snapping object!");
+
                 //Attempt to snap the object
                 SnapObject(collider);
             }
@@ -279,7 +284,13 @@ namespace VRTK
         private VRTK_InteractableObject ValidSnapObject(GameObject checkObject, bool grabState)
         {
             var ioCheck = checkObject.GetComponentInParent<VRTK_InteractableObject>();
-            return (ioCheck && ioCheck.IsGrabbed() == grabState && !VRTK_PolicyList.Check(checkObject, validObjectListPolicy) ? ioCheck : null);
+            //if (ioCheck)
+            //{
+            //    Debug.Log("io check is null? " + ioCheck == null + " io is grabbed? " + (ioCheck.IsGrabbed() == grabState) + " policy check? " + !VRTK_PolicyList.Check(checkObject, validObjectListPolicy));
+            //}
+            var toRet = (ioCheck && ioCheck.IsGrabbed() == grabState && !VRTK_PolicyList.Check(checkObject, validObjectListPolicy) ? ioCheck : null);
+            //Debug.Log("valid snap object is null? " + (toRet == null));
+            return toRet;
         }
 
         private string ObjectPath(string name)
@@ -386,13 +397,19 @@ namespace VRTK
 
         private void SnapObject(Collider collider)
         {
+            Debug.Log("Snapping object");
             var ioCheck = ValidSnapObject(collider.gameObject, false);
+            Debug.Log("IO is valid? " + (ioCheck != null).ToString());
+            Debug.Log("will Snap " + willSnap.ToString());
+            Debug.Log("isSnapped? " + isSnapped.ToString());
             //If the item is in a snappable position and this drop zone isn't snapped and the collider is a valid interactable object
             if (willSnap && !isSnapped && ioCheck)
             {
+                Debug.Log("item is in snappable position and drop zone isnt snapped and IO is valid");
                 //Only snap it to the drop zone if it's not already in a drop zone
                 if (!ioCheck.IsInSnapDropZone())
                 {
+                    Debug.Log("IO is in snap zone");
                     //Turn off the drop zone highlighter
                     highlightObject.SetActive(false);
 
@@ -405,9 +422,14 @@ namespace VRTK
                     isSnapped = true;
                     currentSnappedObject = ioCheck.gameObject;
 
+                    Debug.Log("Starting snap transition");
                     transitionInPlace = StartCoroutine(UpdateTransformDimensions(ioCheck, highlightContainer, newLocalScale, snapDuration));
 
                     ioCheck.ToggleSnapDropZone(this, true);
+                }
+                else
+                {
+                    Debug.Log("IO is not in snap zone");
                 }
             }
 
@@ -535,6 +557,8 @@ namespace VRTK
             var ioCheck = ValidSnapObject(collider.gameObject, true);
             if (highlightObject && ioCheck)
             {
+                Debug.Log("Controller is in snap zone");
+
                 //Turn on the highlighter
                 highlightObject.SetActive(state);
                 ioCheck.SetSnapDropZoneHover(state);
