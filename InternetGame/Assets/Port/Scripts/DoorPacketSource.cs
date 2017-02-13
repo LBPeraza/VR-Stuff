@@ -65,11 +65,6 @@ namespace InternetGame
         {
             base.Initialize();
 
-            if (EnableConnector)
-            {
-                InstantiateConnector();
-            }
-
             currentDoorSetting = 100.0f; // Completely closed.
             SetApertureClose(currentDoorSetting);
 
@@ -92,7 +87,16 @@ namespace InternetGame
             {
                 if (EnableConnector)
                 {
-                    InstantiateConnector();
+                    if (Connector == null)
+                    {
+                        // Create a new connector.
+                        InstantiateConnector();
+                    }
+                    else
+                    {
+                        // Update the color of the connector.
+                        Connector.SetColor(Peek().Color);
+                    }
                 }
 
                 SetBacklight(p.Color);
@@ -113,7 +117,7 @@ namespace InternetGame
             if (IsEmpty())
             {
                 DisableBacklight();
-            } 
+            }
             SetFlashing(false);
         }
 
@@ -176,7 +180,7 @@ namespace InternetGame
                 // Don't open if the player is drawing a link.
                 Cursor cursor = other.transform.parent.GetComponent<Cursor>();
                 bool cursorIsDrawingLink = LinkController.GetInstance().State == LinkControllerState.DrawingLink;
-                if (!cursorIsDrawingLink && !IsOpen)
+                if (!cursorIsDrawingLink && !IsOpen && !IsEmpty())
                 {
                     StartOpenDoor();
 

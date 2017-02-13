@@ -22,11 +22,29 @@ namespace InternetGame
         {
             IsAtSource = true;
             Source = source;
+
+            if (!source.IsEmpty())
+            {
+                SetColor(source.Peek().Color);
+            }
+        }
+
+        public void SetColor(Color c)
+        {
+            Transform cover = ConnectorModel.transform.FindChild("Cover");
+            if (cover != null)
+            {
+                cover.GetComponent<Renderer>().material.color = c;
+            }
+            else
+            {
+                Debug.LogWarning("Could not set color of connector " +
+                    "because could not find 'Cover' object.");
+            }
         }
 
         public virtual void Fade()
         {
-            Debug.Log("Fading connector");
             StartCoroutine(GraduallyFade());
         }
 
@@ -83,13 +101,7 @@ namespace InternetGame
         public virtual void OnSnappedToPort(PacketSink sink)
         {
             // Don't let the user pick the connector back up.
-            Debug.Log("Connector is snapped to port");
             this.isGrabbable = false;
-        }
-
-        public void Follow(Transform t)
-        {
-            //transform.parent = t;
         }
     }
 }

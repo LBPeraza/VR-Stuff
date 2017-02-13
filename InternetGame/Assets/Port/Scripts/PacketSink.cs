@@ -38,7 +38,6 @@ namespace InternetGame
 
         private void ConnectorSnappedToDropZone(object sender, SnapDropZoneEventArgs e)
         {
-            Debug.Log("Ending link from sink");
             LinkController.GetInstance().EndLink(this);
         }
 
@@ -99,11 +98,9 @@ namespace InternetGame
         {
             ActiveLink = null;
 
-            Debug.Log("Link severed!");
             var dropZone = severedLink.Connector.GetStoredSnapDropZone();
             if (dropZone != null)
             {
-                Debug.Log("Connector is unsnapped from port");
                 // Free up the port.
                 dropZone.ForceUnsnap();
             }
