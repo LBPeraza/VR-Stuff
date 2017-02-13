@@ -90,6 +90,11 @@ namespace InternetGame
 
             if (!HasUnfinishedLink())
             {
+                if (EnableConnector)
+                {
+                    InstantiateConnector();
+                }
+
                 SetBacklight(p.Color);
             }
         }
@@ -127,6 +132,10 @@ namespace InternetGame
                 // start flashing the next packet's color.
                 if (!HasUnfinishedLink() && !IsEmpty())
                 {
+                    if (EnableConnector)
+                    {
+                        InstantiateConnector();
+                    }
                     SetBacklight(Peek().Color);
                 } else
                 {
@@ -139,10 +148,7 @@ namespace InternetGame
         {
             base.OnLinkStarted(l);
 
-            if (EnableConnector)
-            {
-                InstantiateConnector();
-            }
+            Connector = null;
         }
 
         protected override void OnTransmissionStarted(Link l, Packet p)
@@ -155,7 +161,11 @@ namespace InternetGame
             }
             else
             {
-               SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
+                if (EnableConnector)
+                {
+                    InstantiateConnector();
+                }
+                SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
             }
         }
 
@@ -305,7 +315,7 @@ namespace InternetGame
             {
                 currentDoorSetting -= DoorOpenRate;
 
-                if (EnableConnector)
+                if (EnableConnector && Connector != null)
                 {
                     SetConnectorHidden(currentDoorSetting);
                 }
@@ -333,7 +343,7 @@ namespace InternetGame
             {
                 currentDoorSetting += DoorOpenRate;
 
-                if (EnableConnector)
+                if (EnableConnector && Connector != null)
                 {
                     SetConnectorHidden(currentDoorSetting);
                 }

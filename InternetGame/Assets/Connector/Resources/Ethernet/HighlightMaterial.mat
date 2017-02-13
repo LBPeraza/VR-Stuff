@@ -6,14 +6,12 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: EthernetBody
+  m_Name: HighlightMaterial
   m_Shader: {fileID: 4800000, guid: 908b379d4818cd64184b95a21123d909, type: 3}
-  m_ShaderKeywords: S_SPECULAR_BLINNPHONG _ALPHABLEND_ON
+  m_ShaderKeywords: S_SPECULAR_BLINNPHONG _EMISSION
   m_LightmapFlags: 5
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    OriginalShader: Standard
-    RenderType: Transparent
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:
@@ -94,11 +92,14 @@ Material:
         name: _Cutoff
       second: 0.5
     - first:
+        name: _Darken
+      second: 0.469
+    - first:
         name: _DetailNormalMapScale
       second: 1
     - first:
         name: _DstBlend
-      second: 10
+      second: 0
     - first:
         name: _FogMultiplier
       second: 1
@@ -107,7 +108,7 @@ Material:
       second: 1
     - first:
         name: _Glossiness
-      second: 0.241
+      second: 0.5
     - first:
         name: _GlossyReflections
       second: 1
@@ -116,7 +117,7 @@ Material:
       second: 0
     - first:
         name: _Mode
-      second: 2
+      second: 0
     - first:
         name: _OcclusionStrength
       second: 1
@@ -136,6 +137,9 @@ Material:
         name: _Parallax
       second: 0.02
     - first:
+        name: _SeeThru
+      second: 1
+    - first:
         name: _SmoothnessTextureChannel
       second: 0
     - first:
@@ -146,13 +150,16 @@ Material:
       second: 1
     - first:
         name: _SrcBlend
-      second: 5
+      second: 1
+    - first:
+        name: _Thickness
+      second: 1
     - first:
         name: _UVSec
       second: 0
     - first:
         name: _ZWrite
-      second: 0
+      second: 1
     - first:
         name: g_bReceiveShadows
       second: 0
@@ -169,27 +176,39 @@ Material:
         name: g_flCubeMapScalar
       second: 1
     - first:
+        name: g_flOutlineWidth
+      second: 0.0075
+    - first:
         name: g_flReflectanceBias
       second: 0
     - first:
         name: g_flReflectanceMax
-      second: 0.465
+      second: 1
     - first:
         name: g_flReflectanceMin
       second: 0
     - first:
         name: g_flReflectanceScale
-      second: 0.465
+      second: 1
     m_Colors:
     - first:
         name: _Color
-      second: {r: 0.85294116, g: 0.85294116, b: 0.85294116, a: 0.678}
+      second: {r: 0.33823532, g: 1, b: 0.3427992, a: 0.428}
     - first:
         name: _EmissionColor
-      second: {r: 0, g: 0, b: 0, a: 1}
+      second: {r: -0.16176468, g: 0.5, b: -0.15720081, a: 0.428}
+    - first:
+        name: _OutlineColor
+      second: {r: 0.9448277, g: 1, b: 0, a: 1}
     - first:
         name: _SpecColor
-      second: {r: 1, g: 1, b: 1, a: 1}
+      second: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - first:
+        name: _TintColor
+      second: {r: 0.6838235, g: 0.2866025, b: 0.2866025, a: 1}
+    - first:
+        name: g_vOutlineColor
+      second: {r: 0, g: 0.7647059, b: 0.29006088, a: 1}
     - first:
         name: g_vWorldAlignedNormalTangentU
       second: {r: -1, g: 0, b: 0, a: 0}

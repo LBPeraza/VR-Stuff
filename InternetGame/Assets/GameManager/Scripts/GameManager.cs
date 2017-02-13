@@ -59,7 +59,7 @@ namespace InternetGame
         {
             // TODO
 			LevelParameters.LevelName = "default_level";
-            LevelParameters.NumDroppedPacketsAllowed = 5;
+            LevelParameters.NumDroppedPacketsAllowed = 10000;
             LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
         }
 
@@ -99,11 +99,6 @@ namespace InternetGame
             if (PacketSinks != null)
             {
                 AllPacketSinks = new List<PacketSink>(PacketSinks.GetComponentsInChildren<PacketSink>());
-
-                foreach (PacketSink sink in AllPacketSinks)
-                {
-                    // sink.Initialize();
-                }
             }
         }
 
@@ -140,6 +135,11 @@ namespace InternetGame
             if (PacketSpawner != null)
             {
                 PacketSpawner.Initialize(this);
+            }
+
+            foreach (PacketSink sink in AllPacketSinks)
+            {
+                sink.Initialize();
             }
 
             ResetScore(Score);

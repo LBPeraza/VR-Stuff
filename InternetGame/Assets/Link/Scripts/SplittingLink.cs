@@ -50,7 +50,6 @@ namespace InternetGame
                         burnColor = Packet.Color;
                     }
 
-
                     // Since we are burning all at once, we need to set this
                     // variable so that the link gets cleaned up even though the burning
                     // is only going in one direction.
@@ -72,7 +71,15 @@ namespace InternetGame
 
                     if (rightIndex < Segments.Count)
                     {
+                        // Only start the increasing burn animation if the severed segment isn't the end.
                         StartCoroutine(burnRight);
+                    }
+                    else
+                    {
+                        // Make sure that if we didn't start the increasing burn animation that we set
+                        // the variables we otherwise would have.
+                        rightSideFinishedBurning = true;
+                        Connector.Fade();
                     }
                     StartCoroutine(burnLeft);
                     break;
@@ -157,6 +164,13 @@ namespace InternetGame
                     {
                         StartCoroutine(BurnTag(i - 1, false));
                     }
+
+                    tagged = true;
+                }
+                else if (isEnd && increasing && !tagged)
+                {
+                    // The last segment should burn the connector too.
+                    Connector.Fade();
 
                     tagged = true;
                 }

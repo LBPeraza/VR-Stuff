@@ -27,6 +27,7 @@ namespace InternetGame
         public bool ControllerInitialized;
 
         public CursorState State;
+        public Stack<CursorState> States;
 
         public GameObject ArrowModel;
         public GameObject HandModel;
@@ -72,6 +73,8 @@ namespace InternetGame
         {
             DefaultCursorEventArgs.preventCursorModelChange = false;
 
+            States = new Stack<CursorState>();
+
             Player = p;
             IsRightHand = isRightHand;
 
@@ -86,6 +89,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
+                    States.Push(State);
                     UpdateState(CursorState.CutHover);
                 }
 
@@ -99,7 +103,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
-                    UpdateState(CursorState.Inactive);
+                    UpdateState(States.Pop());
                 }
 
                 trackedInteractionId = null;
@@ -112,6 +116,7 @@ namespace InternetGame
             { 
                 if (!args.preventCursorModelChange)
                 {
+                    States.Push(State);
                     UpdateState(CursorState.Hovering);
                 }
 
@@ -125,6 +130,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
+                    States.Push(State);
                     UpdateState(CursorState.Grabbing);
                 }
             }
@@ -136,7 +142,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
-                    UpdateState(CursorState.Hovering);
+                    UpdateState(States.Pop());
                 }
             }
         }
@@ -147,7 +153,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
-                    UpdateState(CursorState.Inactive);
+                    UpdateState(States.Pop());
                 }
 
                 trackedInteractionId = null;
@@ -156,6 +162,7 @@ namespace InternetGame
 
         private void UpdateState(CursorState newState)
         {
+            Debug.Log("Switching state to: " + newState.ToString());
             switch (newState)
             {
                 case CursorState.Inactive:

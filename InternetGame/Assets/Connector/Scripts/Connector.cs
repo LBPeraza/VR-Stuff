@@ -14,41 +14,77 @@ namespace InternetGame
         public GameObject ConnectorModel;
         public PacketSource Source;
 
+        public float FadeRate = .5f; // Alpha per second
+
+        public bool IsAtSource;
+
         public void Initialize(PacketSource source)
         {
+            IsAtSource = true;
             Source = source;
+        }
+
+        public virtual void Fade()
+        {
+            Debug.Log("Fading connector");
+            StartCoroutine(GraduallyFade());
+        }
+
+        private IEnumerator GraduallyFade()
+        {
+            float t = 0.0f;
+            while (t < (1.0f / FadeRate))
+            {
+                foreach (Transform model in ConnectorModel.transform)
+                {
+                    Material mat = model.GetComponent<Renderer>().material;
+                    Color originalColor = mat.color;
+                    Color nextColor = new Color(
+                        originalColor.r,
+                        originalColor.g,
+                        originalColor.b,
+                        originalColor.a - (FadeRate * Time.deltaTime));
+
+                    model.GetComponent<Renderer>().material.color = nextColor;
+                }
+
+                t += Time.deltaTime;
+
+                yield return null;
+            }
+
+            Destroy(gameObject);
         }
 
         public override void OnInteractableObjectGrabbed(InteractableObjectEventArgs e)
         {
             base.OnInteractableObjectGrabbed(e);
 
-            Debug.Log("Connector is grabbed!");
-            SetHeld();
-            
-            LinkController.GetInstance().StartLink(Source, LinkPointer);
+            if (IsAtSource)
+            {
+                LinkController.GetInstance().StartLink(Source, this);
+
+                IsAtSource = false;
+            }
         }
 
         public override void OnInteractableObjectUngrabbed(InteractableObjectEventArgs e)
         {
             base.OnInteractableObjectUngrabbed(e);
 
-            if (snappedInSnapDropZone)
+            if (LinkController.GetInstance().State == LinkControllerState.DrawingLink 
+                    && !hoveredOverSnapDropZone)
             {
-                var sink = storedSnapDropZone.transform.parent.GetComponent<PacketSink>();
-                LinkController.GetInstance().EndLink(sink);
-            }
-            else
-            {
+                // End link in the air.
                 LinkController.GetInstance().EndLink();
             }
-            Debug.Log("Connector is ungrabbed");
         }
 
-        public void SetHeld()
+        public virtual void OnSnappedToPort(PacketSink sink)
         {
-            Debug.Log("Setting held position");
-            ConnectorModel.transform.rotation = HeldPosition.rotation;
+            // Don't let the user pick the connector back up.
+            Debug.Log("Connector is snapped to port");
+            this.isGrabbable = false;
         }
 
         public void Follow(Transform t)

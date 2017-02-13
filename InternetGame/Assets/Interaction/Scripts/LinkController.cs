@@ -83,8 +83,6 @@ namespace InternetGame
 
         private void InitializeInput(VRTK.VRTK_ControllerEvents input)
         {
-            input.TriggerPressed += TriggerDown;
-            input.TriggerReleased += TriggerUp;
         }
 
         private void LoadAudioClips()
@@ -120,9 +118,8 @@ namespace InternetGame
             }
         }
 
-        public void StartLink(PacketSource source, Transform linkPointer)
+        public void StartLink(PacketSource source, Connector connector)
         {
-            Debug.Log("Starting link!");
             if (CurrentLink == null
                 && !Player.IsOutOfBandwidth()
                 && source.QueuedPackets.Count > 0)
@@ -130,8 +127,10 @@ namespace InternetGame
                 PlayClip(LinkSoundEffect.LinkDrawing);
 
                 GameObject LinkContainer = LinkFactory.CreateLink(source);
+                connector.transform.SetParent(LinkContainer.transform);
+
                 var linkSegment = LinkContainer.GetComponent<Link>();
-                linkSegment.Initialize(source, linkPointer);
+                linkSegment.Initialize(source, connector);
 
                 // Listen for sever events.
                 linkSegment.OnSever += LinkSegment_OnSever;
@@ -146,87 +145,59 @@ namespace InternetGame
 
         public void EndLink(PacketSink sink = null)
         {
-            if (sink == null)
+            if (CurrentLink != null)
             {
-                // End the current link in the air.
-                var currentLinkComponent = CurrentLink.GetComponent<Link>();
-
-                if (currentLinkComponent != null)
+                if (sink == null)
                 {
-                    currentLinkComponent.End();
+                    // End the current link in the air.
+                    var currentLinkComponent = CurrentLink.GetComponent<Link>();
 
-                    if (currentLinkComponent.Segments.Count > 0)
+                    if (currentLinkComponent != null)
                     {
-                        var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
-                        currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
+                        currentLinkComponent.End();
+
+                        if (currentLinkComponent.Segments.Count > 0)
+                        {
+                            var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
+                            currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
+                        }
                     }
-                }
-                else
-                {
-                    Debug.LogError("Link Controller: 'current link component' is null on a trigger up event.");
-                }
-
-                State = LinkControllerState.Inactive;
-                Cursor.OnExit(cursorEventArgs);
-
-                StopClips();
-
-                DestroyLink();
-            }
-            else
-            {
-                // End the current link at the sink.
-                var currentLinkComponent = CurrentLink.GetComponent<Link>();
-
-                // Only finish the link if the destination matches the packet from the source.
-                if (currentLinkComponent.Packet.Destination == sink.Address)
-                {
-                    PlayClip(LinkSoundEffect.LinkCompleted);
-
-                    currentLinkComponent.End(sink);
-
-                    DestroyLink();
+                    else
+                    {
+                        Debug.LogError("Link Controller: 'current link component' is null on a trigger up event.");
+                    }
 
                     State = LinkControllerState.Inactive;
                     Cursor.OnExit(cursorEventArgs);
-                }
-            }
-        }
 
-        public void TriggerDown(object sender, VRTK.ControllerInteractionEventArgs e)
-        {
-            
-        }
+                    StopClips();
 
-        public void TriggerUp(object sender, VRTK.ControllerInteractionEventArgs e)
-        {
-            if (CurrentLink != null && NearSink == null)
-            {
-                // End the current link in the air.
-                var currentLinkComponent = CurrentLink.GetComponent<Link>();
-
-                if (currentLinkComponent != null)
-                {
-                    currentLinkComponent.End();
-
-                    if (currentLinkComponent.Segments.Count > 0)
-                    {
-                        var lastSegment = currentLinkComponent.Segments[currentLinkComponent.Segments.Count - 1];
-                        currentLinkComponent.Sever(SeverCause.UnfinishedLink, lastSegment);
-                    }
+                    DestroyLink();
                 }
                 else
                 {
-                    Debug.LogError("Link Controller: 'current link component' is null on a trigger up event.");
+                    // End the current link at the sink.
+                    var currentLinkComponent = CurrentLink.GetComponent<Link>();
+
+                    // Only finish the link if the destination matches the packet from the source.
+                    if (currentLinkComponent.Packet.Destination == sink.Address)
+                    {
+                        PlayClip(LinkSoundEffect.LinkCompleted);
+
+                        currentLinkComponent.End(sink);
+
+                        DestroyLink();
+
+                        State = LinkControllerState.Inactive;
+                        Cursor.OnExit(cursorEventArgs);
+                    }
                 }
-
-                State = LinkControllerState.Inactive;
-                Cursor.OnExit(cursorEventArgs);
-
-                StopClips();
-
-                DestroyLink();
             }
+            else
+            {
+                Debug.LogWarning("LinkController cannot end a link when one is not started.");
+            }
+            
         }
 
         public void StopClips()
@@ -272,52 +243,6 @@ namespace InternetGame
                 source.Play();
             }
             
-        }
-
-        public void OnTriggerEnter(Collider other)
-        {
-            if (CurrentLink == null && other.CompareTag("Source"))
-            {
-                State = LinkControllerState.OverSource;
-                Cursor.OnEnter(cursorEventArgs);
-            }
-            else if (CurrentLink != null && other.CompareTag("Sink"))
-            {
-                // In close proximity of packet sink.
-                NearSink = other.GetComponent<PacketSink>();
-
-                // End the current link at the sink.
-                var currentLinkComponent = CurrentLink.GetComponent<Link>();
-
-                // Only finish the link if the destination matches the packet from the source.
-                if (currentLinkComponent.Packet.Destination == NearSink.Address)
-                {
-                    PlayClip(LinkSoundEffect.LinkCompleted);
-
-                    currentLinkComponent.End(NearSink);
-
-                    DestroyLink();
-
-                    State = LinkControllerState.Inactive;
-                    Cursor.OnExit(cursorEventArgs);
-                }
-            }
-        }
-
-        public void OnTriggerExit(Collider other)
-        {
-            if (other.CompareTag("Source"))
-            {
-                if (State == LinkControllerState.OverSource)
-                {
-                    State = LinkControllerState.Inactive;
-                    Cursor.OnExit(cursorEventArgs);
-                }
-            }
-            else if (other.CompareTag("Sink"))
-            {
-                NearSink = null;
-            }
         }
 
         private void LinkSegment_OnSever(Link severed, SeverCause cause, float totalLength)

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using VRTK;
+
 namespace InternetGame
 {
     public enum PacketSinkSoundEffect
@@ -17,18 +19,27 @@ namespace InternetGame
         public AudioSource VirusStrikesAudioSource;
 		public AudioClip VirusStrikesAudioClip;
 
-		private PortInfo info;
+        public List<VRTK_SnapDropZone> DropZones;
 
-        private void Start()
-        {
-            // TODO: call Initialize from PortSpawner or similar.
-            Initialize();
-        }
+		private PortInfo info;
 
         public virtual void Initialize()
         {
-
             InitializeAudio();
+
+            DropZones = new List<VRTK_SnapDropZone>(
+                GetComponentsInChildren<VRTK_SnapDropZone>());
+            // Subscribe to all of the drop zone "on snap" events.
+            foreach (VRTK_SnapDropZone dropZone in DropZones)
+            {
+                dropZone.ObjectSnappedToDropZone += ConnectorSnappedToDropZone;
+            }
+        }
+
+        private void ConnectorSnappedToDropZone(object sender, SnapDropZoneEventArgs e)
+        {
+            Debug.Log("Ending link from sink");
+            LinkController.GetInstance().EndLink(this);
         }
 
         private void InitializeAudio()
@@ -72,20 +83,30 @@ namespace InternetGame
 
         public virtual void OnLinkEstablished(Link l, PacketSource s)
         {
+            l.OnTransmissionStarted += OnTransmissionStarted;
+            l.OnSever += OnLinkSevered;
+
+            // Inform the connector that it has been snapped into a port.
+            l.Connector.OnSnappedToPort(this);
         }
 
-        public virtual void OnTransmissionStarted(Link l)
+        public virtual void OnTransmissionStarted(Link l, Packet p)
         {
-            // Listen for sever events.
-            l.OnSever += (Link severed, SeverCause cause, float totalLength) =>
-            {
-                OnTransmissionSevered(cause, l);
-            };
+          
         }
 
-        protected virtual void OnTransmissionSevered(SeverCause cause, Link severedLink)
+        protected virtual void OnLinkSevered(Link severedLink, SeverCause cause, float totalLength)
         {
             ActiveLink = null;
+
+            Debug.Log("Link severed!");
+            var dropZone = severedLink.Connector.GetStoredSnapDropZone();
+            if (dropZone != null)
+            {
+                Debug.Log("Connector is unsnapped from port");
+                // Free up the port.
+                dropZone.ForceUnsnap();
+            }
         }
 
 		public PortInfo portInfo {
