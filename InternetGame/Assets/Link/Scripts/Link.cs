@@ -320,8 +320,6 @@ namespace InternetGame
                 if (t != null)
                 {
                     // End at a sink.
-                    AddNewSegment(t.transform.position);
-
                     State = LinkState.AwaitingPacket;
 
                     Sink = t;

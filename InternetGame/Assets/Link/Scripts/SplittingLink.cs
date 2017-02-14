@@ -79,7 +79,10 @@ namespace InternetGame
                         // Make sure that if we didn't start the increasing burn animation that we set
                         // the variables we otherwise would have.
                         rightSideFinishedBurning = true;
-                        Connector.Fade();
+                        if (Connector != null)
+                        {
+                            Connector.Fade();
+                        }
                     }
                     StartCoroutine(burnLeft);
                     break;
@@ -169,8 +172,11 @@ namespace InternetGame
                 }
                 else if (isEnd && increasing && !tagged)
                 {
-                    // The last segment should burn the connector too.
-                    Connector.Fade();
+                    if (Connector != null)
+                    {
+                        // The last segment should burn the connector too.
+                        Connector.Fade();
+                    }
 
                     tagged = true;
                 }

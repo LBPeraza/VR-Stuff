@@ -118,7 +118,7 @@ namespace InternetGame
             }
         }
 
-        public void StartLink(PacketSource source, Connector connector)
+        public Link StartLink(PacketSource source, Connector connector)
         {
             if (CurrentLink == null
                 && !Player.IsOutOfBandwidth()
@@ -140,7 +140,11 @@ namespace InternetGame
 
                 State = LinkControllerState.DrawingLink;
                 Cursor.OnGrab(cursorEventArgs);
+
+                return linkSegment;
             }
+
+            return null;
         }
 
         public void EndLink(PacketSink sink = null)

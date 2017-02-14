@@ -9,12 +9,12 @@ namespace InternetGame {
 
 	[Serializable]
 	class Ports {
-		public List<PortInfo> sinks;
-		public List<PortInfo> sources;
+		public List<SinkInfo> sinks;
+		public List<SourceInfo> sources;
 
 		public Ports() {
-			sinks = new List<PortInfo> ();
-			sources = new List<PortInfo> ();
+			sinks = new List<SinkInfo> ();
+			sources = new List<SourceInfo> ();
 		}
 	}
 
@@ -29,8 +29,8 @@ namespace InternetGame {
 		public GameObject SourceHolder;
 		public GameObject SinkHolder;
 
-		public GameObject SourcePrefab;
-		public GameObject SinkPrefab;
+		public PacketSource SourcePrefab;
+		public PacketSink SinkPrefab;
 
 		public void Initialize(LevelParameters levelParams) {
 			if (SourceHolder == null) {
@@ -41,10 +41,10 @@ namespace InternetGame {
 			}
 
 			if (SourcePrefab == null) {
-				SourcePrefab = Resources.Load<GameObject> ("Source");
+				SourcePrefab = Resources.Load<PacketSource> ("Source");
 			}
 			if (SinkPrefab == null) {
-				SinkPrefab = Resources.Load<GameObject> ("Sink");
+				SinkPrefab = Resources.Load<PacketSink> ("Sink");
 			}
 
 			if (SaveOnRun)
@@ -73,7 +73,7 @@ namespace InternetGame {
 				toSave.sinks.Add (sink.portInfo);
 			}
 
-			string json = JsonUtility.ToJson (toSave, true);
+			string json = JsonUtility.ToJson (toSave);
 			using (FileStream fs = new FileStream (
 									   "Assets/Levels/PortMaps/" + levelName + ".json",
 						 			   FileMode.Create)) {
@@ -112,24 +112,25 @@ namespace InternetGame {
 				}
 			}
 			Ports toLoad = JsonUtility.FromJson<Ports> (json);
-			foreach (PortInfo info in toLoad.sources) {
+			foreach (SourceInfo info in toLoad.sources) {
 				LoadSource (info);
 			}
-			foreach (PortInfo info in toLoad.sinks) {
+			foreach (SinkInfo info in toLoad.sinks) {
 				LoadSink (info);
 			}
 		}
 
-		void LoadSource(PortInfo info) {
-			GameObject src = Instantiate<GameObject> (SourcePrefab, SourceHolder.transform);
+		void LoadSource(SourceInfo info) {
+			PacketSource src = Instantiate<PacketSource> (SourcePrefab, SourceHolder.transform);
 			src.transform.localPosition = info.location;
 			src.transform.localRotation = info.orientation;
 		}
 
-		void LoadSink(PortInfo info) {
-			GameObject sink = Instantiate<GameObject> (SinkPrefab, SinkHolder.transform);
+		void LoadSink(SinkInfo info) {
+			PacketSink sink = Instantiate<PacketSink> (SinkPrefab, SinkHolder.transform);
 			sink.transform.localPosition = info.location;
 			sink.transform.localRotation = info.orientation;
+			sink.Address = info.address;
 		}
 	}
 }

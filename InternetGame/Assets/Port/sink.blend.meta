@@ -1,33 +1,24 @@
 fileFormatVersion: 2
-guid: 7c7f5217bb66dfb4496ae389dd551d9c
-timeCreated: 1486166135
+guid: 04c95bf5f48fb7649b70b2a26c7a09d3
+timeCreated: 1486766456
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: Backing
-    100002: Empty
-    100004: Hex
-    100006: Shutter
-    100008: //RootNode
-    400000: Backing
-    400002: Empty
-    400004: Hex
-    400006: Shutter
-    400008: //RootNode
-    2300000: Backing
-    2300002: Empty
-    2300004: Hex
-    3300000: Backing
-    3300002: Empty
-    3300004: Hex
-    4300000: Backing
-    4300002: Empty
-    4300004: Shutter
-    4300006: Hex
+    100000: Cube
+    100002: Plane
+    100004: //RootNode
+    400000: Cube
+    400002: Plane
+    400004: //RootNode
+    2300000: Cube
+    2300002: Plane
+    3300000: Cube
+    3300002: Plane
+    4300000: Cube
+    4300002: Plane
     7400000: Default Take
     9500000: //RootNode
-    13700000: Shutter
   materials:
     importMaterials: 1
     materialName: 0

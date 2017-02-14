@@ -13,6 +13,7 @@ namespace InternetGame
         public Transform LinkPointer;
         public GameObject ConnectorModel;
         public PacketSource Source;
+        public Link Link;
 
         public float FadeRate = .5f; // Alpha per second
 
@@ -78,12 +79,21 @@ namespace InternetGame
         {
             base.OnInteractableObjectGrabbed(e);
 
-            if (IsAtSource)
+            if (IsAtSource && !Source.IsEmpty())
             {
-                LinkController.GetInstance().StartLink(Source, this);
+                Link = LinkController.GetInstance().StartLink(Source, this);
+                Link.OnSever += OnLinkSever;
 
                 IsAtSource = false;
+
+                // Prevent collisions with the cursor hitboxes.
+                gameObject.layer = LayerMask.NameToLayer("Connector");
             }
+        }
+
+        private void OnLinkSever(Link severed, SeverCause cause, float totalLength)
+        {
+            SetGrabbable(false);
         }
 
         public override void OnInteractableObjectUngrabbed(InteractableObjectEventArgs e)
@@ -94,14 +104,19 @@ namespace InternetGame
                     && !hoveredOverSnapDropZone)
             {
                 // End link in the air.
+                Debug.Log("Ungrabbed -- ending in the air. Time: " + Time.time);
                 LinkController.GetInstance().EndLink();
             }
         }
 
+        public void SetGrabbable(bool grabbable)
+        {
+            this.isGrabbable = grabbable;
+        }
+
         public virtual void OnSnappedToPort(PacketSink sink)
         {
-            // Don't let the user pick the connector back up.
-            this.isGrabbable = false;
+            SetGrabbable(false);
         }
     }
 }

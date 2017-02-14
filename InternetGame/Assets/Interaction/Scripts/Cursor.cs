@@ -162,7 +162,6 @@ namespace InternetGame
 
         private void UpdateState(CursorState newState)
         {
-            Debug.Log("Switching state to: " + newState.ToString());
             switch (newState)
             {
                 case CursorState.Inactive:

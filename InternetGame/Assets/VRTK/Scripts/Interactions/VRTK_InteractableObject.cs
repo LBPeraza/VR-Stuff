@@ -559,7 +559,6 @@ namespace VRTK
         /// <param name="state">The state of whether the interactable object is fixed in or removed from the Snap Drop Zone. True denotes the interactable object is fixed to the Snap Drop Zone and false denotes it has been removed from the Snap Drop Zone.</param>
         public void ToggleSnapDropZone(VRTK_SnapDropZone snapDropZone, bool state)
         {
-            Debug.Log("Toggling snap drop zone: " + state);
             snappedInSnapDropZone = state;
             if (state)
             {
