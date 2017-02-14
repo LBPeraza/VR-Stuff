@@ -19,7 +19,7 @@ namespace InternetGame
             this.Size = 1000;
             this.Damage = 10.0f;
 
-            Saturated = new Material(Resources.Load<Material>("EmailIndicator"));
+            Saturated = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
             Destaturated = new Material(Saturated);
 
             SetSaturatedColor(Color);

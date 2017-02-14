@@ -41,10 +41,10 @@ namespace InternetGame {
 			}
 
 			if (SourcePrefab == null) {
-				SourcePrefab = Resources.Load<PacketSource> ("Source");
+				SourcePrefab = Resources.Load<PacketSource> ("Prefabs/Source");
 			}
 			if (SinkPrefab == null) {
-				SinkPrefab = Resources.Load<PacketSink> ("Sink");
+				SinkPrefab = Resources.Load<PacketSink> ("Prefabs/Sink");
 			}
 
 			if (SaveOnRun)

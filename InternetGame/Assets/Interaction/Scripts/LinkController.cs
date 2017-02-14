@@ -31,12 +31,14 @@ namespace InternetGame
         public AudioClip LinkDepleted;
         public int ObjectId;
 
-        public float DrawingLinkRumbleBaseLength = 0.01f;
-
-        public float DrawingLinkRumbleIntensity = 0.4f;
-        public float SeverLinkRumbleIntensity = 0.7f;
-        public ushort SeverLinkRumbleLength = 3000;
-        public ushort SeverLinkRumbleDecay = 300;
+        [Header("Rumble Settings")]
+        public float DrawingLinkRumbleIntensity = 0.1f;
+        public float SeverLinkRumbleIntensity = 0.8f;
+        public ushort SeverLinkRumbleLength = 150;
+        public ushort SeverLinkRumbleInterval = 10;
+        public float EndLinkRumbleBaseIntensity = 0.3f;
+        public ushort EndLinkRumbleLength = 150;
+        public ushort EndLinkRubmleInterval = 30;
 
         public LinkControllerState State;
 
@@ -99,22 +101,22 @@ namespace InternetGame
 
             if (LinkConnected == null)
             {
-                LinkConnected = Resources.Load<AudioClip>("link_connect");
+                LinkConnected = Resources.Load<AudioClip>("Audio/link_connect");
             }
 
             if (LinkDepleted == null)
             {
-                LinkDepleted = Resources.Load<AudioClip>("link_depleted");
+                LinkDepleted = Resources.Load<AudioClip>("Audio/link_depleted");
             }
 
             if (LinkSevered == null)
             {
-                LinkSevered = Resources.Load<AudioClip>("link_sever");
+                LinkSevered = Resources.Load<AudioClip>("Audio/link_sever");
             }
 
             if (LinkDrawing == null)
             {
-                LinkDrawing = Resources.Load<AudioClip>("link_drawing");
+                LinkDrawing = Resources.Load<AudioClip>("Audio/link_drawing");
             }
         }
 
@@ -147,15 +149,23 @@ namespace InternetGame
             return null;
         }
 
+        public void OnConnectorSnapping(Connector c)
+        {
+            StartCoroutine(RumbleWithDecay(
+                EndLinkRumbleLength,
+                EndLinkRubmleInterval,
+                EndLinkRumbleBaseIntensity));
+        }
+
         public void EndLink(PacketSink sink = null)
         {
             if (CurrentLink != null)
             {
+                // End the current link in the air.
+                var currentLinkComponent = CurrentLink.GetComponent<Link>();
+
                 if (sink == null)
                 {
-                    // End the current link in the air.
-                    var currentLinkComponent = CurrentLink.GetComponent<Link>();
-
                     if (currentLinkComponent != null)
                     {
                         currentLinkComponent.End();
@@ -180,9 +190,6 @@ namespace InternetGame
                 }
                 else
                 {
-                    // End the current link at the sink.
-                    var currentLinkComponent = CurrentLink.GetComponent<Link>();
-
                     // Only finish the link if the destination matches the packet from the source.
                     if (currentLinkComponent.Packet.Destination == sink.Address)
                     {
@@ -262,7 +269,10 @@ namespace InternetGame
                 PlayClip(LinkSoundEffect.LinkSevered);
 
                 // Rumble controller on sever.
-                StartCoroutine(RumbleWithDecay(SeverLinkRumbleLength, SeverLinkRumbleDecay));
+                StartCoroutine(RumbleWithDecay(
+                    SeverLinkRumbleLength, 
+                    SeverLinkRumbleInterval, 
+                    SeverLinkRumbleIntensity));
             }
 
             // Restore the bandwidth that this link was using.
@@ -293,26 +303,19 @@ namespace InternetGame
             }
         }
 
-        private IEnumerator RumbleWithDecay(ushort startIntensity, ushort decay)
+        private IEnumerator RumbleWithDecay(ushort duration, ushort interval, float intensity)
         {
-            ushort intensity = startIntensity;
-            while (intensity > 0)
+            ushort length = 0;
+            float intervalInSeconds = (float)(interval) / 1000.0f;
+            while (length < duration)
             {
                 if (Cursor.ControllerActions != null)
                 {
-                    Cursor.ControllerActions.TriggerHapticPulse(SeverLinkRumbleIntensity);
+                    Cursor.ControllerActions.TriggerHapticPulse(intensity);
                 }
 
-                if (decay > intensity)
-                {
-                    intensity = 0;
-                }
-                else
-                {
-                    intensity -= decay;
-                }
-
-                yield return null;
+                length += interval;
+                yield return new WaitForSeconds(intervalInSeconds);
             }
         }
 

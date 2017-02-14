@@ -162,15 +162,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53554ee22e8573f4ba97085519a2f740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info:
-    id: 0
-    location: {x: 0, y: 0, z: 0}
-    orientation: {x: 0, y: 0, z: 0, w: 0}
+  PacketContainer: {fileID: 0}
   QueuedPackets: []
   ActiveLinks: []
   Indicator: {fileID: 0}
   Capacity: 5
-  AudioSource: {fileID: 0}
+  LinkConnectionPoint: {fileID: 0}
+  Connector: {fileID: 0}
+  EnqueuedAudioSource: {fileID: 0}
+  PacketDroppedAudioSource: {fileID: 0}
+  PacketWarningAudioSource: {fileID: 0}
   PacketWarningClip: {fileID: 0}
   PacketDroppedClip: {fileID: 0}
   PacketEnqueuedClip: {fileID: 0}

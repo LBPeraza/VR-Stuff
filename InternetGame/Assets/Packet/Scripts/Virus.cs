@@ -24,7 +24,7 @@ namespace InternetGame
         {
             AudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
 
-            VirusAlertClip = Resources.Load<AudioClip>("virus_warning");
+            VirusAlertClip = Resources.Load<AudioClip>("Audio/virus_warning");
         }
 
         public override void OnTransmissionStarted(Link l, Packet p)

@@ -49,8 +49,8 @@ namespace InternetGame
 
             DoorSounds = AudioMix.AddAudioSourceTo(this.gameObject);
 
-            DoorOpenedSoundEffect = Resources.Load<AudioClip>("door_opened");
-            DoorClosedSoundEffect = Resources.Load<AudioClip>("door_closed");
+            DoorOpenedSoundEffect = Resources.Load<AudioClip>("Audio/door_opened");
+            DoorClosedSoundEffect = Resources.Load<AudioClip>("Audio/door_closed");
 
 			Particles.Initialize ();
         }

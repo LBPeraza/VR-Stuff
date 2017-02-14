@@ -28,11 +28,11 @@ namespace InternetGame
 
             if (NeutralMaterial == null)
             {
-                NeutralMaterial = Resources.Load<Material>("PacketSourceIndicatorNeutralMaterial");
+                NeutralMaterial = Resources.Load<Material>("Materials/PacketSourceIndicatorNeutralMaterial");
             }
             if (ActiveMaterial == null)
             {
-                ActiveMaterial = Resources.Load<Material>("PacketSourceIndicatorActiveMaterial");
+                ActiveMaterial = Resources.Load<Material>("Materials/PacketSourceIndicatorActiveMaterial");
             }
 
             NeutralMaterialCopy = new Material(NeutralMaterial);

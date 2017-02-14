@@ -44,7 +44,7 @@ namespace InternetGame
             NeutralMaterial = new Material(neutralMaterial);
             ActiveMaterial = new Material(activeMaterial);
 
-            HexagonSidePrefab = Resources.Load<GameObject>("HexagonSide");
+            HexagonSidePrefab = Resources.Load<GameObject>("Prefabs/HexagonSide");
 
             RightUpper = Instantiate(HexagonSidePrefab, this.transform, false);
             RightLower = Instantiate(HexagonSidePrefab, this.transform, false);

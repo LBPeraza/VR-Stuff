@@ -10,7 +10,7 @@ namespace InternetGame
         public override void Initialize()
         {
             base.Initialize();
-            Saturated = new Material(Resources.Load<Material>("EmailIndicator"));
+            Saturated = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
             Destaturated = new Material(Saturated);
 
             SetSaturatedColor(Color);

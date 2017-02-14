@@ -61,7 +61,7 @@ namespace InternetGame
         private void InitializeAudio()
         {
             VirusStrikesAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            VirusStrikesAudioClip = Resources.Load<AudioClip>("virus_strikes");
+            VirusStrikesAudioClip = Resources.Load<AudioClip>("Audio/virus_strikes");
         }
 
         public void PlayAudioClip(PacketSinkSoundEffect effect)

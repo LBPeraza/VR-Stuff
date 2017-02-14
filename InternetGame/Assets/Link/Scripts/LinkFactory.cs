@@ -23,11 +23,11 @@ namespace InternetGame
 
             if (USE_CYLINDRICAL_LINK_SEGMENT)
             {
-                link.LinkSegmentPrefab = (GameObject)Resources.Load("CylindricalLinkSegment");
+                link.LinkSegmentPrefab = (GameObject)Resources.Load("Prefabs/CylindricalLinkSegment");
             }
             else
             {
-                link.LinkSegmentPrefab = (GameObject)Resources.Load("LinkSegment");
+                link.LinkSegmentPrefab = (GameObject)Resources.Load("Prefabs/LinkSegment");
             }
 
             return linkContainer;

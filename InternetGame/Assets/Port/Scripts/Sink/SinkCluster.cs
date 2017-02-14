@@ -6,8 +6,11 @@ namespace InternetGame
 {
     public class SinkCluster : PacketSink
     {
-        public Color Color;
+        [Header("Basic")]
         public GameObject Backing;
+
+        [HideInInspector]
+        public Color Color;
 
         public override void Initialize()
         {

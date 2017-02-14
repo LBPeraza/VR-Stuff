@@ -12,15 +12,17 @@ namespace InternetGame
         PacketEnqueued
     }
 
-	[Serializable]
-	public class SourceInfo : PortInfo {
-		public SourceInfo (Vector3 location, Quaternion orientation)
-			: base (location, orientation) {
-		}
-	}
+    [Serializable]
+    public class SourceInfo : PortInfo
+    {
+        public SourceInfo(Vector3 location, Quaternion orientation)
+            : base(location, orientation)
+        {
+        }
+    }
 
     public class PacketSource : MonoBehaviour
-	{
+    {
         public GameObject PacketContainer;
         public List<Packet> QueuedPackets;
         public List<Link> ActiveLinks;
@@ -45,9 +47,9 @@ namespace InternetGame
 
         public AudioClip PacketWarningClip;
         public AudioClip PacketDroppedClip;
-		public AudioClip PacketEnqueuedClip;
+        public AudioClip PacketEnqueuedClip;
 
-		private SourceInfo info;
+        private SourceInfo info;
 
         public bool HasUnfinishedLink()
         {
@@ -65,18 +67,18 @@ namespace InternetGame
 
             if (PacketContainer == null)
             {
-                PacketContainer = new GameObject("PacketContainer");
+                PacketContainer = new GameObject("Prefabs/PacketContainer");
                 PacketContainer.transform.parent = this.transform;
             }
 
             if (LinkConnectionPoint == null)
             {
                 LinkConnectionPoint = this.transform;
-            } 
+            }
 
             if (Indicator == null)
             {
-                var prefab = Resources.Load<GameObject>("RingIndicator");
+                var prefab = Resources.Load<GameObject>("Prefabs/RingIndicator");
                 var indicator = Instantiate(prefab, this.transform, false);
 
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
@@ -95,17 +97,17 @@ namespace InternetGame
 
             if (PacketWarningClip == null)
             {
-                PacketWarningClip = Resources.Load<AudioClip>("packet_alert");
+                PacketWarningClip = Resources.Load<AudioClip>("Audio/packet_alert");
             }
 
             if (PacketDroppedClip == null)
             {
-                PacketDroppedClip = Resources.Load<AudioClip>("packet_dropped");
+                PacketDroppedClip = Resources.Load<AudioClip>("Audio/packet_dropped");
             }
 
             if (PacketEnqueuedClip == null)
             {
-                PacketEnqueuedClip = Resources.Load<AudioClip>("packet_enqueued");
+                PacketEnqueuedClip = Resources.Load<AudioClip>("Audio/packet_enqueued");
             }
         }
 
@@ -213,7 +215,7 @@ namespace InternetGame
         public virtual void OnLinkStarted(Link l)
         {
             ActiveLinks.Add(l);
-            
+
             if (!IsEmpty())
             {
                 // Dequeue packet and load it onto link.
@@ -265,7 +267,7 @@ namespace InternetGame
 
         protected virtual void OnTransmissionStarted(Link l, Packet p)
         {
-            
+
         }
 
         protected virtual void OnTransmissionSevered(SeverCause cause, Link severedLink)
@@ -299,18 +301,20 @@ namespace InternetGame
                 OnPacketEnqueued.Invoke(p);
             }
         }
-        
+
         protected virtual void OnNewPacketOnDeck(Packet p)
         {
             p.OnDeckAtPort(this);
         }
 
-		public SourceInfo portInfo {
-			get {
-				return new SourceInfo (
-					transform.position,
-					transform.rotation);
-			}
-		}
+        public SourceInfo portInfo
+        {
+            get
+            {
+                return new SourceInfo(
+                    transform.position,
+                    transform.rotation);
+            }
+        }
     }
 }

@@ -8,14 +8,15 @@ namespace InternetGame
     public class Connector : VRTK.VRTK_InteractableObject
     {
         [Header("Connector Options", order = 7)]
-
         public Transform HeldPosition;
         public Transform LinkPointer;
         public GameObject ConnectorModel;
-        public PacketSource Source;
-        public Link Link;
-
         public float FadeRate = .5f; // Alpha per second
+
+        [HideInInspector]
+        public PacketSource Source;
+        [HideInInspector]
+        public Link Link;
 
         public bool IsAtSource;
 
@@ -100,12 +101,18 @@ namespace InternetGame
         {
             base.OnInteractableObjectUngrabbed(e);
 
-            if (LinkController.GetInstance().State == LinkControllerState.DrawingLink 
-                    && !hoveredOverSnapDropZone)
+            if (LinkController.GetInstance().State == LinkControllerState.DrawingLink)
             {
-                // End link in the air.
-                Debug.Log("Ungrabbed -- ending in the air. Time: " + Time.time);
-                LinkController.GetInstance().EndLink();
+                if (!hoveredOverSnapDropZone)
+                {
+                    LinkController.GetInstance().EndLink();
+                }
+                else
+                {
+                    // Dropped in snap zone, so the link will complete (will be ended by sink).
+                    // Trigger haptic pulse in the meantime.
+                    LinkController.GetInstance().OnConnectorSnapping(this);
+                }
             }
         }
 

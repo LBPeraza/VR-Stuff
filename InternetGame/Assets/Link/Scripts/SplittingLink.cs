@@ -23,7 +23,7 @@ namespace InternetGame
 
         private void Start()
         {
-            BurnTrail = Resources.Load<GameObject>("LinkBurnTrail");
+            BurnTrail = Resources.Load<GameObject>("Prefabs/LinkBurnTrail");
             randomSource = new System.Random();
         }
 
