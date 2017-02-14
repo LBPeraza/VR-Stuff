@@ -175,7 +175,7 @@ namespace InternetGame
 
         public void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("Player"))
+            if (other.CompareTag("Player") && other.name == "FingersHitbox")
             {
                 // Don't open if the player is drawing a link.
                 Cursor cursor = other.transform.parent.GetComponent<Cursor>();

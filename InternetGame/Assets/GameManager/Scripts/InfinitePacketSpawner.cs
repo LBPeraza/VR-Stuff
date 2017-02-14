@@ -10,6 +10,7 @@ namespace InternetGame
         public float VirusProbability = 0.2f;
         public float LastSpawn;
 
+        public float IntervalIncreaseAmount = 2.0f;
         public float IncreaseSpawnRateInterval = 20.0f;
         public float IncreaseSpawnRateAmount = 1.0f;
         public float LastSpawnRateIncrease;
@@ -54,7 +55,6 @@ namespace InternetGame
             }
         }
 
-
         // Update is called once per frame
         public override void Update()
         {
@@ -72,6 +72,7 @@ namespace InternetGame
                 LastSpawnRateIncrease = Time.fixedTime;
 
                 SpawnInterval -= IncreaseSpawnRateAmount;
+                IncreaseSpawnRateInterval += IntervalIncreaseAmount;
             }
 
             if (Time.fixedTime > LastVirusRateIncrease + IncreaseVirusRateInterval)
@@ -79,6 +80,7 @@ namespace InternetGame
                 LastVirusRateIncrease = Time.fixedTime;
 
                 VirusProbability += IncreaseVirusRateAmount;
+                IncreaseVirusRateInterval += IntervalIncreaseAmount;
             }
         }
     }

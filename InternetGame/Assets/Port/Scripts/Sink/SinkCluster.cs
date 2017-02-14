@@ -12,13 +12,24 @@ namespace InternetGame
         [HideInInspector]
         public Color Color;
 
+        private Color Blend(Color a, Color b)
+        {
+            return new Color(
+                (a.r + b.r) / 2,
+                (a.g + b.g) / 2,
+                (a.b + b.b) / 2,
+                (a.a + b.a) / 2);
+        }
+
         public override void Initialize()
         {
             base.Initialize();
 
             if (Backing != null)
             {
-                Color = (Color)PacketSpawner.AddressToColor[this.Address];
+                var packetColor = (Color)PacketSpawner.AddressToColor[this.Address];
+                var originalColor = Backing.GetComponent<Renderer>().material.color;
+                Color = Blend(packetColor, originalColor);
                 Backing.GetComponent<Renderer>().material.color = Color;
             }
         }

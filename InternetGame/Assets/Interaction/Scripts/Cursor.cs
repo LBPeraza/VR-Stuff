@@ -52,6 +52,13 @@ namespace InternetGame
                     GameObject.FindGameObjectWithTag("LeftController");
             }
 
+            if (Controller == null)
+            {
+                Controller = IsRightHand ?
+                    GameObject.Find("[CameraRig]/Controller (right)") :
+                    GameObject.Find("[CameraRig]/Controller (left)");
+            }
+
             if (Controller != null)
             {
                 Input = Controller.GetComponent<VRTK.VRTK_ControllerEvents>();
@@ -74,6 +81,7 @@ namespace InternetGame
             DefaultCursorEventArgs.preventCursorModelChange = false;
 
             States = new Stack<CursorState>();
+            trackedInteractionId = null;
 
             Player = p;
             IsRightHand = isRightHand;

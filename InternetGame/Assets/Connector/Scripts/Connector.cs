@@ -12,6 +12,8 @@ namespace InternetGame
         public Transform LinkPointer;
         public GameObject ConnectorModel;
         public float FadeRate = .5f; // Alpha per second
+        public GameObject PickUpHitbox;
+        public GameObject RegularHitbox;
 
         [HideInInspector]
         public PacketSource Source;
@@ -24,6 +26,10 @@ namespace InternetGame
         {
             IsAtSource = true;
             Source = source;
+
+            // Set hitbox large for picking up easily.
+            RegularHitbox.SetActive(false);
+            PickUpHitbox.SetActive(true);
 
             if (!source.IsEmpty())
             {
@@ -89,6 +95,10 @@ namespace InternetGame
 
                 // Prevent collisions with the cursor hitboxes.
                 gameObject.layer = LayerMask.NameToLayer("Connector");
+
+                // Make hitbox smaller for plugging into port.
+                RegularHitbox.SetActive(true);
+                PickUpHitbox.SetActive(false);
             }
         }
 

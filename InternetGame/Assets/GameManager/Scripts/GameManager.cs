@@ -50,7 +50,7 @@ namespace InternetGame
         public static string PacketSinksPath = "/Sinks";
         public static string PacketSourcesPath = "/Sources";
 
-        void Start()
+        private void Start()
         {
             Initialize();
         }
@@ -59,7 +59,7 @@ namespace InternetGame
         {
             // TODO
 			LevelParameters.LevelName = "default_level";
-            LevelParameters.NumDroppedPacketsAllowed = 10000;
+            LevelParameters.NumDroppedPacketsAllowed = 5;
             LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
         }
 
@@ -142,6 +142,7 @@ namespace InternetGame
                 sink.Initialize();
             }
 
+            Score = new GameScore();
             ResetScore(Score);
 
             if (Scoreboard == null)

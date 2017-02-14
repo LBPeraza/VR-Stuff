@@ -31,18 +31,41 @@ namespace InternetGame
             CurrentState.MaximumBandwidth = MaxBandwidth;
             CurrentState.BandwidthRemaining = TotalBandwidth;
 
+            if (LeftCursor == null)
+            {
+                var leftCursorContainer = transform.Find("LeftCursor");
+                if (leftCursorContainer)
+                {
+                    LeftCursor = leftCursorContainer.GetComponent<Cursor>();
+                }
+            }
             if (LeftCursor != null)
             {
                 LeftCursor.Initialize(this, false /* is right hand */);
                 LinkCursor = LeftCursor;
             }
 
+            if (RightCursor == null)
+            {
+                var rightCursorContainer = transform.Find("RightCursor");
+                if (rightCursorContainer)
+                {
+                    RightCursor = rightCursorContainer.GetComponent<Cursor>();
+                }
+            }
             if (RightCursor != null)
             {
                 RightCursor.Initialize(this, true /* is right hand */);
                 LinkCursor = RightCursor;
             }
 
+            if (LinkCursor == null)
+            {
+                Debug.LogError("LinkCursor property of LinkController is unset.");
+            }
+
+            // Clear out any residual instance, and initialize a new one.
+            LinkController.ResetInstance();
             LinkController.GetInstance().Initialize(this);
         }
 

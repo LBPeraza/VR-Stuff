@@ -81,7 +81,7 @@ namespace InternetGame
             mat.color = CameraObstructionEndColor;
 
             // Load the scene.
-            SceneManager.LoadSceneAsync(sceneName);
+            SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         }
 
         private IEnumerator GraduallyFadeFromBlack()

@@ -8,7 +8,7 @@ namespace InternetGame
     {
         public static Connector CreateDefaultConnector(PacketSource source, Transform parent)
         {
-            var connectorPrefab = Resources.Load<GameObject>("ConnectorPrefab");
+            var connectorPrefab = Resources.Load<GameObject>("Prefabs/ConnectorPrefab");
             var connectorContainer = Instantiate(connectorPrefab, parent, false);
 
             var connector = connectorContainer.GetComponent<Connector>();

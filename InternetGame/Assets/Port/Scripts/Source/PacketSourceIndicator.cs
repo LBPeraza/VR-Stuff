@@ -26,6 +26,14 @@ namespace InternetGame
             source.OnPacketExpired += OnPacketExpired;
         }
 
+        public void OnDestroy()
+        {
+            Source.OnPacketEnqueued -= OnPacketEnqueued;
+            Source.OnPacketDequeued -= OnPacketDequeued;
+            Source.OnPendingLinkStarted -= OnLinkStarted;
+            Source.OnPacketExpired -= OnPacketExpired;
+        }
+
         public virtual void OnPacketExpired(Packet p)
         {
 

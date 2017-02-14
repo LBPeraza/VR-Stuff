@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: PortMaterial
+  m_Name: SinkClusterBacking
   m_Shader: {fileID: 4800000, guid: 908b379d4818cd64184b95a21123d909, type: 3}
-  m_ShaderKeywords: S_RECEIVE_SHADOWS S_RENDER_BACKFACES S_SPECULAR_METALLIC
+  m_ShaderKeywords: S_RECEIVE_SHADOWS S_SPECULAR_METALLIC
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
   stringTagMap:
@@ -88,7 +88,7 @@ Material:
       second: 1
     - first:
         name: _Cull
-      second: 0
+      second: 2
     - first:
         name: _Cutoff
       second: 0.5
@@ -106,13 +106,13 @@ Material:
       second: 1
     - first:
         name: _Glossiness
-      second: 0.5
+      second: 0.735
     - first:
         name: _GlossyReflections
       second: 1
     - first:
         name: _Metallic
-      second: 0
+      second: 0.648
     - first:
         name: _Mode
       second: 0
@@ -157,7 +157,7 @@ Material:
       second: 1
     - first:
         name: g_bRenderBackfaces
-      second: 1
+      second: 0
     - first:
         name: g_bUnlit
       second: 0
@@ -182,7 +182,7 @@ Material:
     m_Colors:
     - first:
         name: _Color
-      second: {r: 0.66176474, g: 0.66176474, b: 0.66176474, a: 1}
+      second: {r: 0.5147059, g: 0.5147059, b: 0.5147059, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}

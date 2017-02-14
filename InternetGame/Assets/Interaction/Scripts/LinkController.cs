@@ -52,6 +52,15 @@ namespace InternetGame
 
         private CursorEventArgs cursorEventArgs;
 
+        public static void ResetInstance()
+        {
+            if (linkController != null)
+            {
+                DestroyImmediate(linkController.gameObject);
+            }
+            linkController = null;
+        }
+
         public static LinkController GetInstance()
         {
             if (linkController == null)
@@ -126,6 +135,8 @@ namespace InternetGame
                 && !Player.IsOutOfBandwidth()
                 && source.QueuedPackets.Count > 0)
             {
+                Cursor.OnGrab(cursorEventArgs);
+
                 PlayClip(LinkSoundEffect.LinkDrawing);
 
                 GameObject LinkContainer = LinkFactory.CreateLink(source);
@@ -161,6 +172,8 @@ namespace InternetGame
         {
             if (CurrentLink != null)
             {
+                Cursor.OnDrop(cursorEventArgs);
+
                 // End the current link in the air.
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
 
