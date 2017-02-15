@@ -11,15 +11,17 @@ namespace InternetGame
         public Color EndColor = Color.red;
 
         public float ColorChangePercentageOffset;
+        public static int DefaultChameleonVirusSize = 1000;
+        public static float DefaultChameleonVirusDamage = 10.0f;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            this.Size = 1000;
-            this.Damage = 10.0f;
+            this.Size = DefaultChameleonVirusSize;
+            this.Damage = DefaultChameleonVirusDamage;
 
-            Saturated = new Material(Resources.Load<Material>("EmailIndicator"));
+            Saturated = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
             Destaturated = new Material(Saturated);
 
             SetSaturatedColor(Color);

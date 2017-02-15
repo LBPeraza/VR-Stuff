@@ -38,7 +38,7 @@ namespace InternetGame
         public float TaperDelay = 0.2f;
         public float TaperLength = .75f; // Meters
         public float TaperedDiameter = 0.01f; // Meters
-        public Transform Pointer;
+        public Connector Connector;
 
         public delegate void SeverHandler(Link severed, SeverCause cause, float totalLength);
         public event SeverHandler OnSever;
@@ -83,7 +83,7 @@ namespace InternetGame
         /// that the link will follow.
         /// </summary>
         /// <param name="pointer">The pointer that the link will follow.</param>
-        public void Initialize(PacketSource source, Transform pointer)
+        public void Initialize(PacketSource source, Connector connector)
         {
             IsTransmittingPacket = false;
 
@@ -91,7 +91,7 @@ namespace InternetGame
             linkSegmentContainer = new GameObject("Segments");
             linkSegmentContainer.transform.parent = this.transform;
 
-            Pointer = pointer;
+            Connector = connector;
 
             StartTime = Time.fixedTime;
             Finished = false;
@@ -275,27 +275,30 @@ namespace InternetGame
         /// </summary>
         public void Sever(SeverCause cause, LinkSegment severedSegment)
         {
-            Finished = true;
-            Severed = true;
-            FinishedTime = Time.fixedTime;
-            State = LinkState.Severed;
-
-            UndoAlertPacketSinksOfPacket();
-
-            if (cause == SeverCause.Player)
+            if (!Severed)
             {
-                if (Packet is Virus)
+                Finished = true;
+                Severed = true;
+                FinishedTime = Time.fixedTime;
+                State = LinkState.Severed;
+
+                UndoAlertPacketSinksOfPacket();
+
+                if (cause == SeverCause.Player)
                 {
-                    // Add some additional information if the player prevented a virus, specifically.
-                    cause = SeverCause.PlayerPreventedVirus;
+                    if (Packet is Virus)
+                    {
+                        // Add some additional information if the player prevented a virus, specifically.
+                        cause = SeverCause.PlayerPreventedVirus;
+                    }
+
+                    Packet.OnDropped(PacketDroppedCause.Severed);
                 }
 
-                Packet.OnDropped(PacketDroppedCause.Severed);
-            }
-
-            if (OnSever != null)
-            {
-                OnSever.Invoke(this, cause, TotalLength);
+                if (OnSever != null)
+                {
+                    OnSever.Invoke(this, cause, TotalLength);
+                }
             }
 
             AnimateAndDestroy(cause, severedSegment);
@@ -317,18 +320,16 @@ namespace InternetGame
                 if (t != null)
                 {
                     // End at a sink.
-                    AddNewSegment(t.transform.position);
-
                     State = LinkState.AwaitingPacket;
 
                     Sink = t;
 
                     MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
 
-                    StartTransmission();
-
                     Source.OnLinkEstablished(this, Sink);
                     Sink.OnLinkEstablished(this, Source);
+
+                    StartTransmission();
                 }
                 else
                 {
@@ -432,7 +433,7 @@ namespace InternetGame
                 case LinkState.UnderConstruction:
                     if (Time.fixedTime - lastSegmentAddTime >= SegmentAddInterval)
                     {
-                        AddNewSegment(Pointer.transform.position);
+                        AddNewSegment(Connector.LinkPointer.position);
                     }
 
                     if (!AdjustedInitialSegments && TotalLength > InitialLinkLength)

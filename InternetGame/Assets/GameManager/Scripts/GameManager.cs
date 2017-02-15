@@ -31,6 +31,7 @@ namespace InternetGame
         public static List<PacketSource> AllPacketSources;
         public static List<PacketSink> AllPacketSinks;
 
+        public SceneLoader SceneLoader;
         public PacketSpawner PacketSpawner;
         public Player Player;
         public InputManager InputManager;
@@ -49,7 +50,7 @@ namespace InternetGame
         public static string PacketSinksPath = "/Sinks";
         public static string PacketSourcesPath = "/Sources";
 
-        void Start()
+        private void Start()
         {
             Initialize();
         }
@@ -62,9 +63,16 @@ namespace InternetGame
             LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
         }
 
-        public void Initialize()
+        public void LoadPorts()
         {
-            LoadLevelData();
+            if (PortLoader != null)
+            {
+                PortLoader.Initialize(LevelParameters);
+            }
+            else
+            {
+                Debug.Log("No PortLoader found. Skipping initialization.");
+            }
 
             // Try to find Sinks and Sources gameobject in scene, if not already set.
             if (PacketSinks == null)
@@ -91,11 +99,17 @@ namespace InternetGame
             if (PacketSinks != null)
             {
                 AllPacketSinks = new List<PacketSink>(PacketSinks.GetComponentsInChildren<PacketSink>());
+            }
+        }
 
-                foreach (PacketSink sink in AllPacketSinks)
-                {
-                    // sink.Initialize();
-                }
+        public void Initialize()
+        {
+            LoadLevelData();
+
+            if (SceneLoader == null)
+            {
+                SceneLoader = gameObject.AddComponent<SceneLoader>();
+                SceneLoader.Initialize();
             }
 
             if (InputManager != null)
@@ -107,14 +121,7 @@ namespace InternetGame
                 Debug.Log("No InputManager found. Skipping initialization.");
             }
 
-            if (PortLoader != null)
-            {
-				PortLoader.Initialize(LevelParameters);
-            }
-            else
-            {
-                Debug.Log("No PortLoader found. Skipping initialization.");
-            }
+            LoadPorts();
 
             if (Player != null)
             {
@@ -127,9 +134,15 @@ namespace InternetGame
 
             if (PacketSpawner != null)
             {
-                PacketSpawner.Initialize();
+                PacketSpawner.Initialize(this);
             }
 
+            foreach (PacketSink sink in AllPacketSinks)
+            {
+                sink.Initialize();
+            }
+
+            Score = new GameScore();
             ResetScore(Score);
 
             if (Scoreboard == null)

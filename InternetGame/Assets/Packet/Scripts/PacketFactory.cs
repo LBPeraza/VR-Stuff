@@ -6,7 +6,7 @@ namespace InternetGame
 {
     public class PacketFactory
     {
-        public static float DEFAULT_PACKET_PATIENCE = 15.0f; // Seconds.
+        public static float DEFAULT_PACKET_PATIENCE = 17.0f; // Seconds.
         public static float DEFAULT_PACKET_ALERT_TIME = 10.0f; // Seconds
 
         public static Packet CreateEmail(PacketSource s, PacketSink t)

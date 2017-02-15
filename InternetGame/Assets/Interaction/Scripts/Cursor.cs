@@ -20,42 +20,73 @@ namespace InternetGame
 
     public class Cursor : MonoBehaviour
     {
-        public Transform follow;
+        public GameObject Controller;
         public Player Player;
 
-        public bool HasLinkController;
         public bool IsRightHand;
+        public bool ControllerInitialized;
 
         public CursorState State;
+        public Stack<CursorState> States;
 
         public GameObject ArrowModel;
         public GameObject HandModel;
         public GameObject GrabModel;
         public GameObject ScissorsModel;
 
+        public VRTK.VRTK_ControllerEvents Input;
+        public VRTK.VRTK_ControllerActions ControllerActions;
+        public delegate void OnControllerFoundHandler(VRTK.VRTK_ControllerEvents input);
+        public event OnControllerFoundHandler OnControllerFound;
+
         public static CursorEventArgs DefaultCursorEventArgs;
 
         private int? trackedInteractionId;
+
+        private void TryFindController()
+        {
+            if (Controller == null)
+            {
+                Controller = IsRightHand ?
+                    GameObject.FindGameObjectWithTag("RightController") :
+                    GameObject.FindGameObjectWithTag("LeftController");
+            }
+
+            if (Controller == null)
+            {
+                Controller = IsRightHand ?
+                    GameObject.Find("[CameraRig]/Controller (right)") :
+                    GameObject.Find("[CameraRig]/Controller (left)");
+            }
+
+            if (Controller != null)
+            {
+                Input = Controller.GetComponent<VRTK.VRTK_ControllerEvents>();
+                ControllerActions = Controller.GetComponent<VRTK.VRTK_ControllerActions>();
+
+                if (Input != null && ControllerActions != null)
+                {
+                    ControllerInitialized = true;
+
+                    if (OnControllerFound != null)
+                    {
+                        OnControllerFound.Invoke(Input);
+                    }
+                }
+            }
+        }
 
         public void Initialize(Player p, bool isRightHand)
         {
             DefaultCursorEventArgs.preventCursorModelChange = false;
 
+            States = new Stack<CursorState>();
+            trackedInteractionId = null;
+
             Player = p;
             IsRightHand = isRightHand;
 
-            if (HasLinkController)
-            {
-                // Try to find LinkController script, and create one if necessary.
-                var linkController = GetComponent<LinkController>();
-                if (linkController == null)
-                {
-                    linkController = new LinkController();
-                    linkController.transform.parent = this.transform.parent;
-                }
-
-                linkController.Initialize(Player, IsRightHand);
-            }
+            TryFindController();
 
             UpdateState(CursorState.Inactive);
         }
@@ -66,6 +97,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
+                    States.Push(State);
                     UpdateState(CursorState.CutHover);
                 }
 
@@ -79,7 +111,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
-                    UpdateState(CursorState.Inactive);
+                    UpdateState(States.Pop());
                 }
 
                 trackedInteractionId = null;
@@ -92,6 +124,7 @@ namespace InternetGame
             { 
                 if (!args.preventCursorModelChange)
                 {
+                    States.Push(State);
                     UpdateState(CursorState.Hovering);
                 }
 
@@ -105,6 +138,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
+                    States.Push(State);
                     UpdateState(CursorState.Grabbing);
                 }
             }
@@ -116,7 +150,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
-                    UpdateState(CursorState.Hovering);
+                    UpdateState(States.Pop());
                 }
             }
         }
@@ -127,7 +161,7 @@ namespace InternetGame
             {
                 if (!args.preventCursorModelChange)
                 {
-                    UpdateState(CursorState.Inactive);
+                    UpdateState(States.Pop());
                 }
 
                 trackedInteractionId = null;
@@ -170,10 +204,15 @@ namespace InternetGame
         // Update is called once per frame
         void Update()
         {
-            if (follow != null)
+            if (!ControllerInitialized)
             {
-                this.transform.position = follow.transform.position;
-                this.transform.rotation = follow.transform.rotation;
+                TryFindController();
+            }
+
+            if (Controller != null)
+            {
+                this.transform.position = Controller.transform.position;
+                this.transform.rotation = Controller.transform.rotation;
             }
         }
     }

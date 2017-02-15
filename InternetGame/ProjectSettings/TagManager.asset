@@ -8,6 +8,16 @@ TagManager:
   - Sink
   - Source
   - LinkCutBox
+  - LeftController
+  - RightController
+  - Connector
+  - Cubes
+  - Spheres
+  - Leg
+  - Arm
+  - Saucers
+  - Torso
+  - OtherSaucers
   layers:
   - Default
   - TransparentFX
@@ -23,12 +33,12 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Room
+  - Port
   - Links
-  - 
-  - 
-  - 
+  - Player
+  - Sink
+  - Connector
   - 
   - 
   - 

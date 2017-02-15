@@ -21,13 +21,19 @@ namespace InternetGame
         public Material WallMaterial;
         public Material AccentMaterial;
 
+        public bool EnableAccents;
+
         private float WallWidth = 0.1f;
         private bool Dirty = false;
 
         public void Initialize(AudioSource backgroundMusic)
         {
             BuildRoom();
-            BuildAccents();
+
+            if (EnableAccents)
+            {
+                BuildAccents();
+            }
 
             if (RoomGlow == null)
             {
@@ -46,7 +52,11 @@ namespace InternetGame
             if (!Application.isPlaying && Dirty)
             {
                 BuildRoom();
-                BuildAccents();
+
+                if (EnableAccents)
+                {
+                    BuildAccents();
+                }
 
                 Dirty = false;
             }
@@ -122,6 +132,7 @@ namespace InternetGame
             {
                 var accent = RoomAccents.transform.GetChild(i)
                     .gameObject.GetComponent<MeshRenderer>().material = AccentMaterial;
+                RoomAccents.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Room");
             }
         }
 
@@ -172,7 +183,8 @@ namespace InternetGame
             // Set all of the walls to the appropriate material.
             for (int i = 0; i < Walls.transform.childCount; i++)
             {
-                var wall = Walls.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material = WallMaterial;
+                Walls.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material = WallMaterial;
+                Walls.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Room");
             }
         }
     }

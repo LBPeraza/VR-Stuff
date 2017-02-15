@@ -159,7 +159,7 @@ namespace InternetGame
 
         private void MakeCursorScissors(Collider cursorParent)
         {
-            var cursor = cursorParent.transform.parent.GetComponent<Cursor>();
+            var cursor = cursorParent.GetComponentInParent<Cursor>();
             if (cursor != null)
             {
                 cursor.OnEnterCut(new CursorEventArgs
@@ -171,7 +171,7 @@ namespace InternetGame
 
         private void MakeCursorInactive(Collider cursorParent)
         {
-            var cursor = cursorParent.transform.parent.GetComponent<Cursor>();
+            var cursor = cursorParent.GetComponentInParent<Cursor>();
             if (cursor != null)
             {
                 cursor.OnExitCut(new CursorEventArgs
