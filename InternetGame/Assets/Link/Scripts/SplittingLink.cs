@@ -119,8 +119,12 @@ namespace InternetGame
 
             bool isEnd = isEndSegment(i, increasing);
 
-            var dupMaterial = new Material(segment.Model.GetComponent<Renderer>().material);
-            segment.Model.GetComponent<Renderer>().material = dupMaterial;
+            if (segment.ModelRenderers.Length == 0)
+            {
+                Debug.LogError("There are no renderers set in Segment Link. Cannot burn link -- splitting link");
+            }
+            var dupMaterial = new Material(segment.ModelRenderers[0].material);
+            segment.SetModelMaterials(dupMaterial);
 
             var startColor = dupMaterial.color;
             var endColor = Color.black;

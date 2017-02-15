@@ -215,11 +215,14 @@ namespace InternetGame
 
         private LinkSegment MakeSegmentBetween(Vector3 from, Vector3 to)
         {
-            var segment = Instantiate(LinkSegmentPrefab);
+            var segment = Instantiate(LinkSegmentPrefab, linkSegmentContainer.transform);
             float segmentLength = Vector3.Distance(from, to);
 
-            LinkSegment linkSegment;
-            linkSegment = segment.AddComponent<LinkSegment>();
+            LinkSegment linkSegment = segment.GetComponent<LinkSegment>();
+            if (linkSegment == null)
+            {
+                Debug.LogError("No link segment script found on link segment prefab");
+            }
 
             float segmentThickness = segment.transform.localScale.x;
             if (TotalLength < TaperLength)
@@ -229,13 +232,10 @@ namespace InternetGame
                     (TotalLength - TaperDelay) / TaperLength);
             }
 
-            linkSegment.SetBetween(from, to, segmentThickness, segmentLength);
-
             linkSegment.ParentLink = this;
-
-            segment.transform.parent = linkSegmentContainer.transform;
-
             linkSegment.Initialize();
+
+            linkSegment.SetBetween(from, to, segmentThickness, segmentLength);
 
             return linkSegment;
         }
