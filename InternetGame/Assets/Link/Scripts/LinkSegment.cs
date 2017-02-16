@@ -101,6 +101,11 @@ namespace InternetGame
             }
         }
 
+        public virtual Color GetColor()
+        {
+            return ModelRenderers[0].material.color;
+        }
+
         public virtual void Saturate(Material m)
         {
             SetModelMaterials(m);

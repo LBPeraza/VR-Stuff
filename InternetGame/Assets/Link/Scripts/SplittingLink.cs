@@ -7,6 +7,7 @@ namespace InternetGame
     public class SplittingLink : Link
     {
         public GameObject BurnTrail;
+        public Material BurnMaterial;
         public float LinkBurnDuration = 3.2f;
         public float SegmentBurnOverlap = 0.8f;
 
@@ -21,16 +22,19 @@ namespace InternetGame
 
         private System.Random randomSource;
 
-        private void Start()
+        public override void Initialize(PacketSource source, Connector connector)
         {
+            base.Initialize(source, connector);
+
             BurnTrail = Resources.Load<GameObject>("Prefabs/LinkBurnTrail");
+            BurnMaterial = Resources.Load<Material>("Materials/LinkFaded");
             randomSource = new System.Random();
         }
 
         public override void AnimateAndDestroy(SeverCause cause, LinkSegment linkSegment)
         {
             base.AnimateAndDestroy(cause, linkSegment);
-
+            
             isAnimatingDestruction = true;
 
             switch (cause)
@@ -123,10 +127,12 @@ namespace InternetGame
             {
                 Debug.LogError("There are no renderers set in Segment Link. Cannot burn link -- splitting link");
             }
-            var dupMaterial = new Material(segment.ModelRenderers[0].material);
+            var dupMaterial = new Material(BurnMaterial);
+            Color startColor = segment.GetColor();
+            dupMaterial.color = startColor;
+
             segment.SetModelMaterials(dupMaterial);
 
-            var startColor = dupMaterial.color;
             var endColor = Color.black;
             endColor.a = 0.0f;
 

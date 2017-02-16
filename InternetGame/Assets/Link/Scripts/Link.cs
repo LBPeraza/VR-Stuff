@@ -83,7 +83,7 @@ namespace InternetGame
         /// that the link will follow.
         /// </summary>
         /// <param name="pointer">The pointer that the link will follow.</param>
-        public void Initialize(PacketSource source, Connector connector)
+        public virtual void Initialize(PacketSource source, Connector connector)
         {
             IsTransmittingPacket = false;
 
@@ -366,6 +366,9 @@ namespace InternetGame
         {
             if (Packet != null)
             {
+                // First desaturate the link.
+                DesaturateSegments(0, Segments.Count, Packet);
+
                 State = LinkState.TransmittingPacket;
                 TransmissionProgress = SeedTransmissionProgress;
                 NeededProgress = (Packet.Size * TotalLength);

@@ -21,7 +21,7 @@ namespace InternetGame
         {
             base.SetBetween(from, to, segmentThickness, segmentLength);
 
-            Vector3 v = new Vector3(segmentThickness, segmentThickness, (1.0f / segmentLength));
+            Vector3 v = new Vector3(1.0f, 1.0f, (1.0f / segmentLength));
             Cap.transform.localScale = Vector3.Scale(initialScale, v);
         }
 
