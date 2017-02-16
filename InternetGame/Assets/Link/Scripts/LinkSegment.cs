@@ -10,6 +10,7 @@ namespace InternetGame
         public Material DefaultMaterial;
         public float Length;
         public float Thickness;
+		public float StartThickness;
         public bool Saturated;
         public bool IsUnseverableSegment;
         public bool IsNumb = false;
@@ -44,7 +45,12 @@ namespace InternetGame
             }
         }
 
-        public virtual void SetBetween(Vector3 from, Vector3 to, float segmentThickness, float segmentLength = -1.0f)
+		public virtual void SetSize(float thickness, float length) {
+			transform.localScale = new Vector3 (thickness, thickness, length);
+		}
+
+        public virtual void SetBetween(Vector3 from, Vector3 to, float segmentThickness, float maxThickness,
+									   float segmentLength = -1.0f, float segmentThicknessStart = -1.0f)
         {
             if (segmentLength < 0)
             {
@@ -52,13 +58,14 @@ namespace InternetGame
             }
 
             // Make as long as the pointer has traveled.
-            transform.localScale = new Vector3(segmentThickness, segmentThickness, segmentLength);
+			SetSize(segmentThickness, segmentLength);
             // Rotate the link to align with the gap between the two points.
             transform.rotation = Quaternion.LookRotation(to - from);
             // Position in between the two points.
             transform.position = (from + to) / 2;
 
             Thickness = segmentThickness;
+			StartThickness = segmentThicknessStart;
             Length = segmentLength;
             From = from;
             To = to;
@@ -70,7 +77,7 @@ namespace InternetGame
             float t = 0.0f;
             Vector3 originalStart = From;
             Vector3 originalEnd = To;
-            float segmentThickness = transform.localScale.x;
+			float segmentThickness = Thickness;
 
             while (t < 1.0f)
             {

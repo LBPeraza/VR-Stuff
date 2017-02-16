@@ -38,6 +38,7 @@ namespace InternetGame
         public float TaperDelay = 0.2f;
         public float TaperLength = .75f; // Meters
         public float TaperedDiameter = 0.01f; // Meters
+		public float UntaperedDiameter = 0.03f;
         public Connector Connector;
 
         public delegate void SeverHandler(Link severed, SeverCause cause, float totalLength);
@@ -224,18 +225,22 @@ namespace InternetGame
                 Debug.LogError("No link segment script found on link segment prefab");
             }
 
-            float segmentThickness = segment.transform.localScale.x;
+			float segmentThickness = UntaperedDiameter;
+			float segmentStartThickness = -1.0f;
             if (TotalLength < TaperLength)
             {
                 // Make segment progressively thicker.
-                segmentThickness = Mathf.Lerp(TaperedDiameter, segmentThickness,
+				segmentThickness = Mathf.Lerp(TaperedDiameter, UntaperedDiameter,
                     (TotalLength - TaperDelay) / TaperLength);
+				segmentStartThickness = Mathf.Lerp (TaperedDiameter, UntaperedDiameter,
+					(TotalLength - segmentLength - TaperDelay) / TaperLength);
             }
 
             linkSegment.ParentLink = this;
             linkSegment.Initialize();
 
-            linkSegment.SetBetween(from, to, segmentThickness, segmentLength);
+            linkSegment.SetBetween(from, to, segmentThickness, UntaperedDiameter,
+								   segmentLength, segmentStartThickness);
 
             return linkSegment;
         }
