@@ -142,8 +142,7 @@ namespace InternetGame
                 sink.Initialize();
             }
 
-            Score = new GameScore();
-            ResetScore(Score);
+            ResetScore(ref Score);
 
             if (Scoreboard == null)
             {
@@ -191,7 +190,7 @@ namespace InternetGame
             Score.NumberOfVirusesStopped++;
         }
 
-        public void ResetScore(GameScore score)
+        public void ResetScore(ref GameScore score)
         {
             score.BytesDelivered = 0;
             score.PacketsDelivered = 0;
@@ -206,7 +205,7 @@ namespace InternetGame
             IsGameOver = true;
             Debug.Log("Time: " + Score.Time + "  Number of packets delivered: " + Score.PacketsDelivered);
             // TODO
-            SceneManager.LoadScene("LevelSelect", LoadSceneMode.Single);
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
         }
 
         public void Update()

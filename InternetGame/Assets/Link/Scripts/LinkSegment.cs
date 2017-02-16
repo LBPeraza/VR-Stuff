@@ -9,6 +9,7 @@ namespace InternetGame
         public Link ParentLink;
         public Material DefaultMaterial;
         public float Length;
+        public float Thickness;
         public bool Saturated;
         public bool IsUnseverableSegment;
         public bool IsNumb = false;
@@ -17,12 +18,12 @@ namespace InternetGame
         public float SeverGracePeriod = 1.0f; // In seconds.
 
         public GameObject CutBoxContainer;
-        public GameObject Model;
+        public Renderer[] ModelRenderers;
 
         public Vector3 From;
         public Vector3 To;
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             var cutBoxTransform = this.transform.FindChild("CutBox");
             if (cutBoxTransform != null)
@@ -32,14 +33,14 @@ namespace InternetGame
                 cutBox.Initialize(this);
             }
 
-            var modelTransform = this.transform.FindChild("Model");
-            if (modelTransform != null)
+            var modelsTransform = this.transform.FindChild("Models");
+            if (modelsTransform != null)
             {
-                Model = modelTransform.gameObject;
+                ModelRenderers = modelsTransform.GetComponentsInChildren<Renderer>();
             }
             else
             {
-                Model = this.gameObject;
+                ModelRenderers = new Renderer[] { GetComponent<Renderer>() };
             }
         }
 
@@ -57,6 +58,7 @@ namespace InternetGame
             // Position in between the two points.
             transform.position = (from + to) / 2;
 
+            Thickness = segmentThickness;
             Length = segmentLength;
             From = from;
             To = to;
@@ -91,16 +93,24 @@ namespace InternetGame
             StartCoroutine(AnimateMoveToBetween(from, to));
         }
 
+        public virtual void SetModelMaterials(Material m)
+        {
+            foreach (Renderer r in ModelRenderers)
+            {
+                r.material = m;
+            }
+        }
+
         public virtual void Saturate(Material m)
         {
-            Model.GetComponent<Renderer>().material = m;
+            SetModelMaterials(m);
 
             Saturated = true;
         }
 
         public virtual void Desaturate(Material m)
         {
-            Model.GetComponent<Renderer>().material = m;
+            SetModelMaterials(m);
 
             Saturated = false;
         }
