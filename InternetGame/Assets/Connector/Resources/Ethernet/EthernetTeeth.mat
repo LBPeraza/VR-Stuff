@@ -8,12 +8,11 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: EthernetTeeth
   m_Shader: {fileID: 4800000, guid: 908b379d4818cd64184b95a21123d909, type: 3}
-  m_ShaderKeywords: S_SPECULAR_METALLIC _ALPHABLEND_ON
+  m_ShaderKeywords: S_SPECULAR_METALLIC
   m_LightmapFlags: 5
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap:
     OriginalShader: Standard
-    RenderType: Transparent
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:
@@ -98,7 +97,7 @@ Material:
       second: 1
     - first:
         name: _DstBlend
-      second: 10
+      second: 0
     - first:
         name: _FogMultiplier
       second: 1
@@ -116,7 +115,7 @@ Material:
       second: 1
     - first:
         name: _Mode
-      second: 2
+      second: 0
     - first:
         name: _OcclusionStrength
       second: 1
@@ -146,13 +145,13 @@ Material:
       second: 2
     - first:
         name: _SrcBlend
-      second: 5
+      second: 1
     - first:
         name: _UVSec
       second: 0
     - first:
         name: _ZWrite
-      second: 0
+      second: 1
     - first:
         name: g_bReceiveShadows
       second: 0
@@ -183,7 +182,7 @@ Material:
     m_Colors:
     - first:
         name: _Color
-      second: {r: 1, g: 0.9724138, b: 0.653, a: 1}
+      second: {r: 1, g: 0.9724137, b: 0.653, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
