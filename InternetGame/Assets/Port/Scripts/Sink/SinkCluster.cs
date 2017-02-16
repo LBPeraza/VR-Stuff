@@ -8,6 +8,7 @@ namespace InternetGame
     {
         [Header("Basic")]
         public GameObject Backing;
+		public GameObject[] Ports;
 
         [HideInInspector]
         public Color Color;
@@ -23,15 +24,20 @@ namespace InternetGame
 
         public override void Initialize()
         {
-            base.Initialize();
+			base.Initialize();
+
+			var packetColor = (Color)PacketSpawner.AddressToColor[this.Address];
 
             if (Backing != null)
-            {
-                var packetColor = (Color)PacketSpawner.AddressToColor[this.Address];
-                var originalColor = Backing.GetComponent<Renderer>().material.color;
+			{
+				var originalColor = Backing.GetComponent<Renderer>().material.color;
                 Color = Blend(packetColor, originalColor);
                 Backing.GetComponent<Renderer>().material.color = Color;
             }
+
+			foreach (GameObject port in Ports) {
+				port.GetComponent<Renderer> ().materials [1].color = packetColor;
+			}
         }
     }
 }
