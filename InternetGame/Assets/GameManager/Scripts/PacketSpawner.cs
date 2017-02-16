@@ -13,7 +13,7 @@ namespace InternetGame
 
         public static Hashtable AddressToColor;
 
-        private static Color[] AddressColors = { Color.green, Color.blue, Color.magenta, Color.yellow };
+        private static Color[] AddressColors = { Color.green, Color.blue, Color.cyan, Color.yellow };
 
         public virtual void Initialize(GameManager manager)
         {
