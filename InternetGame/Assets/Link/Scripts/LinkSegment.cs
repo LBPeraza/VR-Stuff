@@ -45,10 +45,11 @@ namespace InternetGame
             }
         }
 
-		public virtual void SetSize(float thickness, float length) {
-			transform.localScale = new Vector3 (thickness, thickness, length);
-		}
-
+        public virtual void SetSize(float thickness, float maxThickness, float length)
+        {
+            transform.localScale = new Vector3(thickness, thickness, length);
+        }
+        
         public virtual void SetBetween(Vector3 from, Vector3 to, float segmentThickness, float maxThickness,
 									   float segmentLength = -1.0f, float segmentThicknessStart = -1.0f)
         {
@@ -58,7 +59,7 @@ namespace InternetGame
             }
 
             // Make as long as the pointer has traveled.
-			SetSize(segmentThickness, segmentLength);
+			SetSize(segmentThickness, maxThickness, segmentLength);
             // Rotate the link to align with the gap between the two points.
             transform.rotation = Quaternion.LookRotation(to - from);
             // Position in between the two points.
@@ -86,13 +87,13 @@ namespace InternetGame
                 Vector3 intermediateStart = Vector3.Lerp(originalStart, start, t);
                 Vector3 intermediateEnd = Vector3.Lerp(originalEnd, end, t);
 
-                SetBetween(intermediateStart, intermediateEnd, segmentThickness);
+                SetBetween(intermediateStart, intermediateEnd, segmentThickness, ParentLink.UntaperedDiameter);
 
                 yield return null;
             }
 
             // Finally set at the intended destination.
-            SetBetween(start, end, segmentThickness);
+            SetBetween(start, end, segmentThickness, ParentLink.UntaperedDiameter);
         }
 
         public virtual void GraduallyMoveToBetween(Vector3 from, Vector3 to)

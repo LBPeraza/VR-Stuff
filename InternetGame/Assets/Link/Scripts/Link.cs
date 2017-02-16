@@ -227,7 +227,7 @@ namespace InternetGame
 
 			float segmentThickness = UntaperedDiameter;
 			float segmentStartThickness = -1.0f;
-            if (TotalLength < TaperLength)
+            if (TotalLength - segmentLength < TaperLength)
             {
                 // Make segment progressively thicker.
 				segmentThickness = Mathf.Lerp(TaperedDiameter, UntaperedDiameter,
