@@ -7,22 +7,33 @@ namespace InternetGame
     public class CylindricalLinkSegment : LinkSegment
     {
         public GameObject Cap;
+		public GameObject Cylinder;
 
-        public Vector3 initialScale;
+		private SkinnedMeshRenderer renderer;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            initialScale = Cap.transform.localScale;
+			renderer = Cylinder.GetComponent<SkinnedMeshRenderer> ();
         }
 
-        public override void SetBetween(Vector3 from, Vector3 to, float segmentThickness, float segmentLength = -1.0f)
-        {
-            base.SetBetween(from, to, segmentThickness, segmentLength);
+		public override void SetSize(float thickness, float length) {
+			base.SetSize (thickness, length);
+			Cap.transform.localScale = new Vector3 (1.0f, 1.0f, 1.0f / length);
+		}
 
-            Vector3 v = new Vector3(segmentThickness, segmentThickness, (1.0f / segmentLength));
-            Cap.transform.localScale = Vector3.Scale(initialScale, v);
+        public override void SetBetween(Vector3 from, Vector3 to, float segmentThickness, float maxThickness,
+										float segmentLength = -1.0f, float segmentThicknessStart = -1.0f)
+        {
+            base.SetBetween(from, to, segmentThickness, segmentLength, segmentThicknessStart);
+
+			float percent = segmentThickness / maxThickness;
+			renderer.SetBlendShapeWeight (0, percent);
+			if (segmentThicknessStart > 0)
+				renderer.SetBlendShapeWeight (1, segmentThicknessStart / maxThickness);
+			else
+				renderer.SetBlendShapeWeight (1, percent);
         }
 
     }
