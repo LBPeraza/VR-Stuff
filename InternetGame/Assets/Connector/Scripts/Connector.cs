@@ -113,6 +113,8 @@ namespace InternetGame
                 // Make hitbox smaller for plugging into port.
                 RegularHitbox.SetActive(true);
                 PickUpHitbox.SetActive(false);
+
+                LinkController.GetInstance().Cursor.OnGrab(Cursor.DefaultCursorEventArgs);
             }
         }
 
@@ -137,6 +139,8 @@ namespace InternetGame
                     // Trigger haptic pulse in the meantime.
                     LinkController.GetInstance().OnConnectorSnapping(this);
                 }
+
+                LinkController.GetInstance().Cursor.OnDrop(Cursor.DefaultCursorEventArgs);
             }
         }
 

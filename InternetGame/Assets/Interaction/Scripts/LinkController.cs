@@ -135,8 +135,6 @@ namespace InternetGame
                 && !Player.IsOutOfBandwidth()
                 && source.QueuedPackets.Count > 0)
             {
-                Cursor.OnGrab(cursorEventArgs);
-
                 PlayClip(LinkSoundEffect.LinkDrawing);
 
                 GameObject LinkContainer = LinkFactory.CreateLink(source);
@@ -152,7 +150,6 @@ namespace InternetGame
                 CurrentLink = LinkContainer;
 
                 State = LinkControllerState.DrawingLink;
-                Cursor.OnGrab(cursorEventArgs);
 
                 return linkSegment;
             }
@@ -172,8 +169,6 @@ namespace InternetGame
         {
             if (CurrentLink != null)
             {
-                Cursor.OnDrop(cursorEventArgs);
-
                 // End the current link in the air.
                 var currentLinkComponent = CurrentLink.GetComponent<Link>();
 

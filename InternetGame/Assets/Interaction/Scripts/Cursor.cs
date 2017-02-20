@@ -4,14 +4,6 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public enum CursorState
-    {
-        Inactive,
-        Grabbing,
-        Hovering,
-        CutHover
-    }
-
     public struct CursorEventArgs
     {
         public int senderId;
@@ -26,8 +18,7 @@ namespace InternetGame
         public bool IsRightHand;
         public bool ControllerInitialized;
 
-        public CursorState State;
-        public Stack<CursorState> States;
+        public CursorStateQueue CursorStates;
 
         public GameObject ArrowModel;
         public GameObject HandModel;
@@ -40,8 +31,6 @@ namespace InternetGame
         public event OnControllerFoundHandler OnControllerFound;
 
         public static CursorEventArgs DefaultCursorEventArgs;
-
-        private int? trackedInteractionId;
 
         private void TryFindController()
         {
@@ -80,8 +69,7 @@ namespace InternetGame
         {
             DefaultCursorEventArgs.preventCursorModelChange = false;
 
-            States = new Stack<CursorState>();
-            trackedInteractionId = null;
+            CursorStates = new CursorStateQueue();
 
             Player = p;
             IsRightHand = isRightHand;
@@ -93,78 +81,56 @@ namespace InternetGame
 
         public void OnEnterCut(CursorEventArgs args)
         {
-            if (trackedInteractionId == null)
+            if (!args.preventCursorModelChange)
             {
-                if (!args.preventCursorModelChange)
-                {
-                    States.Push(State);
-                    UpdateState(CursorState.CutHover);
-                }
-
-                trackedInteractionId = args.senderId;
+                //CursorStates.Enqueue(CursorState.CutHover);
+                //UpdateState(CursorStates.Peek());
             }
         }
 
         public void OnExitCut(CursorEventArgs args)
         {
-            if (trackedInteractionId == args.senderId)
-            {
-                if (!args.preventCursorModelChange)
-                {
-                    UpdateState(States.Pop());
-                }
 
-                trackedInteractionId = null;
+            if (!args.preventCursorModelChange)
+            {
+                //CursorStates.Dequeue(CursorState.CutHover);
+                //UpdateState(CursorStates.Peek());
             }
         }
 
         public void OnEnter(CursorEventArgs args)
         {
-            if (trackedInteractionId == null)
-            { 
-                if (!args.preventCursorModelChange)
-                {
-                    States.Push(State);
-                    UpdateState(CursorState.Hovering);
-                }
-
-                trackedInteractionId = args.senderId;
+            if (!args.preventCursorModelChange)
+            {
+                CursorStates.Enqueue(CursorState.Hovering);
+                UpdateState(CursorStates.Peek());
             }
         }
 
         public void OnGrab(CursorEventArgs args)
         {
-            if (trackedInteractionId == args.senderId)
+            if (!args.preventCursorModelChange)
             {
-                if (!args.preventCursorModelChange)
-                {
-                    States.Push(State);
-                    UpdateState(CursorState.Grabbing);
-                }
+                CursorStates.Enqueue(CursorState.Grabbing);
+                UpdateState(CursorStates.Peek());
             }
         }
 
         public void OnDrop(CursorEventArgs args)
         {
-            if (trackedInteractionId == args.senderId)
+            if (!args.preventCursorModelChange)
             {
-                if (!args.preventCursorModelChange)
-                {
-                    UpdateState(States.Pop());
-                }
+                CursorStates.Dequeue(CursorState.Grabbing);
+                UpdateState(CursorStates.Peek());
             }
         }
 
         public void OnExit(CursorEventArgs args)
         {
-            if (trackedInteractionId == args.senderId)
+            if (!args.preventCursorModelChange)
             {
-                if (!args.preventCursorModelChange)
-                {
-                    UpdateState(States.Pop());
-                }
-
-                trackedInteractionId = null;
+                CursorStates.Dequeue(CursorState.Hovering);
+                UpdateState(CursorStates.Peek());
             }
         }
 
@@ -197,8 +163,6 @@ namespace InternetGame
                     ScissorsModel.SetActive(false);
                     break;
             }
-
-            State = newState;
         }
 
         // Update is called once per frame
