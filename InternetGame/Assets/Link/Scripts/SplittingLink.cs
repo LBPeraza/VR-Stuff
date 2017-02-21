@@ -131,6 +131,7 @@ namespace InternetGame
             Color startColor = segment.GetColor();
             dupMaterial.color = startColor;
 
+            segment.PrepareForFade();
             segment.SetModelMaterials(dupMaterial);
 
             var endColor = Color.black;

@@ -38,12 +38,18 @@ namespace InternetGame
         protected bool HasAlerted = false;
         protected bool HasDropped = false;
 
-        protected float saturationPenalty = 0.6f;
+        protected Link TransmittingLink;
+
+        protected float saturationPenalty = 0.0f;
+        protected float valuePenalty = 0.5f;
         protected Color MakeLighter(Color c)
         {
             float h, s, v;
             Color.RGBToHSV(c, out h, out s, out v);
-            var newColor = Color.HSVToRGB(h, Mathf.Clamp01(s - saturationPenalty), v);
+            var newColor = Color.HSVToRGB(
+                h, 
+                Mathf.Clamp01(s - saturationPenalty), 
+                Mathf.Clamp01(v - valuePenalty));
             return newColor;
         }
 
@@ -93,12 +99,13 @@ namespace InternetGame
 
         public virtual void OnTransmissionStarted(Link l, Packet p)
         {
+            TransmittingLink = l;
             l.OnTransmissionProgress += OnTransmissionProgress;
         }
 
         public virtual void OnTransmissionProgress(float percentageDone)
         {
-
+            
         }
 
         public virtual void OnDropped(PacketDroppedCause cause)

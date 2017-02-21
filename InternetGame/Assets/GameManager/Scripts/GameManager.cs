@@ -204,8 +204,8 @@ namespace InternetGame
         {
             IsGameOver = true;
             Debug.Log("Time: " + Score.Time + "  Number of packets delivered: " + Score.PacketsDelivered);
-            // TODO
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+
+            SceneLoader.TransitionToScene("MainMenu");
         }
 
         public void Update()

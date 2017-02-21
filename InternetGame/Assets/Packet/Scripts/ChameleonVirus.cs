@@ -48,9 +48,24 @@ namespace InternetGame
         {
             base.OnTransmissionProgress(percentageDone);
 
-            float scaledPercentage = Mathf.Clamp01((percentageDone - ColorChangePercentageOffset) / (1.0f - ColorChangePercentageOffset));
+            float scaledPercentage = Mathf.Clamp01(
+                (percentageDone - ColorChangePercentageOffset) / 
+                (1.0f - ColorChangePercentageOffset));
             Color currentColor = Color.Lerp(StartColor, EndColor, scaledPercentage);
             this.Saturated.color = currentColor;
+
+            //float distanceDone = percentageDone * TransmittingLink.TotalLength;
+            //float distanceSoFar = 0.0f;
+            //foreach (LinkSegment segment in TransmittingLink.Segments)
+            //{
+            //    distanceSoFar += segment.Length;
+            //    if (distanceSoFar > distanceDone)
+            //    {
+            //        break;
+            //    }
+
+            //    segment.Saturate(Saturated);
+            //}
         }
     }
 }

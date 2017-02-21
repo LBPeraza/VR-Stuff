@@ -227,7 +227,7 @@ namespace InternetGame
 
 			float segmentThickness = UntaperedDiameter;
 			float segmentStartThickness = -1.0f;
-            if (TotalLength - segmentLength < TaperLength)
+            if (TotalLength - segmentLength < TaperLength + TaperDelay)
             {
                 // Make segment progressively thicker.
 				segmentThickness = Mathf.Lerp(TaperedDiameter, UntaperedDiameter,
@@ -395,11 +395,11 @@ namespace InternetGame
             {
                 Packet.OnDequeuedFromLink(this, Sink);
 
-                // Clean up packet.
-                Destroy(Packet.gameObject);
-
                 // Desaturate all segments.
                 DesaturateSegments(0, Segments.Count, Packet);
+
+                // Clean up packet.
+                Destroy(Packet.gameObject);
 
                 var cause = Packet is Virus ?
                     SeverCause.VirusTransmitted : 
@@ -457,7 +457,7 @@ namespace InternetGame
                     TransmissionProgress += Bandwidth * Time.deltaTime;
 
                     float percentageProgress = TransmissionProgress / NeededProgress;
-                    percentageProgress = percentageProgress > 100.0f ? 100.0f : percentageProgress;
+                    percentageProgress = percentageProgress > 1.0f ? 1.0f : percentageProgress;
 
                     // Notify listeners of progress.
                     if (OnTransmissionProgress != null)

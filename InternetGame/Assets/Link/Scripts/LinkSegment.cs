@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,6 +24,8 @@ namespace InternetGame
 
         public Vector3 From;
         public Vector3 To;
+
+        private Coroutine colorAnimation;
 
         public virtual void Initialize()
         {
@@ -58,7 +61,6 @@ namespace InternetGame
                 segmentLength = Vector3.Distance(from, to);
             }
 
-            // Make as long as the pointer has traveled.
 			SetSize(segmentThickness, maxThickness, segmentLength);
             // Rotate the link to align with the gap between the two points.
             transform.rotation = Quaternion.LookRotation(to - from);
@@ -72,7 +74,8 @@ namespace InternetGame
             To = to;
         }
 
-        private IEnumerator AnimateMoveToBetween(Vector3 start, Vector3 end)
+        private IEnumerator AnimateMoveToBetween(
+            Vector3 start, Vector3 end, float startThickness, float endThickness)
         {
             float startTime = Time.fixedTime;
             float t = 0.0f;
@@ -87,18 +90,29 @@ namespace InternetGame
                 Vector3 intermediateStart = Vector3.Lerp(originalStart, start, t);
                 Vector3 intermediateEnd = Vector3.Lerp(originalEnd, end, t);
 
-                SetBetween(intermediateStart, intermediateEnd, segmentThickness, ParentLink.UntaperedDiameter);
+                SetBetween(
+                    intermediateStart, 
+                    intermediateEnd,
+                    endThickness, 
+                    ParentLink.UntaperedDiameter, 
+                    -1 /* segment length */, 
+                    startThickness);
 
                 yield return null;
             }
 
             // Finally set at the intended destination.
-            SetBetween(start, end, segmentThickness, ParentLink.UntaperedDiameter);
+            SetBetween(start, end, endThickness, ParentLink.UntaperedDiameter, -1 /* segment length */, startThickness);
         }
 
         public virtual void GraduallyMoveToBetween(Vector3 from, Vector3 to)
         {
-            StartCoroutine(AnimateMoveToBetween(from, to));
+            StartCoroutine(AnimateMoveToBetween(from, to, StartThickness, Thickness));
+        }
+
+        public virtual void PrepareForFade()
+        {
+            StopAllCoroutines();
         }
 
         public virtual void SetModelMaterials(Material m)
@@ -109,6 +123,14 @@ namespace InternetGame
             }
         }
 
+        protected virtual void SetModelColors(Color c)
+        {
+            foreach (Renderer r in ModelRenderers)
+            {
+                r.material.color = c;
+            }
+        }
+
         public virtual Color GetColor()
         {
             return ModelRenderers[0].material.color;
@@ -116,13 +138,48 @@ namespace InternetGame
 
         public virtual void Saturate(Material m)
         {
-            SetModelMaterials(m);
+            Color originalColor = GetColor();
+
+            if (colorAnimation != null)
+            {
+                StopCoroutine(colorAnimation);
+            }
+            colorAnimation = StartCoroutine(GraduallySetColor(originalColor, m.color, () =>
+            {
+                SetModelMaterials(m);
+
+                return false;
+            }));
 
             Saturated = true;
         }
 
+        private IEnumerator GraduallySetColor(Color originalColor, Color color, Func<bool> callback)
+        {
+            float t = 0.0f;
+            float startTime = Time.time;
+            while (t <= 1.0f)
+            {
+                Color toSet = Color.Lerp(originalColor, color, t);
+                SetModelColors(toSet);
+
+                t = Time.time - startTime;
+
+                yield return null;
+            }
+
+            SetModelColors(color);
+
+            callback();
+        }
+
         public virtual void Desaturate(Material m)
         {
+            if (colorAnimation != null)
+            {
+                StopCoroutine(colorAnimation);
+            }
+
             SetModelMaterials(m);
 
             Saturated = false;

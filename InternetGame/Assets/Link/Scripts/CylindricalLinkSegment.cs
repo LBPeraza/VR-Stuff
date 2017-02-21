@@ -35,7 +35,7 @@ namespace InternetGame
             cylinderRenderer.SetBlendShapeWeight(0, endPercentThickness);
             if (segmentThicknessStart > 0)
             {
-                float startPercentThickness = (segmentThicknessStart / maxThickness) *100.0f;
+                float startPercentThickness = (segmentThicknessStart / maxThickness) * 100.0f;
                 cylinderRenderer.SetBlendShapeWeight(1, startPercentThickness);
             }
             else
