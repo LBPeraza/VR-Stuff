@@ -14,7 +14,7 @@ namespace InternetGame
 
         public float CameraObstructionWidth = 10;
         public float CameraObstructionHeight = 10;
-        public float CameraObstructionOffset = 0.5f;
+        public float CameraObstructionOffset = 0.1f;
         public float FadeRate = 0.7f;
 
         public Color CameraObstructionStartColor;
