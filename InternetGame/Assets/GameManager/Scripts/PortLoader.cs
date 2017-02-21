@@ -7,13 +7,19 @@ using System.IO;
 
 namespace InternetGame {
 
+	public enum LoadLocation {
+		LevelParams,
+		LoaderLevel,
+		NoLoad
+	}
+
 	[Serializable]
 	class Ports {
-		public List<SinkInfo> sinks;
+		public List<ClusterInfo> sinks;
 		public List<SourceInfo> sources;
 
 		public Ports() {
-			sinks = new List<SinkInfo> ();
+			sinks = new List<ClusterInfo> ();
 			sources = new List<SourceInfo> ();
 		}
 	}
@@ -22,9 +28,7 @@ namespace InternetGame {
 
 		public string levelName = "default_level";
 		public bool SaveOnRun = false;
-
-		public PacketSource[] SourceObjects;
-		public PacketSink[] SinkObjects;
+		public LoadLocation LoadFrom = LoadLocation.LevelParams;
 
 		public GameObject SourceHolder;
 		public GameObject SinkHolder;
@@ -32,7 +36,27 @@ namespace InternetGame {
 		public PacketSource SourcePrefab;
 		public PacketSink SinkPrefab;
 
+		[Header("Cluster Prefabs")]
+		public SinkCluster ClusterPrefab;
+		public GameObject SinkPortPrefab;
+		public GameObject BackingPrefab;
+
+		private PacketSource[] SourceObjects;
+		private SinkCluster[] SinkObjects;
+
 		public void Initialize(LevelParameters levelParams) {
+			InitializePrefabs ();
+
+			if (SaveOnRun)
+				SavePorts ();
+
+			if (LoadFrom == LoadLocation.LevelParams)
+				LoadPorts (levelParams.LevelName);
+			else if (LoadFrom == LoadLocation.LoaderLevel)
+				LoadPorts (levelName);
+		}
+
+		public void InitializePrefabs() {
 			if (SourceHolder == null) {
 				SourceHolder = GameObject.Find ("Sources");
 			}
@@ -46,11 +70,15 @@ namespace InternetGame {
 			if (SinkPrefab == null) {
 				SinkPrefab = Resources.Load<PacketSink> ("Prefabs/Sink");
 			}
-
-			if (SaveOnRun)
-				SavePorts ();
-
-			LoadPorts (levelParams.LevelName);
+			if (ClusterPrefab == null) {
+				ClusterPrefab = Resources.Load<SinkCluster> ("Prefabs/ClusterPrefab");
+			}
+			if (SinkPortPrefab == null) {
+				SinkPortPrefab = Resources.Load<GameObject> ("Prefabs/SinkFromCluster");
+			}
+			if (BackingPrefab == null) {
+				BackingPrefab = Resources.Load<GameObject> ("Prefabs/ClusterBacking");
+			}
 		}
 
 		void GetSrcList() {
@@ -58,7 +86,7 @@ namespace InternetGame {
 		}
 
 		void GetSinkList() {
-			SinkObjects = SinkHolder.transform.GetComponentsInChildren<PacketSink> ();
+			SinkObjects = SinkHolder.transform.GetComponentsInChildren<SinkCluster> ();
 		}
 
 		public void SavePorts() {
@@ -69,11 +97,11 @@ namespace InternetGame {
 				toSave.sources.Add (src.portInfo);
 			}
 			GetSinkList ();
-			foreach (PacketSink sink in SinkObjects) {
-				toSave.sinks.Add (sink.portInfo);
+			foreach (SinkCluster sink in SinkObjects) {
+				toSave.sinks.Add (sink.clusterInfo);
 			}
 
-			string json = JsonUtility.ToJson (toSave);
+			string json = JsonUtility.ToJson (toSave, true);
 			using (FileStream fs = new FileStream (
 									   "Assets/Levels/PortMaps/" + levelName + ".json",
 						 			   FileMode.Create)) {
@@ -102,6 +130,7 @@ namespace InternetGame {
 		}
 
 		public void LoadPorts(string levelName) {
+			Debug.Log ("Loading ports from Assets/Levels/PortMaps/" + levelName + ".json");
 			ClearPorts ();
 			string json;
 			using (FileStream fs = new FileStream (
@@ -115,8 +144,8 @@ namespace InternetGame {
 			foreach (SourceInfo info in toLoad.sources) {
 				LoadSource (info);
 			}
-			foreach (SinkInfo info in toLoad.sinks) {
-				LoadSink (info);
+			foreach (ClusterInfo info in toLoad.sinks) {
+				LoadClusterSink (info);
 			}
 		}
 
@@ -131,6 +160,28 @@ namespace InternetGame {
 			sink.transform.localPosition = info.location;
 			sink.transform.localRotation = info.orientation;
 			sink.Address = info.address;
+		}
+
+		void LoadClusterSink(ClusterInfo info) {
+			SinkCluster cluster = Instantiate<SinkCluster> (ClusterPrefab, SinkHolder.transform);
+			cluster.transform.localPosition = info.location;
+			cluster.transform.localRotation = info.orientation;
+			cluster.Address = info.address;
+
+			foreach (BackingInfo backing in info.backings) {
+				GameObject back = Instantiate<GameObject> (BackingPrefab, cluster.transform);
+				back.transform.localPosition = backing.location;
+				back.transform.localRotation = backing.orientation;
+				back.transform.localScale = backing.scale;
+				cluster.Backings.Add (back);
+			}
+
+			foreach (PortInfo port in info.ports) {
+				GameObject portObj = Instantiate<GameObject> (SinkPortPrefab, cluster.transform);
+				portObj.transform.localPosition = port.location;
+				portObj.transform.localRotation = port.orientation;
+				cluster.Ports.Add (portObj);
+			}
 		}
 	}
 }

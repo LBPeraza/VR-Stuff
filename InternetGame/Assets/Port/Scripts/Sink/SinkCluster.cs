@@ -1,14 +1,46 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace InternetGame
 {
+	[Serializable]
+	public class BackingInfo {
+		public Vector3 location;
+		public Quaternion orientation;
+		public Vector3 scale;
+
+		public BackingInfo (Vector3 l, Quaternion o, Vector3 s) {
+			location = l;
+			orientation = o;
+			scale = s;
+		}
+	}
+
+	[Serializable]
+	public class ClusterInfo : PortInfo
+	{
+		public string address;
+		public List<PortInfo> ports;
+
+		public List<BackingInfo> backings;
+
+		public ClusterInfo (Vector3 location, Quaternion orientation,
+			string address, List<PortInfo> ports, List<BackingInfo> backings)
+			: base(location, orientation)
+		{
+			this.address = address;
+			this.ports = ports;
+			this.backings = backings;
+		}
+	}
+
     public class SinkCluster : PacketSink
     {
         [Header("Basic")]
-        public GameObject Backing;
-        public GameObject[] Ports;
+        public List<GameObject> Backings;
+        public List<GameObject> Ports;
 
         [HideInInspector]
         public Color Color;
@@ -28,17 +60,41 @@ namespace InternetGame
 
             var packetColor = (Color)PacketSpawner.AddressToColor[this.Address];
 
-            if (Backing != null)
-            {
-                var originalColor = Backing.GetComponent<Renderer>().material.color;
-                Color = Blend(packetColor, originalColor);
-                Backing.GetComponent<Renderer>().material.color = Color;
-            }
+			foreach (GameObject Backing in Backings) {
+				if (Backing != null) {
+					var originalColor = Backing.GetComponent<Renderer> ().material.color;
+					Color = Blend (packetColor, originalColor);
+					Backing.GetComponent<Renderer> ().material.color = Color;
+				}
+			}
 
             foreach (GameObject port in Ports)
             {
-                port.GetComponent<Renderer>().materials[1].color = packetColor;
+				port.transform.Find ("Model")
+					.transform.Find ("Port")
+					.GetComponent<Renderer> ().materials [1].color = packetColor;
             }
         }
+
+		public ClusterInfo clusterInfo {
+			get {
+				List<PortInfo> ports = new List<PortInfo> ();
+				foreach (GameObject port in Ports) {
+					Transform t = port.transform;
+					ports.Add (new PortInfo (t.localPosition, t.localRotation));
+				}
+				List<BackingInfo> backings = new List<BackingInfo> ();
+				foreach (GameObject backing in Backings) {
+					Transform t = backing.transform;
+					backings.Add (new BackingInfo (t.localPosition, t.localRotation, t.localScale));
+				}
+				return new ClusterInfo (
+					transform.position,
+					transform.rotation,
+					Address,
+					ports,
+				    backings);
+			}
+		}
     }
 }
