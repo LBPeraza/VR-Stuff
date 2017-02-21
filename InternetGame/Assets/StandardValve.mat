@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: EmailIndicator
+  m_Name: StandardValve
   m_Shader: {fileID: 4800000, guid: 908b379d4818cd64184b95a21123d909, type: 3}
-  m_ShaderKeywords: S_SPECULAR_METALLIC
+  m_ShaderKeywords: S_RECEIVE_SHADOWS S_RENDER_BACKFACES S_SPECULAR_METALLIC
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
   stringTagMap:
@@ -88,7 +88,7 @@ Material:
       second: 1
     - first:
         name: _Cull
-      second: 2
+      second: 0
     - first:
         name: _Cutoff
       second: 0.5
@@ -112,7 +112,7 @@ Material:
       second: 1
     - first:
         name: _Metallic
-      second: 0.193
+      second: 0
     - first:
         name: _Mode
       second: 0
@@ -154,10 +154,10 @@ Material:
       second: 1
     - first:
         name: g_bReceiveShadows
-      second: 0
+      second: 1
     - first:
         name: g_bRenderBackfaces
-      second: 0
+      second: 1
     - first:
         name: g_bUnlit
       second: 0
@@ -166,7 +166,7 @@ Material:
       second: 0
     - first:
         name: g_flCubeMapScalar
-      second: 1.16
+      second: 1
     - first:
         name: g_flReflectanceBias
       second: 0
@@ -188,7 +188,7 @@ Material:
       second: {r: 0, g: 0, b: 0, a: 1}
     - first:
         name: _SpecColor
-      second: {r: 0, g: 0, b: 0, a: 1}
+      second: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - first:
         name: g_vWorldAlignedNormalTangentU
       second: {r: -1, g: 0, b: 0, a: 0}

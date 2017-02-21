@@ -14,6 +14,8 @@ namespace InternetGame
         public float FadeRate = .5f; // Alpha per second
         public GameObject PickUpHitbox;
         public GameObject RegularHitbox;
+        public Material FadeMaterial;
+        public Color Color;
 
         [HideInInspector]
         public PacketSource Source;
@@ -35,10 +37,17 @@ namespace InternetGame
             {
                 SetColor(source.Peek().Color);
             }
+
+            FadeMaterial = new Material(Resources.Load<Material>("Materials/ConnectorFaded"));
+            if (FadeMaterial == null)
+            {
+                Debug.LogError("Could not find connector fade material");
+            }
         }
 
         public void SetColor(Color c)
         {
+            Color = c;
             Transform cover = ConnectorModel.transform.FindChild("Cover");
             if (cover != null)
             {
@@ -53,6 +62,11 @@ namespace InternetGame
 
         public virtual void Fade()
         {
+            foreach (Transform model in ConnectorModel.transform)
+            {
+                model.GetComponent<Renderer>().material = FadeMaterial;
+            }
+            SetColor(Color);
             StartCoroutine(GraduallyFade());
         }
 
@@ -99,6 +113,8 @@ namespace InternetGame
                 // Make hitbox smaller for plugging into port.
                 RegularHitbox.SetActive(true);
                 PickUpHitbox.SetActive(false);
+
+                LinkController.GetInstance().Cursor.OnGrab(Cursor.DefaultCursorEventArgs);
             }
         }
 
@@ -123,6 +139,8 @@ namespace InternetGame
                     // Trigger haptic pulse in the meantime.
                     LinkController.GetInstance().OnConnectorSnapping(this);
                 }
+
+                LinkController.GetInstance().Cursor.OnDrop(Cursor.DefaultCursorEventArgs);
             }
         }
 

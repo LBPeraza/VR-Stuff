@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 136742909712995964}
   - component: {fileID: 23614819252488668}
   - component: {fileID: 54007764974008312}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CutBox
   m_TagString: LinkCutBox
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4888206571971956}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Models
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,8 +55,24 @@ GameObject:
   - component: {fileID: 4917827747567662}
   - component: {fileID: 33756467543810104}
   - component: {fileID: 23037035659901466}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Sphere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1572599918019956
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4838380843071260}
+  - component: {fileID: 136741404501004848}
+  m_Layer: 16
+  m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,7 +88,7 @@ GameObject:
   - component: {fileID: 4733305220803260}
   - component: {fileID: 137266142229754234}
   - component: {fileID: 95176769999446212}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: cylinder-link
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +105,7 @@ GameObject:
   - component: {fileID: 4314497721592408}
   - component: {fileID: 54192274742516728}
   - component: {fileID: 114321766223148472}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CylindricalLinkSegment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,10 +132,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1847602588363392}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.61698014, y: 0.1828072, z: -0.99999994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4030301490181334}
+  - {fileID: 4838380843071260}
   - {fileID: 4888206571971956}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -137,6 +154,19 @@ Transform:
   m_Father: {fileID: 4888206571971956}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4838380843071260
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572599918019956}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4314497721592408}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4888206571971956
 Transform:
   m_ObjectHideFlags: 1
@@ -150,7 +180,7 @@ Transform:
   - {fileID: 4733305220803260}
   - {fileID: 4917827747567662}
   m_Father: {fileID: 4314497721592408}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4917827747567662
 Transform:
@@ -315,8 +345,19 @@ MonoBehaviour:
   To: {x: 0, y: 0, z: 0}
   Cap: {fileID: 1556223443514598}
   Cylinder: {fileID: 1648759164193618}
-  initialScale: {x: 0, y: 0, z: 0}
-  renderer: {fileID: 0}
+--- !u!136 &136741404501004848
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572599918019956}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &136742909712995964
 CapsuleCollider:
   m_ObjectHideFlags: 1

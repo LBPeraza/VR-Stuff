@@ -6,13 +6,14 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: EmailIndicator
+  m_Name: ConnectorFaded
   m_Shader: {fileID: 4800000, guid: 908b379d4818cd64184b95a21123d909, type: 3}
-  m_ShaderKeywords: S_SPECULAR_METALLIC
+  m_ShaderKeywords: S_SPECULAR_METALLIC _ALPHABLEND_ON
   m_LightmapFlags: 5
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap:
     OriginalShader: Standard
+    RenderType: Transparent
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:
@@ -97,7 +98,7 @@ Material:
       second: 1
     - first:
         name: _DstBlend
-      second: 0
+      second: 10
     - first:
         name: _FogMultiplier
       second: 1
@@ -112,10 +113,10 @@ Material:
       second: 1
     - first:
         name: _Metallic
-      second: 0.193
+      second: 0
     - first:
         name: _Mode
-      second: 0
+      second: 2
     - first:
         name: _OcclusionStrength
       second: 1
@@ -145,13 +146,13 @@ Material:
       second: 2
     - first:
         name: _SrcBlend
-      second: 1
+      second: 5
     - first:
         name: _UVSec
       second: 0
     - first:
         name: _ZWrite
-      second: 1
+      second: 0
     - first:
         name: g_bReceiveShadows
       second: 0
@@ -166,7 +167,7 @@ Material:
       second: 0
     - first:
         name: g_flCubeMapScalar
-      second: 1.16
+      second: 1
     - first:
         name: g_flReflectanceBias
       second: 0
@@ -188,7 +189,7 @@ Material:
       second: {r: 0, g: 0, b: 0, a: 1}
     - first:
         name: _SpecColor
-      second: {r: 0, g: 0, b: 0, a: 1}
+      second: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - first:
         name: g_vWorldAlignedNormalTangentU
       second: {r: -1, g: 0, b: 0, a: 0}

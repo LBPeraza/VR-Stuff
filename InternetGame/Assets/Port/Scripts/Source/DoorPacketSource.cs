@@ -177,11 +177,14 @@ namespace InternetGame
         {
             if (other.CompareTag("Player") && other.name == "FingersHitbox")
             {
+                Cursor cursor = other.transform.GetComponentInParent<Cursor>();
+
                 // Don't open if the player is drawing a link.
-                Cursor cursor = other.transform.parent.GetComponent<Cursor>();
                 bool cursorIsDrawingLink = LinkController.GetInstance().State == LinkControllerState.DrawingLink;
                 if (!cursorIsDrawingLink && !IsOpen && !IsEmpty())
                 {
+                    cursor.OnEnter(Cursor.DefaultCursorEventArgs);
+
                     StartOpenDoor();
 
                     IsOpen = true;
@@ -195,6 +198,9 @@ namespace InternetGame
             {
                 if (IsOpen)
                 {
+                    Cursor cursor = other.transform.GetComponentInParent<Cursor>();
+                    cursor.OnExit(Cursor.DefaultCursorEventArgs);
+
                     StartCloseDoor();
 
                     IsOpen = false;
