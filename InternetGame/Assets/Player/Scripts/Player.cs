@@ -64,6 +64,11 @@ namespace InternetGame
                 Debug.LogError("LinkCursor property of LinkController is unset.");
             }
 
+            if (PlayerUI != null)
+            {
+                PlayerUI.Initialize(this);
+            }
+
             // Clear out any residual instance, and initialize a new one.
             LinkController.ResetInstance();
             LinkController.GetInstance().Initialize(this);

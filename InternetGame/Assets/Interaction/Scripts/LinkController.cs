@@ -271,7 +271,7 @@ namespace InternetGame
                 if (!(severed.Packet is Virus))
                 {
                     // Report dropped packet.
-                    GameManager.ReportPacketDropped(severed.Packet);
+                    GameManager.GetInstance().ReportPacketDropped(severed.Packet);
                 }
 
                 PlayClip(LinkSoundEffect.LinkSevered);

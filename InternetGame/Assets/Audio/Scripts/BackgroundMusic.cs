@@ -32,6 +32,16 @@ namespace InternetGame
             DeepDreamMachine = Resources.Load<AudioClip>("deep_dream_machine");
             EtherealColosseum = Resources.Load<AudioClip>("ethereal_colosseum");
         }
+
+        public void Pause()
+        {
+            BackgroundMusicSource.Pause();
+        }
+
+        public void Resume()
+        {
+            BackgroundMusicSource.UnPause();
+        }
         
         public void SetBackgroundSoundtrack(Soundtrack track)
         {

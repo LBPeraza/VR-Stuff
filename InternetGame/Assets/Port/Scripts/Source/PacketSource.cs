@@ -258,7 +258,7 @@ namespace InternetGame
                 OnPacketExpired.Invoke(p);
             }
 
-            GameManager.ReportPacketDropped(p);
+            GameManager.GetInstance().ReportPacketDropped(p);
         }
 
         protected virtual void OnEmptied()

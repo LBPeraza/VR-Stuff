@@ -64,7 +64,7 @@ namespace InternetGame
         {
             StopAudio();
 
-            GameManager.ReportStoppedVirus(this);
+            GameManager.GetInstance().ReportStoppedVirus(this);
         }
         
         public override void OnDequeuedFromLink(Link l, PacketSink p)
@@ -76,7 +76,7 @@ namespace InternetGame
 
         public virtual void OnVirusStrikes(PacketSink sink)
         {
-            GameManager.ReportVirusDelivered(this);
+            GameManager.GetInstance().ReportVirusDelivered(this);
 
             sink.PlayAudioClip(PacketSinkSoundEffect.VirusStrikes);
         }

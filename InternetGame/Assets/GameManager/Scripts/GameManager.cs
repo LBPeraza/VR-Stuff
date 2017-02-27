@@ -34,25 +34,39 @@ namespace InternetGame
         public SceneLoader SceneLoader;
         public PacketSpawner PacketSpawner;
         public Player Player;
+        public GameObject HeadCamera;
         public InputManager InputManager;
 		public PortLoader PortLoader;
         public BackgroundMusic BackgroundMusic;
         public Room Room;
 
-        public static GameScore Score;
-        public static Scoreboard Scoreboard;
+        public GameScore Score;
+        public Scoreboard Scoreboard;
 
-        public static LevelParameters LevelParameters;
+        public LevelParameters LevelParameters;
 
-        public static bool IsGameOver;
-        public static bool IsPaused;
+        public bool IsGameOver;
+        public bool IsPaused;
 
         public static string PacketSinksPath = "/Sinks";
         public static string PacketSourcesPath = "/Sources";
 
+        protected static GameManager instance;
+
         private void Start()
         {
+            SetInstance(this);
             Initialize();
+        }
+
+        public static void SetInstance(GameManager manager)
+        {
+            instance = manager;
+        }
+
+        public static GameManager GetInstance()
+        {
+            return instance;
         }
 
         public void LoadLevelData()
@@ -132,6 +146,11 @@ namespace InternetGame
                 Debug.Log("No Player found. Skipping initialization.");
             }
 
+            if (HeadCamera == null)
+            {
+                HeadCamera = GameObject.FindWithTag("MainCamera");
+            }
+
             if (PacketSpawner != null)
             {
                 PacketSpawner.Initialize(this);
@@ -168,24 +187,39 @@ namespace InternetGame
             }
         }
 
-        public static void ReportPacketDelivered(Packet p)
+        public void TogglePause()
+        {
+            IsPaused = !IsPaused;
+            if (IsPaused)
+            {
+                Time.timeScale = 0.0f;
+                BackgroundMusic.Pause();
+            }
+            else
+            {
+                Time.timeScale = 1.0f;
+                BackgroundMusic.Resume();
+            }
+        }
+
+        public void ReportPacketDelivered(Packet p)
         {
             Score.PacketsDelivered++;
             Score.BytesDelivered += p.Size;
         }
 
-        public static void ReportVirusDelivered(Virus v)
+        public void ReportVirusDelivered(Virus v)
         {
             Score.VirusAmount += v.Damage;
             Score.NumberOfVirusesInfected++;
         }
 
-        public static void ReportPacketDropped(Packet p)
+        public void ReportPacketDropped(Packet p)
         {
             Score.PacketsDropped++;
         }
 
-        public static void ReportStoppedVirus(Virus v)
+        public void ReportStoppedVirus(Virus v)
         {
             Score.NumberOfVirusesStopped++;
         }

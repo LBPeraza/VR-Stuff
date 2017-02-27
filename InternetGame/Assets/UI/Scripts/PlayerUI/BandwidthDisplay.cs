@@ -4,9 +4,13 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public abstract class BandwidthDisplay : MonoBehaviour
+    public abstract class BandwidthDisplay : MonoBehaviour, ResourceLoadable
     {
-        public abstract void Initialize();
+        public virtual void Initialize()
+        {
+            LoadResources();
+        }
+        public abstract void LoadResources();
         public abstract void UpdateRemainingBandwidth(float percentage);
     }
 }

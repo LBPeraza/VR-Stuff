@@ -94,7 +94,7 @@ namespace InternetGame
         public virtual void OnDequeuedFromLink(Link l, PacketSink p)
         {
             // Don't put anything critical in here -- Virus overrides this without calling base.
-            GameManager.ReportPacketDelivered(this);
+            GameManager.GetInstance().ReportPacketDelivered(this);
         }
 
         public virtual void OnTransmissionStarted(Link l, Packet p)

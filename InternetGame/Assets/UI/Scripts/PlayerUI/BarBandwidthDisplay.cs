@@ -13,7 +13,14 @@ namespace InternetGame
 
         public override void Initialize()
         {
+            base.Initialize();
+
             UpdateRemainingBandwidth(1.0f);
+        }
+
+        public override void LoadResources()
+        {
+            
         }
 
         public override void UpdateRemainingBandwidth(float percentage)

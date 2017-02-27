@@ -341,7 +341,7 @@ namespace InternetGame
                     // End somewhere other than a sink.
                     State = LinkState.EarlyTerminated;
                     
-                    GameManager.ReportPacketDropped(Packet);
+                    GameManager.GetInstance().ReportPacketDropped(Packet);
                     Packet.OnDropped(PacketDroppedCause.EarlyTermination);
                     Packet = null;
                 }

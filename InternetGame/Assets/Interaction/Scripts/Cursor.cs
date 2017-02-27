@@ -67,6 +67,7 @@ namespace InternetGame
 
         public void Initialize(Player p, bool isRightHand)
         {
+            ControllerInitialized = false;
             DefaultCursorEventArgs.preventCursorModelChange = false;
 
             CursorStates = new CursorStateQueue();
