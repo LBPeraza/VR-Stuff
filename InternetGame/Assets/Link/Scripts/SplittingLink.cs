@@ -6,8 +6,9 @@ namespace InternetGame
 {
     public class SplittingLink : Link
     {
-        public GameObject BurnTrail;
-        public Material BurnMaterial;
+        public static GameObject BurnTrail;
+        public static Material BurnMaterial;
+
         public float LinkBurnDuration = 3.2f;
         public float SegmentBurnOverlap = 0.8f;
 
@@ -22,12 +23,16 @@ namespace InternetGame
 
         private System.Random randomSource;
 
+        public static void LoadResources()
+        {
+            BurnTrail = Resources.Load<GameObject>("Prefabs/LinkBurnTrail");
+            BurnMaterial = Resources.Load<Material>("Materials/LinkFaded");
+        }
+
         public override void Initialize(PacketSource source, Connector connector)
         {
             base.Initialize(source, connector);
 
-            BurnTrail = Resources.Load<GameObject>("Prefabs/LinkBurnTrail");
-            BurnMaterial = Resources.Load<Material>("Materials/LinkFaded");
             randomSource = new System.Random();
         }
 

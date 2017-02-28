@@ -5,33 +5,25 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public abstract class Virus : Packet
+    public abstract class Virus : PacketPayload
     {
         public float Damage;
         public float VirusAlertPercentage;
         public bool VirusHasAlerted;
         public AudioSource AudioSource;
-        public AudioClip VirusAlertClip;
 
-        public override void Initialize()
+        public static AudioClip VirusAlertClip;
+
+        public override void Initialize(Color c)
         {
-            base.Initialize();
+            base.Initialize(c);
 
-            InitializeAudio();
-        }
-
-        public virtual void InitializeAudio()
-        {
             AudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-
-            VirusAlertClip = Resources.Load<AudioClip>("Audio/virus_warning");
         }
 
-        public override void OnTransmissionStarted(Link l, Packet p)
+        public static void LoadResources()
         {
-            base.OnTransmissionStarted(l, p);
-
-            l.OnSever += OnSever;
+            VirusAlertClip = Resources.Load<AudioClip>("Audio/virus_warning");
         }
 
         private void PlayVirusAlertClip()
@@ -52,6 +44,8 @@ namespace InternetGame
 
         public override void OnTransmissionProgress(float percentage)
         {
+            base.OnTransmissionProgress(percentage);
+
             if (!VirusHasAlerted && percentage > VirusAlertPercentage)
             {
                 PlayVirusAlertClip();
@@ -60,8 +54,10 @@ namespace InternetGame
             }
         }
 
-        public virtual void OnSever(Link severerd, SeverCause cause, float totalLength)
+        public override void OnSever(Link severed, SeverCause cause, float totalLength)
         {
+            base.OnSever(severed, cause, totalLength);
+
             StopAudio();
 
             GameManager.GetInstance().ReportStoppedVirus(this);

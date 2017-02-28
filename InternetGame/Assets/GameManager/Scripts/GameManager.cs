@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,7 +24,7 @@ namespace InternetGame
 		public string LevelName;
     }
 
-    public class GameManager : MonoBehaviour
+    public class GameManager : MonoBehaviour, ResourceLoadable
     {
         public GameObject PacketSources;
         public GameObject PacketSinks;
@@ -116,9 +117,29 @@ namespace InternetGame
             }
         }
 
+        public void LoadResources()
+        {
+        }
+
+        public void InitializeFactories()
+        {
+            PacketFactory.Initialize();
+            ConnectorFactory.Initialize();
+            LinkFactory.Initialize();
+        }
+
         public void Initialize()
         {
+            LoadResources();
+
             LoadLevelData();
+
+            InitializeFactories();
+
+            if (HeadCamera == null)
+            {
+                HeadCamera = GameObject.FindWithTag("MainCamera");
+            }
 
             if (SceneLoader == null)
             {
@@ -144,11 +165,6 @@ namespace InternetGame
             else
             {
                 Debug.Log("No Player found. Skipping initialization.");
-            }
-
-            if (HeadCamera == null)
-            {
-                HeadCamera = GameObject.FindWithTag("MainCamera");
             }
 
             if (PacketSpawner != null)
@@ -205,7 +221,7 @@ namespace InternetGame
         public void ReportPacketDelivered(Packet p)
         {
             Score.PacketsDelivered++;
-            Score.BytesDelivered += p.Size;
+            Score.BytesDelivered += p.Payload.Size;
         }
 
         public void ReportVirusDelivered(Virus v)

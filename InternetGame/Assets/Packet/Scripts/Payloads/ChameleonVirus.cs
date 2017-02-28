@@ -14,14 +14,21 @@ namespace InternetGame
         public static int DefaultChameleonVirusSize = 1000;
         public static float DefaultChameleonVirusDamage = 10.0f;
 
-        public override void Initialize()
+        public static Material SaturatedMaterial;
+
+        public static void LoadResources()
         {
-            base.Initialize();
+            SaturatedMaterial = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
+        }
+
+        public override void Initialize(Color c)
+        {
+            base.Initialize(c);
 
             this.Size = DefaultChameleonVirusSize;
             this.Damage = DefaultChameleonVirusDamage;
 
-            Saturated = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
+            Saturated = new Material(SaturatedMaterial);
             Destaturated = new Material(Saturated);
 
             SetSaturatedColor(Color);
@@ -32,16 +39,6 @@ namespace InternetGame
         public override void OnDequeuedFromLink(Link l, PacketSink p)
         {
             base.OnDequeuedFromLink(l, p);
-        }
-
-        public override void OnDequeuedFromPort(PacketSource p, Link l)
-        {
-            base.OnDequeuedFromPort(p, l);
-        }
-
-        public override void OnEnqueuedToPort(PacketSource p)
-        {
-            base.OnEnqueuedToPort(p);
         }
 
         public override void OnTransmissionProgress(float percentageDone)

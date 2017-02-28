@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace InternetGame
 {
-    public class SceneLoader : MonoBehaviour
+    public class SceneLoader : MonoBehaviour, ResourceLoadable
     {
         public GameObject Camera;
 
@@ -22,17 +23,22 @@ namespace InternetGame
 
         public bool IsLoadingLevel = false;
 
-        public void Initialize()
+        public void LoadResources()
         {
-            Camera = GameObject.FindGameObjectWithTag("MainCamera");
-            if (Camera == null)
-            {
-                throw new System.Exception("Could not find Camera object in Level Loader");
-            }
-
             if (CameraObstructionPrefab == null)
             {
                 CameraObstructionPrefab = Resources.Load<GameObject>("CameraObstruction");
+            }
+        }
+
+        public void Initialize()
+        {
+            LoadResources();
+
+            Camera = GameManager.GetInstance().HeadCamera;
+            if (Camera == null)
+            {
+                throw new System.Exception("Could not find Camera object in Scene Loader");
             }
 
             CameraObstructionStartColor = new Color(0, 0, 0, 0);

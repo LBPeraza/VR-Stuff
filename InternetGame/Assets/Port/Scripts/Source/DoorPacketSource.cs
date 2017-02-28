@@ -49,16 +49,21 @@ namespace InternetGame
 
             DoorSounds = AudioMix.AddAudioSourceTo(this.gameObject);
 
-            DoorOpenedSoundEffect = Resources.Load<AudioClip>("Audio/door_opened");
-            DoorClosedSoundEffect = Resources.Load<AudioClip>("Audio/door_closed");
-
-			Particles.Initialize ();
+            Particles.Initialize();
         }
 
         private void InstantiateConnector()
         {
             Connector = ConnectorFactory.CreateDefaultConnector(this, transform);
             Connector.transform.localPosition = ConnectorHidden.localPosition;
+        }
+
+        public override void LoadResources()
+        {
+            base.LoadResources();
+
+            DoorOpenedSoundEffect = Resources.Load<AudioClip>("Audio/door_opened");
+            DoorClosedSoundEffect = Resources.Load<AudioClip>("Audio/door_closed");
         }
 
         public override void Initialize()

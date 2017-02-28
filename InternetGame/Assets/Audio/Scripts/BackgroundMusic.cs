@@ -10,7 +10,7 @@ namespace InternetGame
         EtherealColosseum
     }
 
-    public class BackgroundMusic : MonoBehaviour
+    public class BackgroundMusic : MonoBehaviour, ResourceLoadable
     {
         public AudioSource BackgroundMusicSource;
 
@@ -19,15 +19,15 @@ namespace InternetGame
 
         public void Initialize()
         {
+            LoadResources();
+
             BackgroundMusicSource = this.gameObject.AddComponent<AudioSource>();
             BackgroundMusicSource.loop = true;
             BackgroundMusicSource.spatialBlend = 0.0f; // 2D.
             BackgroundMusicSource.volume = AudioMix.BackgroundMusicVolume;
-
-            LoadAudioAssets();
         }
 
-        private void LoadAudioAssets()
+        public void LoadResources()
         {
             DeepDreamMachine = Resources.Load<AudioClip>("deep_dream_machine");
             EtherealColosseum = Resources.Load<AudioClip>("ethereal_colosseum");

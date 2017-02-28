@@ -24,7 +24,7 @@ namespace InternetGame {
 		}
 	}
 
-	public class PortLoader : MonoBehaviour {
+	public class PortLoader : MonoBehaviour, ResourceLoadable {
 
 		public string levelName = "default_level";
 		public bool SaveOnRun = false;
@@ -45,7 +45,7 @@ namespace InternetGame {
 		private SinkCluster[] SinkObjects;
 
 		public void Initialize(LevelParameters levelParams) {
-			InitializePrefabs ();
+            LoadResources();
 
 			if (SaveOnRun)
 				SavePorts ();
@@ -56,7 +56,7 @@ namespace InternetGame {
 				LoadPorts (levelName);
 		}
 
-		public void InitializePrefabs() {
+		public void LoadResources() {
 			if (SourceHolder == null) {
 				SourceHolder = GameObject.Find ("Sources");
 			}

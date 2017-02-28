@@ -4,45 +4,117 @@ using UnityEngine;
 
 namespace InternetGame
 {
+    public enum PacketMode
+    {
+        FallingPackets,
+        TimedOnDeck
+    }
+
+    public enum PacketPayloadType
+    {
+        Email,
+        ChameleonVirus,
+        Netflix
+    }
+
     public class PacketFactory
     {
         public static float DEFAULT_PACKET_PATIENCE = 17.0f; // Seconds.
         public static float DEFAULT_PACKET_ALERT_TIME = 10.0f; // Seconds
 
-        public static Packet CreateEmail(PacketSource s, PacketSink t)
+        public static PacketMode Mode = PacketMode.TimedOnDeck;
+
+        public static void LoadResources()
         {
-            GameObject emailContainer = new GameObject("Email");
-            emailContainer.transform.parent = s.PacketContainer.transform;
-
-            Email email = emailContainer.AddComponent<Email>();
-            email.Destination = t.Address;
-            email.Patience = DEFAULT_PACKET_PATIENCE;
-            email.AlertTime = DEFAULT_PACKET_ALERT_TIME;
-
-            email.Initialize();
-
-            s.EnqueuePacket(email);
-
-            return email;
+            Email.LoadResources();
+            Netflix.LoadResources();
+            Virus.LoadResources();
+            ChameleonVirus.LoadResources();
         }
 
-        public static Virus CreateEmailVirus(PacketSource s, PacketSink t)
+        public static void Initialize()
         {
-            GameObject emailContainer = new GameObject("EmailVirus");
+            LoadResources();
+        }
+
+        public static Packet CreatePacket(PacketSource s, PacketSink t)
+        {
+            GameObject emailContainer = new GameObject("Packet");
             emailContainer.transform.parent = s.PacketContainer.transform;
 
-            ChameleonVirus emailVirus = emailContainer.AddComponent<ChameleonVirus>();
-            emailVirus.Destination = t.Address;
-            emailVirus.Patience = DEFAULT_PACKET_PATIENCE;
-            emailVirus.AlertTime = DEFAULT_PACKET_ALERT_TIME;
+            Packet packet = null;
+            switch (Mode)
+            {
+                case PacketMode.FallingPackets:
+                    packet = emailContainer.AddComponent<FallingPacket>();
+                    break;
+                case PacketMode.TimedOnDeck:
+                    packet = emailContainer.AddComponent<TimedPacket>();
+                    break;
+            }
+
+            packet.Destination = t.Address;
+            packet.Patience = DEFAULT_PACKET_PATIENCE;
+            packet.AlertTime = DEFAULT_PACKET_ALERT_TIME;
+
+            return packet;
+        }
+
+        public static Packet CreateEmail(PacketSource s, PacketSink t)
+        {
+            Packet p = CreatePacket(s, t);
+            p.Payload = p.gameObject.AddComponent<Email>();
+
+            p.Initialize();
+
+            s.EnqueuePacket(p);
+
+            return p;
+        }
+
+        public static Packet CreateEmailVirus(PacketSource s, PacketSink t)
+        {
+            Packet p = CreatePacket(s, t);
+            p.Payload = p.gameObject.AddComponent<ChameleonVirus>();
+
+            ChameleonVirus emailVirus = (ChameleonVirus) p.Payload;
             emailVirus.ColorChangePercentageOffset = 0.1f; // 10%
             emailVirus.VirusAlertPercentage = 0.6f; // 60%
 
-            emailVirus.Initialize();
+            p.Initialize();
 
-            s.EnqueuePacket(emailVirus);
+            s.EnqueuePacket(p);
 
-            return emailVirus;
+            return p;
+        }
+
+        public static Packet CreateLoadedPacket(
+            PacketSource s,
+            PacketSink t, 
+            PacketPayloadType payloadType)
+        {
+            Packet p = CreatePacket(s, t);
+
+            switch (payloadType)
+            {
+                case PacketPayloadType.ChameleonVirus:
+                    p.Payload = p.gameObject.AddComponent<ChameleonVirus>();
+                    ChameleonVirus emailVirus = (ChameleonVirus)p.Payload;
+                    emailVirus.ColorChangePercentageOffset = 0.1f; // 10%
+                    emailVirus.VirusAlertPercentage = 0.6f; // 60%
+                    break;
+                case PacketPayloadType.Email:
+                    p.Payload = p.gameObject.AddComponent<Email>();
+                    break;
+                case PacketPayloadType.Netflix:
+                    p.Payload = p.gameObject.AddComponent<Netflix>();
+                    break;
+            }
+            p.Initialize();
+
+            s.EnqueuePacket(p);
+
+            return p;
         }
     }
 }
