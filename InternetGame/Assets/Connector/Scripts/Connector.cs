@@ -14,7 +14,7 @@ namespace InternetGame
         public float FadeRate = .5f; // Alpha per second
         public GameObject PickUpHitbox;
         public GameObject RegularHitbox;
-        public Material FadeMaterial;
+        public static Material FadeMaterial;
         public Color Color;
 
         [HideInInspector]
@@ -23,6 +23,15 @@ namespace InternetGame
         public Link Link;
 
         public bool IsAtSource;
+
+        public static void LoadResources()
+        {
+            FadeMaterial = new Material(Resources.Load<Material>("Materials/ConnectorFaded"));
+            if (FadeMaterial == null)
+            {
+                Debug.LogError("Could not find connector fade material");
+            }
+        }
 
         public void Initialize(PacketSource source)
         {
@@ -38,11 +47,6 @@ namespace InternetGame
                 SetColor(source.Peek().Color);
             }
 
-            FadeMaterial = new Material(Resources.Load<Material>("Materials/ConnectorFaded"));
-            if (FadeMaterial == null)
-            {
-                Debug.LogError("Could not find connector fade material");
-            }
         }
 
         public void SetColor(Color c)

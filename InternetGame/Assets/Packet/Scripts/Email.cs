@@ -8,10 +8,17 @@ namespace InternetGame
     public class Email : Packet
     {
         public static int DefaultEmailSize = 1000;
+        public static Material SaturatedMaterial;
+
+        public static void LoadResources()
+        {
+            SaturatedMaterial = Resources.Load<Material>("Materials/EmailIndicator");
+        }
+
         public override void Initialize()
         {
             base.Initialize();
-            Saturated = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
+            Saturated = new Material(SaturatedMaterial);
             Destaturated = new Material(Saturated);
 
             SetSaturatedColor(Color);

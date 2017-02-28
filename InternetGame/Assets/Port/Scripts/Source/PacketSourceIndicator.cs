@@ -16,8 +16,16 @@ namespace InternetGame
     public abstract class PacketSourceIndicator : MonoBehaviour
     {
         public PacketSource Source;
+
+        public virtual void LoadResources()
+        {
+
+        }
+
         public virtual void Initialize(PacketSource source)
         {
+            LoadResources();
+
             Source = source;
 
             source.OnPacketEnqueued += OnPacketEnqueued;

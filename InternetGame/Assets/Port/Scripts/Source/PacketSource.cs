@@ -21,11 +21,12 @@ namespace InternetGame
         }
     }
 
-    public class PacketSource : MonoBehaviour
+    public class PacketSource : MonoBehaviour, ResourceLoadable
     {
         public GameObject PacketContainer;
         public List<Packet> QueuedPackets;
         public List<Link> ActiveLinks;
+        public GameObject IndicatorPrefab;
         public PacketSourceIndicator Indicator;
         public int Capacity = 5;
         public PacketSourceInfo Info;
@@ -56,8 +57,32 @@ namespace InternetGame
             return ActiveLinks.Exists(link => !link.Finished);
         }
 
+        public virtual void LoadResources()
+        {
+            if (PacketWarningClip == null)
+            {
+                PacketWarningClip = Resources.Load<AudioClip>("Audio/packet_alert");
+            }
+
+            if (PacketDroppedClip == null)
+            {
+                PacketDroppedClip = Resources.Load<AudioClip>("Audio/packet_dropped");
+            }
+
+            if (PacketEnqueuedClip == null)
+            {
+                PacketEnqueuedClip = Resources.Load<AudioClip>("Audio/packet_enqueued");
+            }
+
+            IndicatorPrefab = Resources.Load<GameObject>("Prefabs/RingIndicator");
+
+            Hexagon.LoadResources();
+        }
+
         public virtual void Initialize()
         {
+            LoadResources();
+
             ActiveLinks = new List<Link>();
             QueuedPackets = new List<Packet>();
 
@@ -78,9 +103,7 @@ namespace InternetGame
 
             if (Indicator == null)
             {
-                var prefab = Resources.Load<GameObject>("Prefabs/RingIndicator");
-                var indicator = Instantiate(prefab, this.transform, false);
-
+                var indicator = Instantiate(IndicatorPrefab, this.transform, false);
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
 
@@ -94,21 +117,6 @@ namespace InternetGame
             EnqueuedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
             PacketDroppedAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
             PacketWarningAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-
-            if (PacketWarningClip == null)
-            {
-                PacketWarningClip = Resources.Load<AudioClip>("Audio/packet_alert");
-            }
-
-            if (PacketDroppedClip == null)
-            {
-                PacketDroppedClip = Resources.Load<AudioClip>("Audio/packet_dropped");
-            }
-
-            if (PacketEnqueuedClip == null)
-            {
-                PacketEnqueuedClip = Resources.Load<AudioClip>("Audio/packet_enqueued");
-            }
         }
 
         public void PlayClip(PacketSourceSoundEffect effect)

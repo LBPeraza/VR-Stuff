@@ -14,6 +14,13 @@ namespace InternetGame
         public static int DefaultChameleonVirusSize = 1000;
         public static float DefaultChameleonVirusDamage = 10.0f;
 
+        public static Material SaturatedMaterial;
+
+        public static void LoadResources()
+        {
+            SaturatedMaterial = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -21,7 +28,7 @@ namespace InternetGame
             this.Size = DefaultChameleonVirusSize;
             this.Damage = DefaultChameleonVirusDamage;
 
-            Saturated = new Material(Resources.Load<Material>("Materials/EmailIndicator"));
+            Saturated = new Material(SaturatedMaterial);
             Destaturated = new Material(Saturated);
 
             SetSaturatedColor(Color);

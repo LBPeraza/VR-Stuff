@@ -59,7 +59,7 @@ namespace InternetGame
             Saturated.color = c;
             Destaturated.color = MakeLighter(c);
         }
-
+        
         public virtual void Initialize()
         {
             Color = (Color)PacketSpawner.AddressToColor[Destination];

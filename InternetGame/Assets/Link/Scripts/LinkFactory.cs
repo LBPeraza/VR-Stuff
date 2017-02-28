@@ -13,6 +13,22 @@ namespace InternetGame
 		public static float LINK_THICKNESS = 0.03f;
 		public static float LINK_TAPERED_THICKNESS = 0.01f;
 
+        public static GameObject CylindricalLinkSegmentPrefab;
+        public static GameObject SquareLinkSegmentPrefab; 
+
+        public static void LoadResources()
+        {
+            CylindricalLinkSegmentPrefab = (GameObject)Resources.Load("Prefabs/CylindricalLinkSegment");
+            SquareLinkSegmentPrefab = (GameObject)Resources.Load("Prefabs/LinkSegment");
+
+            SplittingLink.LoadResources();
+        }
+
+        public static void Initialize()
+        {
+            LoadResources();
+        }
+
         public static GameObject CreateLink(PacketSource s)
         {
             GameObject linkContainer = new GameObject("Link");
@@ -26,11 +42,11 @@ namespace InternetGame
 
             if (USE_CYLINDRICAL_LINK_SEGMENT)
             {
-                link.LinkSegmentPrefab = (GameObject)Resources.Load("Prefabs/CylindricalLinkSegment");
+                link.LinkSegmentPrefab = CylindricalLinkSegmentPrefab;
             }
             else
             {
-                link.LinkSegmentPrefab = (GameObject)Resources.Load("Prefabs/LinkSegment");
+                link.LinkSegmentPrefab = SquareLinkSegmentPrefab;
             }
 
             return linkContainer;

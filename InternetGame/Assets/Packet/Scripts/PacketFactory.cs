@@ -9,6 +9,18 @@ namespace InternetGame
         public static float DEFAULT_PACKET_PATIENCE = 17.0f; // Seconds.
         public static float DEFAULT_PACKET_ALERT_TIME = 10.0f; // Seconds
 
+        public static void LoadResources()
+        {
+            Email.LoadResources();
+            Virus.LoadResources();
+            ChameleonVirus.LoadResources();
+        }
+
+        public static void Initialize()
+        {
+            LoadResources();
+        }
+
         public static Packet CreateEmail(PacketSource s, PacketSink t)
         {
             GameObject emailContainer = new GameObject("Email");

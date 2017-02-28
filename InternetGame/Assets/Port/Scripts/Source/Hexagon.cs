@@ -8,7 +8,7 @@ namespace InternetGame
     {
         public float Radius;
         public float RingThickness = 0.15f;
-        public GameObject HexagonSidePrefab;
+        public static GameObject HexagonSidePrefab;
         public Packet AssociatedPacket;
 
         public GameObject RightUpper;
@@ -32,6 +32,11 @@ namespace InternetGame
         private Coroutine colorChangingCoroutine;
         private Coroutine resizingCoroutine;
 
+        public static void LoadResources()
+        {
+            HexagonSidePrefab = Resources.Load<GameObject>("Prefabs/HexagonSide");
+        }
+
         public void Initialize(Material neutralMaterial, Material activeMaterial, float radius, float thickness)
         {
             Radius = radius;
@@ -43,8 +48,6 @@ namespace InternetGame
 
             NeutralMaterial = new Material(neutralMaterial);
             ActiveMaterial = new Material(activeMaterial);
-
-            HexagonSidePrefab = Resources.Load<GameObject>("Prefabs/HexagonSide");
 
             RightUpper = Instantiate(HexagonSidePrefab, this.transform, false);
             RightLower = Instantiate(HexagonSidePrefab, this.transform, false);

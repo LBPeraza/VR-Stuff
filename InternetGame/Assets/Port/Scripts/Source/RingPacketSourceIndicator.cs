@@ -22,9 +22,9 @@ namespace InternetGame
         public float RingThickness = 0.015f;
         public bool EnableEmission;
 
-        public override void Initialize(PacketSource source)
+        public override void LoadResources()
         {
-            base.Initialize(source);
+            base.LoadResources();
 
             if (NeutralMaterial == null)
             {
@@ -34,6 +34,11 @@ namespace InternetGame
             {
                 ActiveMaterial = Resources.Load<Material>("Materials/PacketSourceIndicatorActiveMaterial");
             }
+        }
+
+        public override void Initialize(PacketSource source)
+        {
+            base.Initialize(source);
 
             NeutralMaterialCopy = new Material(NeutralMaterial);
             ActiveMaterialCopy = new Material(ActiveMaterial);

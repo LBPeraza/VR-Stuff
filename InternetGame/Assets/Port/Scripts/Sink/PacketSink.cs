@@ -34,9 +34,16 @@ namespace InternetGame
 
 		private PortInfo info;
 
+        public virtual void LoadResources()
+        {
+            VirusStrikesAudioClip = Resources.Load<AudioClip>("Audio/virus_strikes");
+        }
+
         public virtual void Initialize()
         {
-            InitializeAudio();
+            LoadResources();
+
+            VirusStrikesAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
 
             DropZones = new List<VRTK_SnapDropZone>(
                 GetComponentsInChildren<VRTK_SnapDropZone>());
@@ -56,12 +63,6 @@ namespace InternetGame
         private void ConnectorSnappedToDropZone(object sender, SnapDropZoneEventArgs e)
         {
             LinkController.GetInstance().EndLink(this);
-        }
-
-        private void InitializeAudio()
-        {
-            VirusStrikesAudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-            VirusStrikesAudioClip = Resources.Load<AudioClip>("Audio/virus_strikes");
         }
 
         public void PlayAudioClip(PacketSinkSoundEffect effect)

@@ -11,19 +11,18 @@ namespace InternetGame
         public float VirusAlertPercentage;
         public bool VirusHasAlerted;
         public AudioSource AudioSource;
-        public AudioClip VirusAlertClip;
+
+        public static AudioClip VirusAlertClip;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            InitializeAudio();
+            AudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
         }
 
-        public virtual void InitializeAudio()
+        public static void LoadResources()
         {
-            AudioSource = AudioMix.AddAudioSourceTo(this.gameObject);
-
             VirusAlertClip = Resources.Load<AudioClip>("Audio/virus_warning");
         }
 

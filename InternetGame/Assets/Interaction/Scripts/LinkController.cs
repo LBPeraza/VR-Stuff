@@ -72,9 +72,16 @@ namespace InternetGame
             return linkController;
         }
 
+        public void LoadResources()
+        {
+            LoadAudioClips();
+        }
+
         // Use this for initialization
         public void Initialize(Player p)
         {
+            LoadResources();
+
             Player = p;
 
             ObjectId = GetInstanceID();
@@ -88,12 +95,6 @@ namespace InternetGame
             State = LinkControllerState.Inactive;
 
             Cursor.OnControllerFound += InitializeInput;
-
-            LoadAudioClips();
-        }
-
-        private void InitializeInput(VRTK.VRTK_ControllerEvents input)
-        {
         }
 
         private void LoadAudioClips()
@@ -127,6 +128,10 @@ namespace InternetGame
             {
                 LinkDrawing = Resources.Load<AudioClip>("Audio/link_drawing");
             }
+        }
+
+        private void InitializeInput(VRTK.VRTK_ControllerEvents input)
+        {
         }
 
         public Link StartLink(PacketSource source, Connector connector)
