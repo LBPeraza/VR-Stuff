@@ -43,7 +43,10 @@ namespace InternetGame
                 {
                     if (random.NextDouble() > VirusProbability)
                     {
-                        Packet p = PacketFactory.CreateEmail(Sources[sourceIndex], Sinks[sinkIndex]);
+                        Packet p = PacketFactory.CreateLoadedPacket(
+                            Sources[sourceIndex], 
+                            Sinks[sinkIndex], 
+                            PacketPayloadType.Netflix);
                     }
                     else
                     {

@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public class Email : PacketPayload
+    public class Netflix : PacketPayload
     {
-        public static int DefaultEmailSize = 1000;
+        public static int DefaultNetflixSize = 3000;
         public static Material SaturatedMaterial;
 
         public static void LoadResources()
@@ -26,7 +26,7 @@ namespace InternetGame
 
             if (Size <= 0)
             {
-                Size = DefaultEmailSize;
+                Size = DefaultNetflixSize;
             }
         }
     }

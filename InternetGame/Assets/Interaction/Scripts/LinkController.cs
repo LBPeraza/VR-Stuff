@@ -142,7 +142,7 @@ namespace InternetGame
             {
                 PlayClip(LinkSoundEffect.LinkDrawing);
 
-                GameObject LinkContainer = LinkFactory.CreateLink(source);
+                GameObject LinkContainer = LinkFactory.CreateLink(source, source.Peek());
                 connector.transform.SetParent(LinkContainer.transform);
 
                 var linkSegment = LinkContainer.GetComponent<Link>();

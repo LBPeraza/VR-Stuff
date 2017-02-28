@@ -12,6 +12,7 @@ namespace InternetGame
         public static bool USE_CYLINDRICAL_LINK_SEGMENT = true;
 		public static float LINK_THICKNESS = 0.03f;
 		public static float LINK_TAPERED_THICKNESS = 0.01f;
+        public static float BASE_PACKET_SIZE = 1400.0f;
 
         public static GameObject CylindricalLinkSegmentPrefab;
         public static GameObject SquareLinkSegmentPrefab; 
@@ -29,7 +30,12 @@ namespace InternetGame
             LoadResources();
         }
 
-        public static GameObject CreateLink(PacketSource s)
+        public static float PayloadThickness(PacketPayload p)
+        {
+            return (p.Size / BASE_PACKET_SIZE) * LINK_THICKNESS;
+        }
+
+        public static GameObject CreateLink(PacketSource s, Packet p)
         {
             GameObject linkContainer = new GameObject("Link");
             Link link = linkContainer.AddComponent<SplittingLink>();
@@ -38,7 +44,7 @@ namespace InternetGame
             link.SegmentAddInterval = SEGMENT_ADD_INTERVAL;
             link.SegmentMinLength = LINK_MIN_LENGTH;
             link.Bandwidth = LINK_BANDWIDTH;
-			link.UntaperedDiameter = LINK_THICKNESS;
+			link.UntaperedDiameter = PayloadThickness(p.Payload);
 
             if (USE_CYLINDRICAL_LINK_SEGMENT)
             {

@@ -10,6 +10,13 @@ namespace InternetGame
         TimedOnDeck
     }
 
+    public enum PacketPayloadType
+    {
+        Email,
+        ChameleonVirus,
+        Netflix
+    }
+
     public class PacketFactory
     {
         public static float DEFAULT_PACKET_PATIENCE = 17.0f; // Seconds.
@@ -20,6 +27,7 @@ namespace InternetGame
         public static void LoadResources()
         {
             Email.LoadResources();
+            Netflix.LoadResources();
             Virus.LoadResources();
             ChameleonVirus.LoadResources();
         }
@@ -73,6 +81,35 @@ namespace InternetGame
             emailVirus.ColorChangePercentageOffset = 0.1f; // 10%
             emailVirus.VirusAlertPercentage = 0.6f; // 60%
 
+            p.Initialize();
+
+            s.EnqueuePacket(p);
+
+            return p;
+        }
+
+        public static Packet CreateLoadedPacket(
+            PacketSource s,
+            PacketSink t, 
+            PacketPayloadType payloadType)
+        {
+            Packet p = CreatePacket(s, t);
+
+            switch (payloadType)
+            {
+                case PacketPayloadType.ChameleonVirus:
+                    p.Payload = p.gameObject.AddComponent<ChameleonVirus>();
+                    ChameleonVirus emailVirus = (ChameleonVirus)p.Payload;
+                    emailVirus.ColorChangePercentageOffset = 0.1f; // 10%
+                    emailVirus.VirusAlertPercentage = 0.6f; // 60%
+                    break;
+                case PacketPayloadType.Email:
+                    p.Payload = p.gameObject.AddComponent<Email>();
+                    break;
+                case PacketPayloadType.Netflix:
+                    p.Payload = p.gameObject.AddComponent<Netflix>();
+                    break;
+            }
             p.Initialize();
 
             s.EnqueuePacket(p);
