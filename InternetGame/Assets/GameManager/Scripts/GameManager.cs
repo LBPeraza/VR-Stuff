@@ -221,7 +221,7 @@ namespace InternetGame
         public void ReportPacketDelivered(Packet p)
         {
             Score.PacketsDelivered++;
-            Score.BytesDelivered += p.Size;
+            Score.BytesDelivered += p.Payload.Size;
         }
 
         public void ReportVirusDelivered(Virus v)

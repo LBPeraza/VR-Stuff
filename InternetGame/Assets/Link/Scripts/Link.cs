@@ -260,7 +260,7 @@ namespace InternetGame
                 LinkSegment linkSegment = MakeSegmentBetween(lastSegmentEnd, nextPosition);
 
                 // Set initial color to be desaturated.
-                linkSegment.Desaturate(Packet.Destaturated);
+                linkSegment.Desaturate(Packet.Payload.Destaturated);
 
                 Segments.Add(linkSegment);
 
@@ -291,7 +291,7 @@ namespace InternetGame
 
                 if (cause == SeverCause.Player)
                 {
-                    if (Packet is Virus)
+                    if (Packet.Payload is Virus)
                     {
                         // Add some additional information if the player prevented a virus, specifically.
                         cause = SeverCause.PlayerPreventedVirus;
@@ -376,7 +376,7 @@ namespace InternetGame
 
                 State = LinkState.TransmittingPacket;
                 TransmissionProgress = SeedTransmissionProgress;
-                NeededProgress = (Packet.Size * TotalLength);
+                NeededProgress = (Packet.Payload.Size * TotalLength);
                 IsTransmittingPacket = true;
 
                 if (OnTransmissionStarted != null)
@@ -422,7 +422,7 @@ namespace InternetGame
         {
             for (int i = start; i < end; i++)
             {
-                Segments[i].Saturate(p.Saturated);
+                Segments[i].Saturate(p.Payload.Saturated);
             }
         }
 
@@ -430,7 +430,7 @@ namespace InternetGame
         {
             for (int i = start; i < end; i++)
             {
-                Segments[i].Desaturate(p.Destaturated);
+                Segments[i].Desaturate(p.Payload.Destaturated);
             }
         }
 

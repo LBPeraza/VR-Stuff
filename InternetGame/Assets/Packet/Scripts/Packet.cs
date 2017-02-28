@@ -13,10 +13,8 @@ namespace InternetGame
 
     public abstract class Packet : MonoBehaviour
     {
-        public int Size; // In "bytes".
+        public PacketPayload Payload;
         public Color Color;
-        public Material Saturated;
-        public Material Destaturated;
         public string Destination;
 
         public bool IsWaitingAtPort;
@@ -39,30 +37,12 @@ namespace InternetGame
         protected bool HasDropped = false;
 
         protected Link TransmittingLink;
-
-        protected float saturationPenalty = 0.0f;
-        protected float valuePenalty = 0.5f;
-        protected Color MakeLighter(Color c)
-        {
-            float h, s, v;
-            Color.RGBToHSV(c, out h, out s, out v);
-            var newColor = Color.HSVToRGB(
-                h, 
-                Mathf.Clamp01(s - saturationPenalty), 
-                Mathf.Clamp01(v - valuePenalty));
-            return newColor;
-        }
-
-        public void SetSaturatedColor(Color c)
-        {
-            Saturated.SetColor("_EmissionColor", c);
-            Saturated.color = c;
-            Destaturated.color = MakeLighter(c);
-        }
         
         public virtual void Initialize()
         {
             Color = (Color)PacketSpawner.AddressToColor[Destination];
+
+            Payload.Initialize(Color);
         }
 
         public virtual void OnDeckAtPort(PacketSource p)
@@ -91,21 +71,26 @@ namespace InternetGame
 
             l.OnTransmissionStarted += OnTransmissionStarted;
         }
+
         public virtual void OnDequeuedFromLink(Link l, PacketSink p)
         {
+            Payload.OnDequeuedFromLink(l, p);
+
             // Don't put anything critical in here -- Virus overrides this without calling base.
             GameManager.GetInstance().ReportPacketDelivered(this);
         }
 
         public virtual void OnTransmissionStarted(Link l, Packet p)
         {
+            Payload.OnTransmissionStarted(l, p);
+
             TransmittingLink = l;
             l.OnTransmissionProgress += OnTransmissionProgress;
         }
 
         public virtual void OnTransmissionProgress(float percentageDone)
         {
-            
+            Payload.OnTransmissionProgress(percentageDone);
         }
 
         public virtual void OnDropped(PacketDroppedCause cause)
@@ -136,24 +121,7 @@ namespace InternetGame
 
         public virtual void Update()
         {
-            if (IsOnDeck)
-            {
-                if (!HasAlerted && Time.fixedTime > OnDeckTime + AlertTime)
-                {
-                    // Alert player to expiring packet.
-                    ExpireWarning();
-
-                    HasAlerted = true;
-                }
-                if (!HasDropped && Time.fixedTime > OnDeckTime + Patience)
-                {
-                    // Drop packet.
-                    Expire();
-
-                    HasDropped = true;
-                    IsOnDeck = false;
-                }
-            }
+            
         }
     }
 }

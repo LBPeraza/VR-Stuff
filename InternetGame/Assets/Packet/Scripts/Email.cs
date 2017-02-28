@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public class Email : Packet
+    public class Email : PacketPayload
     {
         public static int DefaultEmailSize = 1000;
         public static Material SaturatedMaterial;
@@ -15,9 +15,10 @@ namespace InternetGame
             SaturatedMaterial = Resources.Load<Material>("Materials/EmailIndicator");
         }
 
-        public override void Initialize()
+        public override void Initialize(Color c)
         {
-            base.Initialize();
+            base.Initialize(c);
+
             Saturated = new Material(SaturatedMaterial);
             Destaturated = new Material(Saturated);
 
@@ -27,26 +28,6 @@ namespace InternetGame
             {
                 Size = DefaultEmailSize;
             }
-        }
-
-        public override void OnDequeuedFromLink(Link l, PacketSink p)
-        {
-            base.OnDequeuedFromLink(l, p);
-        }
-
-        public override void OnDequeuedFromPort(PacketSource p, Link l)
-        {
-            base.OnDequeuedFromPort(p, l);
-        }
-
-        public override void OnEnqueuedToPort(PacketSource p)
-        {
-            base.OnEnqueuedToPort(p);
-        }
-
-        public override void OnTransmissionProgress(float percentageDone)
-        {
-            base.OnTransmissionProgress(percentageDone);
         }
     }
 }
