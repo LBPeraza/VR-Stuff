@@ -134,12 +134,14 @@ namespace InternetGame
         {
         }
 
-        public Link StartLink(PacketSource source, Connector connector)
+        public Link StartLink(Cursor cursor, PacketSource source, Connector connector)
         {
             if (CurrentLink == null
                 && !Player.IsOutOfBandwidth()
                 && source.QueuedPackets.Count > 0)
             {
+                Cursor = cursor;
+
                 PlayClip(LinkSoundEffect.LinkDrawing);
 
                 GameObject LinkContainer = LinkFactory.CreateLink(source, source.Peek());

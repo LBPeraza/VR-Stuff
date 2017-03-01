@@ -21,6 +21,8 @@ namespace InternetGame
         public PacketSource Source;
         [HideInInspector]
         public Link Link;
+        [HideInInspector]
+        public Cursor Cursor;
 
         public bool IsAtSource;
 
@@ -106,7 +108,11 @@ namespace InternetGame
 
             if (IsAtSource && !Source.IsEmpty())
             {
-                Link = LinkController.GetInstance().StartLink(Source, this);
+                VRTK_InteractGrab grab = e.interactingObject.GetComponentInParent<VRTK_InteractGrab>();
+                Cursor cursor = grab.controllerAttachPoint.GetComponentInParent<Cursor>();
+                Cursor = cursor;
+
+                Link = LinkController.GetInstance().StartLink(cursor, Source, this);
                 Link.OnSever += OnLinkSever;
 
                 IsAtSource = false;
@@ -118,7 +124,7 @@ namespace InternetGame
                 RegularHitbox.SetActive(true);
                 PickUpHitbox.SetActive(false);
 
-                LinkController.GetInstance().Cursor.OnGrab(Cursor.DefaultCursorEventArgs);
+                Cursor.OnGrab(Cursor.DefaultCursorEventArgs);
             }
         }
 
