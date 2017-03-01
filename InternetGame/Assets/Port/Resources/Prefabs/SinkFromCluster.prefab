@@ -170,9 +170,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4624268680490472}
   - component: {fileID: 54665099265583348}
-  - component: {fileID: 114680822010157038}
   - component: {fileID: 114934765851747078}
   - component: {fileID: 136541702065232834}
+  - component: {fileID: 114217758819826704}
   m_Layer: 18
   m_Name: DropZone
   m_TagString: Untagged
@@ -202,7 +202,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1224138461393410}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.00266, z: -0.00702}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4989798709989994}
@@ -256,7 +256,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1656740239364006}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.0083, z: 0.0452}
+  m_LocalPosition: {x: 0, y: -0.0113, z: 0.0389}
   m_LocalScale: {x: 5.000001, y: 5.000005, z: 5.000005}
   m_Children: []
   m_Father: {fileID: 4026049063240164}
@@ -342,7 +342,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1730892482757750}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.0083, z: 0.0452}
+  m_LocalPosition: {x: 0, y: -0.0113, z: 0.0389}
   m_LocalScale: {x: 5.000001, y: 5.000005, z: 5.000005}
   m_Children: []
   m_Father: {fileID: 4026049063240164}
@@ -647,7 +647,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114680822010157038
+--- !u!114 &114217758819826704
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -655,17 +655,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1870241754804126}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa31935730602684ca098655260a7c33, type: 3}
+  m_Script: {fileID: 11500000, guid: 245232acf547d214fac7159cd48c9e92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   highlightObjectPrefab: {fileID: 1574925252712052}
   snapType: 0
-  snapDuration: 0.2
+  snapDuration: 0.5
   applyScalingOnSnap: 0
-  highlightColor: {r: 0.53676474, g: 1, b: 0.6933063, a: 0}
+  highlightColor: {r: 0.14705884, g: 1, b: 0.47058827, a: 0}
   highlightAlwaysActive: 0
   validObjectListPolicy: {fileID: 114934765851747078}
   displayDropZoneInEditor: 1
+  StraightenRate: 0.05
+  IntertiaRate: 0.5
 --- !u!114 &114934765851747078
 MonoBehaviour:
   m_ObjectHideFlags: 1

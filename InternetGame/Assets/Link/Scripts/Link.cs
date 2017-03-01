@@ -40,6 +40,7 @@ namespace InternetGame
         public float TaperedDiameter = 0.01f; // Meters
 		public float UntaperedDiameter = 0.03f;
         public Connector Connector;
+        public int SlopeWindow = 3;
 
         public delegate void SeverHandler(Link severed, SeverCause cause, float totalLength);
         public event SeverHandler OnSever;
@@ -64,6 +65,7 @@ namespace InternetGame
         public float? FinishedTime;
         public bool Severed;
         public float TotalLength;
+        public Vector3 RecentSlope;
 
         public bool AdjustedInitialSegments = false;
         public bool IsTransmittingPacket;
@@ -107,6 +109,8 @@ namespace InternetGame
 
             lastSegmentAddTime = currentTime;
             lastSegmentEnd = source.LinkConnectionPoint.position;
+
+            RecentSlope = Vector3.zero;
 
             source.OnLinkStarted(this);
             
@@ -184,6 +188,17 @@ namespace InternetGame
                 }
             }
             
+        }
+
+        public static Vector3 CubicLerp(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
+        {
+            t = Mathf.Clamp01(t);
+            float oneMinusT = 1f - t;
+            return
+                oneMinusT * oneMinusT * oneMinusT * p0 +
+                3f * oneMinusT * oneMinusT * t * p1 +
+                3f * oneMinusT * t * t * p2 +
+                t * t * t * p3;
         }
 
         public static Vector3 QuadraticLerp(Vector3 p0, Vector3 p1, Vector3 p2, float t)
@@ -436,6 +451,33 @@ namespace InternetGame
             }
         }
 
+        private void UpdateSlope()
+        {
+            // Update slope.
+            if (Segments.Count > SlopeWindow)
+            {
+                LinkSegment phasedOutSegment = Segments[Segments.Count - SlopeWindow - 1];
+                Vector3 phasedOutVector = phasedOutSegment.To - phasedOutSegment.From;
+
+                // Reuses computation from previous update.
+                Vector3 reusableComputation = (RecentSlope - (phasedOutVector / SlopeWindow));
+
+                LinkSegment newSegment = Segments[Segments.Count - 1];
+                Vector3 newVector = newSegment.To - newSegment.From;
+
+                RecentSlope = reusableComputation + (newVector / SlopeWindow);
+            }
+            else
+            {
+                Vector3 accumulator = Vector3.zero;
+                foreach (LinkSegment segment in Segments)
+                {
+                    accumulator += (segment.To - segment.From);
+                }
+                RecentSlope = accumulator / Segments.Count;
+            }
+        }
+
         public void Update()
         {
             if (!GameManager.GetInstance().IsPaused)
@@ -446,6 +488,8 @@ namespace InternetGame
                         if (GameManager.GetInstance().GameTime() - lastSegmentAddTime >= SegmentAddInterval)
                         {
                             AddNewSegment(Connector.LinkPointer.position);
+
+                            UpdateSlope();
                         }
 
                         if (!AdjustedInitialSegments && TotalLength > InitialLinkLength)

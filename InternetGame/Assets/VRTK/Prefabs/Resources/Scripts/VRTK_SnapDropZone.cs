@@ -439,7 +439,7 @@ namespace VRTK
             return newLocalScale;
         }
 
-        private IEnumerator UpdateTransformDimensions(VRTK_InteractableObject ioCheck, GameObject endSettings, Vector3 endScale, float duration)
+        protected virtual IEnumerator UpdateTransformDimensions(VRTK_InteractableObject ioCheck, GameObject endSettings, Vector3 endScale, float duration)
         {
             var elapsedTime = 0f;
             var ioTransform = ioCheck.transform;
@@ -467,7 +467,7 @@ namespace VRTK
             SetDropSnapType(ioCheck);
         }
 
-        private void SetDropSnapType(VRTK_InteractableObject ioCheck)
+        protected void SetDropSnapType(VRTK_InteractableObject ioCheck)
         {
             switch (snapType)
             {
