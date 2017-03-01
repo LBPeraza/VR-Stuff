@@ -94,7 +94,9 @@ namespace InternetGame
 
             Connector = connector;
 
-            StartTime = Time.fixedTime;
+            float currentTime = GameManager.GetInstance().GameTime();
+
+            StartTime = currentTime;
             Finished = false;
             FinishedTime = null;
             TotalLength = 0.0f;
@@ -103,7 +105,7 @@ namespace InternetGame
 
             possibleDestinations = new List<PacketSink>();
 
-            lastSegmentAddTime = Time.fixedTime;
+            lastSegmentAddTime = currentTime;
             lastSegmentEnd = source.LinkConnectionPoint.position;
 
             source.OnLinkStarted(this);
@@ -264,7 +266,7 @@ namespace InternetGame
 
                 Segments.Add(linkSegment);
 
-                lastSegmentAddTime = Time.fixedTime;
+                lastSegmentAddTime = GameManager.GetInstance().GameTime();
                 lastSegmentEnd = nextPosition;
 
                 // Notify handlers of progress.
@@ -284,7 +286,7 @@ namespace InternetGame
             {
                 Finished = true;
                 Severed = true;
-                FinishedTime = Time.fixedTime;
+                FinishedTime = GameManager.GetInstance().GameTime();
                 State = LinkState.Severed;
 
                 UndoAlertPacketSinksOfPacket();
@@ -349,7 +351,7 @@ namespace InternetGame
                 UndoAlertPacketSinksOfPacket();
 
                 Finished = true;
-                FinishedTime = Time.fixedTime;
+                FinishedTime = GameManager.GetInstance().GameTime();
             }
 
             return TotalLength;
@@ -401,7 +403,7 @@ namespace InternetGame
                 // Clean up packet.
                 Destroy(Packet.gameObject);
 
-                var cause = Packet is Virus ?
+                var cause = Packet.Payload is Virus ?
                     SeverCause.VirusTransmitted : 
                     SeverCause.TransmissionFinished;
 
@@ -436,55 +438,57 @@ namespace InternetGame
 
         public void Update()
         {
-            switch (State)
+            if (!GameManager.GetInstance().IsPaused)
             {
-                case LinkState.UnderConstruction:
-                    if (Time.fixedTime - lastSegmentAddTime >= SegmentAddInterval)
-                    {
-                        AddNewSegment(Connector.LinkPointer.position);
-                    }
+                switch (State)
+                {
+                    case LinkState.UnderConstruction:
+                        if (GameManager.GetInstance().GameTime() - lastSegmentAddTime >= SegmentAddInterval)
+                        {
+                            AddNewSegment(Connector.LinkPointer.position);
+                        }
 
-                    if (!AdjustedInitialSegments && TotalLength > InitialLinkLength)
-                    {
-                        AdjustInitialLinkSegments(Segments[Segments.Count - 1], Segments.Count);
-                    }
-                    break;
-                case LinkState.TransmittingPacket:
-                    int oldStart = PacketStart;
-                    int oldEnd = PacketEnd;
+                        if (!AdjustedInitialSegments && TotalLength > InitialLinkLength)
+                        {
+                            AdjustInitialLinkSegments(Segments[Segments.Count - 1], Segments.Count);
+                        }
+                        break;
+                    case LinkState.TransmittingPacket:
+                        int oldStart = PacketStart;
+                        int oldEnd = PacketEnd;
 
-                    // Incrememnt progress
-                    TransmissionProgress += Bandwidth * Time.deltaTime;
+                        // Incrememnt progress
+                        TransmissionProgress += Bandwidth * Time.deltaTime;
 
-                    float percentageProgress = TransmissionProgress / NeededProgress;
-                    percentageProgress = percentageProgress > 1.0f ? 1.0f : percentageProgress;
+                        float percentageProgress = TransmissionProgress / NeededProgress;
+                        percentageProgress = percentageProgress > 1.0f ? 1.0f : percentageProgress;
 
-                    // Notify listeners of progress.
-                    if (OnTransmissionProgress != null)
-                    {
-                        OnTransmissionProgress.Invoke(percentageProgress);
-                    }
+                        // Notify listeners of progress.
+                        if (OnTransmissionProgress != null)
+                        {
+                            OnTransmissionProgress.Invoke(percentageProgress);
+                        }
 
-                    if (TransmissionProgress >= NeededProgress)
-                    {
-                        // Transmission completed.
-                        EndTransmission();
-                    }
-                    else
-                    {
-                        PacketEnd = (int)(Segments.Count * percentageProgress);
-                        PacketStart = 0;
+                        if (TransmissionProgress >= NeededProgress)
+                        {
+                            // Transmission completed.
+                            EndTransmission();
+                        }
+                        else
+                        {
+                            PacketEnd = (int)(Segments.Count * percentageProgress);
+                            PacketStart = 0;
 
-                        // Deactivate these segments.
-                        DesaturateSegments(oldStart, Math.Min(PacketStart, oldEnd), Packet);
+                            // Deactivate these segments.
+                            DesaturateSegments(oldStart, Math.Min(PacketStart, oldEnd), Packet);
 
-                        // Activate these segments.
-                        SaturateSegments(Math.Max(oldEnd, PacketStart), PacketEnd, Packet);
-                    }
-                    
-                    break;
+                            // Activate these segments.
+                            SaturateSegments(Math.Max(oldEnd, PacketStart), PacketEnd, Packet);
+                        }
+
+                        break;
+                }
             }
-            
         }
     }
 }

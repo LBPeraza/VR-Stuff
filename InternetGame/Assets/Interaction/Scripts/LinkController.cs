@@ -273,7 +273,7 @@ namespace InternetGame
         {
             if (cause == SeverCause.Player || cause == SeverCause.PlayerPreventedVirus)
             {
-                if (!(severed.Packet is Virus))
+                if (!(severed.Packet.Payload is Virus))
                 {
                     // Report dropped packet.
                     GameManager.GetInstance().ReportPacketDropped(severed.Packet);

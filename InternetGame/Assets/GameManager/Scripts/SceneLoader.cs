@@ -76,7 +76,10 @@ namespace InternetGame
 
             while (t < 1.0f)
             {
-                Color toSet = Color.Lerp(CameraObstructionStartColor, CameraObstructionEndColor, t);
+                Color toSet = Color.Lerp(
+                    CameraObstructionStartColor, 
+                    CameraObstructionEndColor, 
+                    t);
                 mat.color = toSet;
 
                 t = Time.fixedTime - startTime;
@@ -96,7 +99,7 @@ namespace InternetGame
             mat.color = CameraObstructionEndColor;
 
             float t = 0.0f;
-            float startTime = Time.fixedTime;
+            float startTime = GameManager.GetInstance().GameTime();
 
             while (t < 1.0f)
             {

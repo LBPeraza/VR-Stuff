@@ -25,9 +25,9 @@ namespace InternetGame
         {
             base.Initialize(manager);
 
-            LastSpawn = Time.fixedTime;
-            LastSpawnRateIncrease = Time.fixedTime;
-            LastVirusRateIncrease = Time.fixedTime;
+            LastSpawn = GameManager.GetInstance().GameTime();
+            LastSpawnRateIncrease = GameManager.GetInstance().GameTime();
+            LastVirusRateIncrease = GameManager.GetInstance().GameTime();
 
             random = new System.Random();
         }
@@ -46,14 +46,14 @@ namespace InternetGame
                         Packet p = PacketFactory.CreateLoadedPacket(
                             Sources[sourceIndex], 
                             Sinks[sinkIndex], 
-                            PacketPayloadType.Netflix);
+                            PacketPayloadType.Email);
                     }
                     else
                     {
                         Packet p = PacketFactory.CreateEmailVirus(Sources[sourceIndex], Sinks[sinkIndex]);
                     }
 
-                    LastSpawn = Time.fixedTime;
+                    LastSpawn = GameManager.GetInstance().GameTime();
                 }
             }
         }
@@ -61,29 +61,35 @@ namespace InternetGame
         // Update is called once per frame
         public override void Update()
         {
-            if (Time.fixedTime > LastSpawn + SpawnInterval)
+            base.Update();
+
+            if (!GameManager.GetInstance().IsPaused)
             {
-                double p = random.NextDouble();
-                if (p > 0.95)
+                float currentTime = GameManager.GetInstance().GameTime();
+                if (currentTime > LastSpawn + SpawnInterval)
                 {
-                    SpawnPacket();
+                    double p = random.NextDouble();
+                    if (p > 0.95)
+                    {
+                        SpawnPacket();
+                    }
                 }
-            }
 
-            if (Time.fixedTime > LastSpawnRateIncrease + IncreaseSpawnRateInterval)
-            {
-                LastSpawnRateIncrease = Time.fixedTime;
+                if (currentTime > LastSpawnRateIncrease + IncreaseSpawnRateInterval)
+                {
+                    LastSpawnRateIncrease = currentTime;
 
-                SpawnInterval -= IncreaseSpawnRateAmount;
-                IncreaseSpawnRateInterval += IntervalIncreaseAmount;
-            }
+                    SpawnInterval -= IncreaseSpawnRateAmount;
+                    IncreaseSpawnRateInterval += IntervalIncreaseAmount;
+                }
 
-            if (Time.fixedTime > LastVirusRateIncrease + IncreaseVirusRateInterval)
-            {
-                LastVirusRateIncrease = Time.fixedTime;
+                if (currentTime > LastVirusRateIncrease + IncreaseVirusRateInterval)
+                {
+                    LastVirusRateIncrease = currentTime;
 
-                VirusProbability += IncreaseVirusRateAmount;
-                IncreaseVirusRateInterval += IntervalIncreaseAmount;
+                    VirusProbability += IncreaseVirusRateAmount;
+                    IncreaseVirusRateInterval += IntervalIncreaseAmount;
+                }
             }
         }
     }

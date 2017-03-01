@@ -77,7 +77,7 @@ namespace InternetGame
         private IEnumerator AnimateMoveToBetween(
             Vector3 start, Vector3 end, float startThickness, float endThickness)
         {
-            float startTime = Time.fixedTime;
+            float startTime = GameManager.GetInstance().GameTime();
             float t = 0.0f;
             Vector3 originalStart = From;
             Vector3 originalEnd = To;
@@ -86,7 +86,7 @@ namespace InternetGame
             while (t < 1.0f)
             {
                 // Move the segment along from its original position to the intended destination.
-                t = (Time.fixedTime - startTime) * GraduallyMoveRate;
+                t = (GameManager.GetInstance().GameTime() - startTime) * GraduallyMoveRate;
                 Vector3 intermediateStart = Vector3.Lerp(originalStart, start, t);
                 Vector3 intermediateEnd = Vector3.Lerp(originalEnd, end, t);
 
@@ -197,7 +197,7 @@ namespace InternetGame
                 !IsNumb 
                 && !(l.State == LinkState.UnderConstruction)
                 && !(l.State == LinkState.EarlyTerminated)
-                && Time.fixedTime > ParentLink.FinishedTime + SeverGracePeriod) ;
+                && GameManager.GetInstance().GameTime() > ParentLink.FinishedTime + SeverGracePeriod) ;
         }
         
         public void OnCutBoxEnter(Collider col)

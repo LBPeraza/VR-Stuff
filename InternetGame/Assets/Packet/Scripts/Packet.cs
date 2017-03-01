@@ -48,19 +48,19 @@ namespace InternetGame
         public virtual void OnDeckAtPort(PacketSource p)
         {
             IsOnDeck = true;
-            OnDeckTime = Time.fixedTime;
+            OnDeckTime = GameManager.GetInstance().GameTime();
         }
 
         public virtual void OnEnqueuedToPort(PacketSource p)
         {
-            EnqueuedTime = Time.fixedTime;
+            EnqueuedTime = GameManager.GetInstance().GameTime();
 
             Source = p;
         }
 
         public virtual void OnDequeuedFromPort(PacketSource p, Link l)
         {
-            DequeuedTime = Time.fixedTime;
+            DequeuedTime = GameManager.GetInstance().GameTime();
             IsWaitingAtPort = false;
             IsOnDeck = false;
 

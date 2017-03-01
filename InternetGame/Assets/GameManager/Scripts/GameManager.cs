@@ -40,6 +40,7 @@ namespace InternetGame
 		public PortLoader PortLoader;
         public BackgroundMusic BackgroundMusic;
         public Room Room;
+        public GameOverOptions GameOverOptions;
 
         public GameScore Score;
         public Scoreboard Scoreboard;
@@ -74,7 +75,7 @@ namespace InternetGame
         {
             // TODO
 			LevelParameters.LevelName = "default_level";
-            LevelParameters.NumDroppedPacketsAllowed = 5;
+            LevelParameters.NumDroppedPacketsAllowed = 1;
             LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
         }
 
@@ -201,6 +202,11 @@ namespace InternetGame
             {
                 Room.Initialize(BackgroundMusic.BackgroundMusicSource);
             }
+
+            if (GameOverOptions != null)
+            {
+                GameOverOptions.Initialize();
+            }
         }
 
         public void TogglePause()
@@ -208,12 +214,12 @@ namespace InternetGame
             IsPaused = !IsPaused;
             if (IsPaused)
             {
-                Time.timeScale = 0.0f;
+                //Time.timeScale = 0.0f;
                 BackgroundMusic.Pause();
             }
             else
             {
-                Time.timeScale = 1.0f;
+                //Time.timeScale = 1.0f;
                 BackgroundMusic.Resume();
             }
         }
@@ -255,7 +261,23 @@ namespace InternetGame
             IsGameOver = true;
             Debug.Log("Time: " + Score.Time + "  Number of packets delivered: " + Score.PacketsDelivered);
 
+            TogglePause();
+            GameOverOptions.Show();
+        }
+
+        public void Quit()
+        {
             SceneLoader.TransitionToScene("MainMenu");
+        }
+
+        public void Retry()
+        {
+            SceneLoader.TransitionToScene("LevelOne");
+        }
+
+        public float GameTime()
+        {
+            return Score.Time;
         }
 
         public void Update()

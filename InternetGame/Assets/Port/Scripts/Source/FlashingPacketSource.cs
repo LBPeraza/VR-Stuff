@@ -98,7 +98,12 @@ namespace InternetGame
         {
             while (true)
             {
-                Color lerpedColor = Color.Lerp(StartColor, flashColor, Mathf.PingPong(Time.fixedTime * FlashRate, 1));
+                Color lerpedColor = Color.Lerp(
+                    StartColor, 
+                    flashColor, 
+                    Mathf.PingPong(
+                        GameManager.GetInstance().GameTime() * FlashRate, 
+                        1));
                 GetComponent<Renderer>().material.color = lerpedColor;
 
                 yield return null;

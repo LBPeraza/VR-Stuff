@@ -13,7 +13,7 @@ namespace InternetGame
         {
             if (!IsOnDeck)
             {
-                float fallTime = Time.fixedTime - EnqueuedTime;
+                float fallTime = GameManager.GetInstance().GameTime() - EnqueuedTime;
                 if (!HasAlerted && fallTime > AlertPercentage * FallDuration)
                 {
                     // Alert player to expiring packet.

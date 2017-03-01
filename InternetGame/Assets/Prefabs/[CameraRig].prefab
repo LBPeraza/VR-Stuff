@@ -61,6 +61,7 @@ GameObject:
   - component: {fileID: 114438309986475702}
   - component: {fileID: 92892934435796474}
   - component: {fileID: 114642950201125636}
+  - component: {fileID: 114965431360401354}
   m_Layer: 0
   m_Name: Camera (head)
   m_TagString: MainCamera
@@ -435,6 +436,7 @@ MonoBehaviour:
     buttonOneModelPath: 
     buttonTwoModelPath: 
     systemMenuModelPath: 
+    startMenuModelPath: 
   elementHighlighterOverrides:
     body: {fileID: 0}
     trigger: {fileID: 0}
@@ -444,6 +446,7 @@ MonoBehaviour:
     buttonOne: {fileID: 0}
     buttonTwo: {fileID: 0}
     systemMenu: {fileID: 0}
+    startMenu: {fileID: 0}
 --- !u!114 &114322698885050364
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -551,7 +554,7 @@ MonoBehaviour:
   m_valveShadowTextureWidth: 4096
   m_valveShadowTextureHeight: 4096
   m_indirectLightmapsOnly: 0
-  m_adaptiveQualityEnabled: 0
+  m_adaptiveQualityEnabled: 1
   m_adaptiveQualityDebugVis: 0
   m_MSAALevel: 4
   m_minRenderTargetScale: 0.8
@@ -645,6 +648,17 @@ MonoBehaviour:
   padPressed: 0
   padTouched: 0
   gripped: 0
+--- !u!114 &114965431360401354
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1116249106747234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44596d094d0946345a7fc6688ba9c06c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114966351037873840
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -690,7 +704,7 @@ MonoBehaviour:
   grabToggleButton: 7
   useToggleButton: 3
   uiClickButton: 3
-  menuToggleButton: 12
+  menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
   gripClickThreshold: 1
@@ -711,6 +725,7 @@ MonoBehaviour:
   buttonOneTouched: 0
   buttonTwoPressed: 0
   buttonTwoTouched: 0
+  startMenuPressed: 0
   pointerPressed: 0
   grabPressed: 0
   usePressed: 0
@@ -736,6 +751,7 @@ MonoBehaviour:
     buttonOneModelPath: 
     buttonTwoModelPath: 
     systemMenuModelPath: 
+    startMenuModelPath: 
   elementHighlighterOverrides:
     body: {fileID: 0}
     trigger: {fileID: 0}
@@ -745,6 +761,7 @@ MonoBehaviour:
     buttonOne: {fileID: 0}
     buttonTwo: {fileID: 0}
     systemMenu: {fileID: 0}
+    startMenu: {fileID: 0}
 --- !u!114 &114987867892088912
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -761,7 +778,7 @@ MonoBehaviour:
   grabToggleButton: 7
   useToggleButton: 3
   uiClickButton: 3
-  menuToggleButton: 12
+  menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
   gripClickThreshold: 1
@@ -782,6 +799,7 @@ MonoBehaviour:
   buttonOneTouched: 0
   buttonTwoPressed: 0
   buttonTwoTouched: 0
+  startMenuPressed: 0
   pointerPressed: 0
   grabPressed: 0
   usePressed: 0

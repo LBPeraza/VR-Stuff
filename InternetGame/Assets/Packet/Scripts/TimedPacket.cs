@@ -10,14 +10,15 @@ namespace InternetGame
         {
             if (IsOnDeck)
             {
-                if (!HasAlerted && Time.fixedTime > OnDeckTime + AlertTime)
+                float currentTime = GameManager.GetInstance().GameTime();
+                if (!HasAlerted && currentTime > OnDeckTime + AlertTime)
                 {
                     // Alert player to expiring packet.
                     ExpireWarning();
 
                     HasAlerted = true;
                 }
-                if (!HasDropped && Time.fixedTime > OnDeckTime + Patience)
+                if (!HasDropped && currentTime > OnDeckTime + Patience)
                 {
                     // Drop packet.
                     Expire();

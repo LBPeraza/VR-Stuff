@@ -10,6 +10,7 @@ namespace InternetGame
         public List<PacketSink> Sinks;
 
         public GameManager GameManager;
+        public bool IsPaused = false;
 
         public static Hashtable AddressToColor;
 

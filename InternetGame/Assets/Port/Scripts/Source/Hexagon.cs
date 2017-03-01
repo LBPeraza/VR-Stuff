@@ -130,7 +130,7 @@ namespace InternetGame
                 mat.SetColor("_EmissionColor", Color.black);
             }
 
-            float startTime = Time.fixedTime;
+            float startTime = GameManager.GetInstance().GameTime();
             float t = startTime;
             while (t - startTime <= RingColorChangeDuration)
             {
@@ -157,7 +157,12 @@ namespace InternetGame
         {
             while (true)
             {
-                Color lerpedColor = Color.Lerp(from, to, Mathf.PingPong(Time.fixedTime * FlashRate, 1));
+                Color lerpedColor = Color.Lerp(
+                    from, 
+                    to, 
+                    Mathf.PingPong(
+                        GameManager.GetInstance().GameTime() * FlashRate, 
+                        1));
                 ActiveMaterial.color = lerpedColor;
                 ActiveMaterial.SetColor("_EmissionColor", lerpedColor);
 
