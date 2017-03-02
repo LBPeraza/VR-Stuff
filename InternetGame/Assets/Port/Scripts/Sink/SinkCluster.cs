@@ -58,7 +58,7 @@ namespace InternetGame
         {
             base.Initialize();
 
-            var packetColor = (Color)PacketSpawner.AddressToColor[this.Address];
+            var packetColor = (Color)GameUtils.AddressToColor[this.Address];
 
 			foreach (GameObject Backing in Backings) {
 				if (Backing != null) {

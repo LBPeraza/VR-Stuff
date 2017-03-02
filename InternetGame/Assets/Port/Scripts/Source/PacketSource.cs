@@ -28,6 +28,7 @@ namespace InternetGame
         public List<Link> ActiveLinks;
         public GameObject IndicatorPrefab;
         public PacketSourceIndicator Indicator;
+        public string Address;
         public int Capacity = 5;
         public PacketSourceInfo Info;
         public Transform LinkConnectionPoint;
@@ -239,7 +240,7 @@ namespace InternetGame
                 OnTransmissionSevered(cause, l);
             };
 
-            l.OnTransmissionStarted += OnTransmissionStarted;
+            l.TransmissionStarted += OnTransmissionStarted;
 
             if (OnPendingLinkStarted != null)
             {
@@ -302,7 +303,7 @@ namespace InternetGame
             Info.QueuedPackets = QueuedPackets;
 
             // Subscribe to packet expiration warning events.
-            p.OnExpireWarning += OnPacketWarning;
+            p.ExpireWarning += OnPacketWarning;
 
             if (OnPacketEnqueued != null)
             {

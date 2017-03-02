@@ -46,13 +46,16 @@ namespace InternetGame
         public event SeverHandler OnSever;
 
         public delegate void OnConstructionProgressHandler(float deltaLength, float totalLengthSoFar);
-        public event OnConstructionProgressHandler OnConstructionProgress;
+        public event OnConstructionProgressHandler ConstructionProgress;
 
         public delegate void OnTransmissionStartedHandler(Link l, Packet p);
-        public event OnTransmissionStartedHandler OnTransmissionStarted;
+        public event OnTransmissionStartedHandler TransmissionStarted;
 
         public delegate void OnTransmissionProgressHandler(float percentage);
-        public event OnTransmissionProgressHandler OnTransmissionProgress;
+        public event OnTransmissionProgressHandler TransmissionProgressed;
+
+        public delegate void OnTransmissionCompletedHandler(Packet p);
+        public event OnTransmissionCompletedHandler TransmissionCompleted;
 
         public float Bandwidth; // Meters/second.
         public PacketSource Source;
@@ -285,9 +288,9 @@ namespace InternetGame
                 lastSegmentEnd = nextPosition;
 
                 // Notify handlers of progress.
-                if (OnConstructionProgress != null)
+                if (ConstructionProgress != null)
                 {
-                    OnConstructionProgress.Invoke(segmentLength, TotalLength);
+                    ConstructionProgress.Invoke(segmentLength, TotalLength);
                 }
             }
         }
@@ -396,9 +399,9 @@ namespace InternetGame
                 NeededProgress = (Packet.Payload.Size * TotalLength);
                 IsTransmittingPacket = true;
 
-                if (OnTransmissionStarted != null)
+                if (TransmissionStarted != null)
                 {
-                    OnTransmissionStarted.Invoke(this, Packet);
+                    TransmissionStarted.Invoke(this, Packet);
                 }
             }
         }
@@ -415,12 +418,17 @@ namespace InternetGame
                 // Desaturate all segments.
                 DesaturateSegments(0, Segments.Count, Packet);
 
-                // Clean up packet.
-                Destroy(Packet.gameObject);
-
                 var cause = Packet.Payload is Virus ?
                     SeverCause.VirusTransmitted : 
                     SeverCause.TransmissionFinished;
+
+                if (cause == SeverCause.TransmissionFinished)
+                {
+                    if (TransmissionCompleted != null)
+                    {
+                        TransmissionCompleted.Invoke(Packet);
+                    }
+                }
 
                 // Sever at first link segment.
                 this.Sever(cause, Segments[0]);
@@ -429,6 +437,9 @@ namespace InternetGame
                 PacketEnd = 0;
                 TransmissionProgress = 0.0f;
                 NeededProgress = 0.0f;
+
+                // Clean up packet.
+                Destroy(Packet.gameObject);
 
                 IsTransmittingPacket = false;
                 Packet = null;
@@ -508,9 +519,9 @@ namespace InternetGame
                         percentageProgress = percentageProgress > 1.0f ? 1.0f : percentageProgress;
 
                         // Notify listeners of progress.
-                        if (OnTransmissionProgress != null)
+                        if (TransmissionProgressed != null)
                         {
-                            OnTransmissionProgress.Invoke(percentageProgress);
+                            TransmissionProgressed.Invoke(percentageProgress);
                         }
 
                         if (TransmissionProgress >= NeededProgress)

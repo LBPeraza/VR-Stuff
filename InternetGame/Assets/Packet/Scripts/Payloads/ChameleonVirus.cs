@@ -11,7 +11,6 @@ namespace InternetGame
         public Color EndColor = Color.red;
 
         public float ColorChangePercentageOffset;
-        public static int DefaultChameleonVirusSize = 1000;
         public static float DefaultChameleonVirusDamage = 10.0f;
 
         public static Material SaturatedMaterial;
@@ -25,7 +24,7 @@ namespace InternetGame
         {
             base.Initialize(c);
 
-            this.Size = DefaultChameleonVirusSize;
+            this.Size = Email.DefaultEmailSize;
             this.Damage = DefaultChameleonVirusDamage;
 
             Saturated = new Material(SaturatedMaterial);

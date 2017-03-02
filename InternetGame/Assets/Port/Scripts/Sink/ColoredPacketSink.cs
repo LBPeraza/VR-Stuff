@@ -12,7 +12,7 @@ namespace InternetGame
         {
             base.Initialize();
 
-            Color = (Color) PacketSpawner.AddressToColor[this.Address];
+            Color = (Color) GameUtils.AddressToColor[this.Address];
             GetComponent<Renderer>().material.color = Color;
         }
     }

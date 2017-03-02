@@ -66,7 +66,7 @@ namespace InternetGame
         {
             if (AssociatedPacket != null)
             {
-                AssociatedPacket.OnExpireWarning -= OnExpireWarning;
+                AssociatedPacket.ExpireWarning -= OnExpireWarning;
             }
 
             OriginalColor = p.Color;
@@ -81,7 +81,7 @@ namespace InternetGame
             
             if (EnableFlashing)
             {
-                p.OnExpireWarning += OnExpireWarning;
+                p.ExpireWarning += OnExpireWarning;
             }
         }
 

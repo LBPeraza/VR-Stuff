@@ -18,8 +18,6 @@ namespace InternetGame
         public float IncreaseVirusRateAmount = .05f;
         public float LastVirusRateIncrease;
 
-        private System.Random random;
-
         // Use this for initialization
         public override void Initialize(GameManager manager)
         {
@@ -28,8 +26,6 @@ namespace InternetGame
             LastSpawn = GameManager.GetInstance().GameTime();
             LastSpawnRateIncrease = GameManager.GetInstance().GameTime();
             LastVirusRateIncrease = GameManager.GetInstance().GameTime();
-
-            random = new System.Random();
         }
 
         private void SpawnPacket()

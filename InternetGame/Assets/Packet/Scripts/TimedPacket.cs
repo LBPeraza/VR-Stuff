@@ -14,7 +14,7 @@ namespace InternetGame
                 if (!HasAlerted && currentTime > OnDeckTime + AlertTime)
                 {
                     // Alert player to expiring packet.
-                    ExpireWarning();
+                    OnExpireWarning();
 
                     HasAlerted = true;
                 }

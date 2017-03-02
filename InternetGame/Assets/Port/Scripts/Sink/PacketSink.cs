@@ -100,7 +100,7 @@ namespace InternetGame
 
         public virtual void OnLinkEstablished(Link l, PacketSource s)
         {
-            l.OnTransmissionStarted += OnTransmissionStarted;
+            l.TransmissionStarted += OnTransmissionStarted;
             l.OnSever += OnLinkSevered;
 
             // Inform the connector that it has been snapped into a port.

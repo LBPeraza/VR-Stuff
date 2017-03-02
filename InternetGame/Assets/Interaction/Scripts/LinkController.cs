@@ -152,7 +152,7 @@ namespace InternetGame
 
                 // Listen for sever events.
                 linkSegment.OnSever += LinkSegment_OnSever;
-                linkSegment.OnConstructionProgress += LinkSegment_OnConstructionProgress;
+                linkSegment.ConstructionProgress += LinkSegment_OnConstructionProgress;
 
                 CurrentLink = LinkContainer;
 

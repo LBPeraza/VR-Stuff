@@ -28,10 +28,19 @@ namespace InternetGame
         public PacketSource Source;
 
         public delegate void OnExpireWarningHandler(Packet p);
-        public OnExpireWarningHandler OnExpireWarning;
+        public OnExpireWarningHandler ExpireWarning;
 
         public delegate void OnSavedHandler(Packet p);
-        public OnSavedHandler OnSaved;
+        public OnSavedHandler Saved;
+
+        public delegate void OnDroppedHandler(Packet p);
+        public OnDroppedHandler Dropped;
+
+        public delegate void OnTransmittedHandler(Packet p);
+        public OnTransmittedHandler Transmitted;
+
+        public delegate void OnDestroyedHandler(Packet p);
+        public OnDestroyedHandler Destroyed;
 
         protected bool HasAlerted = false;
         protected bool HasDropped = false;
@@ -40,7 +49,7 @@ namespace InternetGame
         
         public virtual void Initialize()
         {
-            Color = (Color)PacketSpawner.AddressToColor[Destination];
+            Color = (Color)GameUtils.AddressToColor[Destination];
 
             Payload.Initialize(Color);
         }
@@ -64,12 +73,12 @@ namespace InternetGame
             IsWaitingAtPort = false;
             IsOnDeck = false;
 
-            if (HasAlerted && OnSaved != null)
+            if (HasAlerted && Saved != null)
             {
-                OnSaved.Invoke(this);
+                Saved.Invoke(this);
             }
 
-            l.OnTransmissionStarted += OnTransmissionStarted;
+            l.TransmissionStarted += OnTransmissionStarted;
         }
 
         public virtual void OnDequeuedFromLink(Link l, PacketSink p)
@@ -85,7 +94,8 @@ namespace InternetGame
             Payload.OnTransmissionStarted(l, p);
 
             TransmittingLink = l;
-            l.OnTransmissionProgress += OnTransmissionProgress;
+            l.TransmissionProgressed += OnTransmissionProgress;
+            l.TransmissionCompleted += (_ => OnTransmissionComplete());
         }
 
         public virtual void OnTransmissionProgress(float percentageDone)
@@ -93,16 +103,39 @@ namespace InternetGame
             Payload.OnTransmissionProgress(percentageDone);
         }
 
+        public virtual void OnTransmissionComplete()
+        {
+            if (Transmitted != null)
+            {
+                Transmitted.Invoke(this);
+            }
+
+            if (Destroyed != null)
+            {
+                Destroyed.Invoke(this);
+            }
+        }
+
         public virtual void OnDropped(PacketDroppedCause cause)
         {
+            if (Dropped != null)
+            {
+                Dropped.Invoke(this);
+            }
+
+            if (Destroyed != null)
+            {
+                Destroyed.Invoke(this);
+            }
+
             Destroy(this.gameObject);
         }
 
-        protected virtual void ExpireWarning()
+        protected virtual void OnExpireWarning()
         {
-            if (OnExpireWarning != null)
+            if (ExpireWarning != null)
             {
-                OnExpireWarning.Invoke(this);
+                ExpireWarning.Invoke(this);
             }
 
             Source.PlayClip(PacketSourceSoundEffect.PacketWarning);

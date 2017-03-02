@@ -17,7 +17,7 @@ namespace InternetGame
                 if (!HasAlerted && fallTime > AlertPercentage * FallDuration)
                 {
                     // Alert player to expiring packet.
-                    ExpireWarning();
+                    OnExpireWarning();
 
                     HasAlerted = true;
                 }

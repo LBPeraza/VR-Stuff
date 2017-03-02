@@ -36,7 +36,7 @@ namespace InternetGame
 
             if (!HasUnfinishedLink())
             {
-                StartFlashing((Color)PacketSpawner.AddressToColor[p.Destination]);
+                StartFlashing((Color)GameUtils.AddressToColor[p.Destination]);
             }
         }
 
@@ -60,7 +60,7 @@ namespace InternetGame
                 EndFlashing();
             } else
             {
-                StartFlashing((Color)PacketSpawner.AddressToColor[Peek().Destination]);
+                StartFlashing((Color)GameUtils.AddressToColor[Peek().Destination]);
             }
         }
 

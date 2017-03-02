@@ -86,7 +86,7 @@ namespace InternetGame
         {
             base.OnNewPacketOnDeck(p);
 
-            p.OnSaved += OnPacketSaved;
+            p.Saved += OnPacketSaved;
 
             if (!HasUnfinishedLink())
             {
@@ -174,7 +174,7 @@ namespace InternetGame
                 {
                     InstantiateConnector();
                 }
-                SetBacklight((Color)PacketSpawner.AddressToColor[Peek().Destination]);
+                SetBacklight((Color)GameUtils.AddressToColor[Peek().Destination]);
             }
         }
 

@@ -17,11 +17,20 @@ namespace InternetGame
         public float Time;
     }
 
+    public enum PacketSpawnerType
+    {
+        Infinite,
+        MainMenu,
+        Wave
+    }
+
     public struct LevelParameters
     {
         public int NumDroppedPacketsAllowed;
         public Soundtrack BackgroundSoundtrack;
 		public string LevelName;
+        public PacketSpawnerType PacketSpawner;
+        public LevelPacketSpawnerConfig PacketSpawnConfig;
     }
 
     public class GameManager : MonoBehaviour, ResourceLoadable
@@ -74,21 +83,83 @@ namespace InternetGame
         public void LoadLevelData()
         {
             // TODO
-			LevelParameters.LevelName = "default_level";
-            LevelParameters.NumDroppedPacketsAllowed = 1;
+			LevelParameters.LevelName = "level_one";
+            LevelParameters.NumDroppedPacketsAllowed = 10;
             LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
+            LevelParameters.PacketSpawner = PacketSpawnerType.Wave;
+
+            LevelParameters.PacketSpawnConfig = new LevelPacketSpawnerConfig();
+            LevelParameters.PacketSpawnConfig.Waves = new WaveConfig[]
+            {
+                new WaveConfig
+                {
+                    MarginAfter = 2.0f,
+                    MarginBefore = 2.0f,
+                    Packets = new PacketConfig[]
+                    {
+                        new PacketConfig
+                        {
+                            Destination = "A",
+                            Size = 1000,
+                            Type = PacketPayloadType.Email,
+                            Offset = 2.0f
+                        },
+                        new PacketConfig
+                        {
+                            Destination = "B",
+                            Size = 1000,
+                            Type = PacketPayloadType.Email,
+                            Offset = 6.0f
+                        },
+                        new PacketConfig
+                        {
+                            Destination = "C",
+                            Size = 1000,
+                            Type = PacketPayloadType.Email,
+                            Offset = 10.0f
+                        },
+                    }
+                },
+                new WaveConfig
+                {
+                    MarginAfter = 2.0f,
+                    MarginBefore = 10.0f,
+                    Packets = new PacketConfig[]
+                    {
+                        new PacketConfig
+                        {
+                            Destination = "D",
+                            Size = 1000,
+                            Type = PacketPayloadType.ChameleonVirus,
+                            Offset = 1.0f
+                        },
+                        new PacketConfig
+                        {
+                            Destination = "D",
+                            Size = 1000,
+                            Type = PacketPayloadType.ChameleonVirus,
+                            Offset = 1.0f
+                        },
+                        new PacketConfig
+                        {
+                            Destination = "D",
+                            Size = 1000,
+                            Type = PacketPayloadType.ChameleonVirus,
+                            Offset = 1.0f
+                        },
+                    }
+                },
+            };
         }
 
         public void LoadPorts()
         {
-            if (PortLoader != null)
+            if (PortLoader == null)
             {
-                PortLoader.Initialize(LevelParameters);
+                PortLoader = gameObject.AddComponent<PortLoader>();
+                PortLoader.LoadFrom = LoadLocation.NoLoad;
             }
-            else
-            {
-                Debug.Log("No PortLoader found. Skipping initialization.");
-            }
+            PortLoader.Initialize(LevelParameters);
 
             // Try to find Sinks and Sources gameobject in scene, if not already set.
             if (PacketSinks == null)
@@ -159,6 +230,8 @@ namespace InternetGame
 
             LoadPorts();
 
+            GameUtils.Initialize(this);
+
             if (Player != null)
             {
                 Player.Initialize();
@@ -168,10 +241,22 @@ namespace InternetGame
                 Debug.Log("No Player found. Skipping initialization.");
             }
 
-            if (PacketSpawner != null)
+            if (PacketSpawner == null)
             {
-                PacketSpawner.Initialize(this);
+                switch (LevelParameters.PacketSpawner)
+                {
+                    case PacketSpawnerType.Infinite:
+                        PacketSpawner = gameObject.AddComponent<InfinitePacketSpawner>();
+                        break;
+                    case PacketSpawnerType.MainMenu:
+                        PacketSpawner = gameObject.AddComponent<MainMenuPacketSpawner>();
+                        break;
+                    case PacketSpawnerType.Wave:
+                        PacketSpawner = gameObject.AddComponent<LevelPacketSpawner>();
+                        break;
+                }
             }
+            PacketSpawner.Initialize(this);
 
             foreach (PacketSink sink in AllPacketSinks)
             {
@@ -190,13 +275,14 @@ namespace InternetGame
                 }
             }
 
-            if (BackgroundMusic != null)
+            if (BackgroundMusic == null)
             {
-                BackgroundMusic.Initialize();
-
-                BackgroundMusic.SetBackgroundSoundtrack(
-                    LevelParameters.BackgroundSoundtrack);
+                BackgroundMusic = gameObject.AddComponent<BackgroundMusic>();
             }
+            BackgroundMusic.Initialize();
+
+            BackgroundMusic.SetBackgroundSoundtrack(
+                LevelParameters.BackgroundSoundtrack);
 
             if (Room != null)
             {
