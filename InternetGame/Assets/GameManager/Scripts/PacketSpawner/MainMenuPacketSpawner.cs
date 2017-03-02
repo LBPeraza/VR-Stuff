@@ -18,7 +18,8 @@ namespace InternetGame
 
             Levels = new Dictionary<string, string>
             {
-                {"Infinite Mode", "LevelOne"}
+                {"Infinite Mode", "LevelOne"},
+                {"Level One", "WaveLevel" }
             };
             PortAssociations = new Dictionary<PacketSource, string>();
 
@@ -46,6 +47,8 @@ namespace InternetGame
 
                 // Associate level name with the port.
                 PortAssociations[Sources[i]] = valuePair.Value;
+
+                i++;
             }
         }
 

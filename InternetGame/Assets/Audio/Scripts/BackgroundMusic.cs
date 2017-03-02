@@ -7,7 +7,8 @@ namespace InternetGame
     public enum Soundtrack
     {
         DeepDreamMachine,
-        EtherealColosseum
+        EtherealColosseum,
+        WelcomeToTheSimulation
     }
 
     public class BackgroundMusic : MonoBehaviour, ResourceLoadable
@@ -16,6 +17,7 @@ namespace InternetGame
 
         public AudioClip DeepDreamMachine;
         public AudioClip EtherealColosseum;
+        public AudioClip WelcomeToTheSimulation;
 
         public void Initialize()
         {
@@ -31,6 +33,7 @@ namespace InternetGame
         {
             DeepDreamMachine = Resources.Load<AudioClip>("deep_dream_machine");
             EtherealColosseum = Resources.Load<AudioClip>("ethereal_colosseum");
+            WelcomeToTheSimulation = Resources.Load<AudioClip>("welcome_to_the_simulation");
         }
 
         public void Pause()
@@ -54,6 +57,9 @@ namespace InternetGame
                     break;
                 case Soundtrack.EtherealColosseum:
                     soundtrack = EtherealColosseum;
+                    break;
+                case Soundtrack.WelcomeToTheSimulation:
+                    soundtrack = WelcomeToTheSimulation;
                     break;
             }
 

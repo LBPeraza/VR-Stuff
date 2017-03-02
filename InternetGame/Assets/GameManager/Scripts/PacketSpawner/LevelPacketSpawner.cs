@@ -58,7 +58,7 @@ namespace InternetGame
         {
             base.Initialize(manager);
 
-            LoadLevelConfig(manager.LevelParameters.PacketSpawnConfig);
+            LoadLevelConfig(manager.LevelParameters.PacketSpawnerConfig);
         }
 
         protected virtual void OnPacketDestroyed(Packet p)

@@ -13,15 +13,24 @@ namespace InternetGame
         public WaveConfig[] Waves;
         public static string path = "Assets/Levels/LevelData/SpawnConfigs/";
 
-        public void LoadFromFile(string fileName)
+        public bool LoadFromFile(string fileName)
         {
-            using (FileStream fs = new FileStream(path + fileName, FileMode.Open))
+            try
             {
-                using (StreamReader reader = new StreamReader(fs))
+                using (FileStream fs = new FileStream(path + fileName, FileMode.Open))
                 {
-                    string json = reader.ReadToEnd();
-                    JsonUtility.FromJsonOverwrite(json, this);
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        string json = reader.ReadToEnd();
+                        JsonUtility.FromJsonOverwrite(json, this);
+                    }
                 }
+
+                return true;
+            }
+            catch (Exception  e)
+            {
+                return false;
             }
         }
 

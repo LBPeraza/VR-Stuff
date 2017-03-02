@@ -17,22 +17,6 @@ namespace InternetGame
         public float Time;
     }
 
-    public enum PacketSpawnerType
-    {
-        Infinite,
-        MainMenu,
-        Wave
-    }
-
-    public struct LevelParameters
-    {
-        public int NumDroppedPacketsAllowed;
-        public Soundtrack BackgroundSoundtrack;
-		public string LevelName;
-        public PacketSpawnerType PacketSpawner;
-        public PacketSpawnerConfig PacketSpawnConfig;
-    }
-
     public class GameManager : MonoBehaviour, ResourceLoadable
     {
         public GameObject PacketSources;
@@ -50,10 +34,12 @@ namespace InternetGame
         public BackgroundMusic BackgroundMusic;
         public Room Room;
         public GameOverOptions GameOverOptions;
-
         public GameScore Score;
         public Scoreboard Scoreboard;
 
+        public string LevelName;
+
+        [HideInInspector]
         public LevelParameters LevelParameters;
 
         public bool IsGameOver;
@@ -83,13 +69,9 @@ namespace InternetGame
         public void LoadLevelData()
         {
             // TODO
-			LevelParameters.LevelName = "level_one";
-            LevelParameters.NumDroppedPacketsAllowed = 10;
-            LevelParameters.BackgroundSoundtrack = Soundtrack.DeepDreamMachine;
-            LevelParameters.PacketSpawner = PacketSpawnerType.Wave;
-
-            LevelParameters.PacketSpawnConfig = new PacketSpawnerConfig();
-            LevelParameters.PacketSpawnConfig.LoadFromFile("test_level");
+            LevelParameters = new LevelParameters();
+            LevelParameters.LevelName = LevelName;
+            LevelParameters.LoadFromFile(LevelName);
         }
 
         public void LoadPorts()
@@ -260,6 +242,7 @@ namespace InternetGame
         {
             Score.VirusAmount += v.Damage;
             Score.NumberOfVirusesInfected++;
+            Score.PacketsDropped++;
         }
 
         public void ReportPacketDropped(Packet p)
