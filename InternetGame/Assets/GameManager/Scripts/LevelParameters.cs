@@ -27,25 +27,31 @@ namespace InternetGame
 
         public static string path = "Assets/Levels/LevelData/";
 
-        public void LoadFromFile(string fileName)
+        public static LevelParameters LoadFromFile(string fileName, LevelParameters levelParams = null)
         {
+            if (levelParams == null)
+            {
+                GameObject levelParamContainer = new GameObject("LevelParametersTemp");
+                levelParams = levelParamContainer.AddComponent<LevelParameters>();
+            }
             using (FileStream fs = new FileStream(path + fileName, FileMode.Open))
             {
                 using (StreamReader reader = new StreamReader(fs))
                 {
                     string json = reader.ReadToEnd();
-                    JsonUtility.FromJsonOverwrite(json, this);
+                    JsonUtility.FromJsonOverwrite(json, levelParams);
                 }
             }
 
-            switch (PacketSpawner)
+            switch (levelParams.PacketSpawner)
             {
                 case PacketSpawnerType.Wave:
                     // Load wave config from file.
-                    PacketSpawnerConfig = new PacketSpawnerConfig();
-                    PacketSpawnerConfig.LoadFromFile(LevelName);
+                    levelParams.PacketSpawnerConfig = new PacketSpawnerConfig();
+                    levelParams.PacketSpawnerConfig.LoadFromFile(fileName);
                     break;
             }
+            return levelParams;
         }
 
         public void SaveToFile(string fileName)

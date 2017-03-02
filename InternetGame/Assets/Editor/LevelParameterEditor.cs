@@ -21,7 +21,7 @@ namespace InternetGame
             if (GUILayout.Button("Load level params (check params name!)"))
             {
                 LevelParameters config = (LevelParameters)target;
-                config.LoadFromFile(config.LevelName);
+                LevelParameters.LoadFromFile(config.LevelName, config);
             }
         }
     }

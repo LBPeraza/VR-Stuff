@@ -33,6 +33,7 @@ namespace InternetGame
         public int NumActivePackets;
 
         public LevelPacketSpawnerState State;
+        private bool alertedGameManagerToGameCleared = false;
 
         public virtual void LoadLevelConfig(PacketSpawnerConfig config)
         {
@@ -89,7 +90,7 @@ namespace InternetGame
                         {
                             // Time to spawn this packet.
                             PacketSource source = null;
-                            if (CurrentPacket.Source != null)
+                            if (CurrentPacket.Source != null && CurrentPacket.Source != "")
                             {
                                 // Config specifies a source port.
                                 var desired = (PacketSource)GameUtils.AddressToSource[CurrentPacket.Source];
@@ -98,7 +99,8 @@ namespace InternetGame
                                     source = desired;
                                 }
                             }
-                            else
+                            
+                            if (source == null)
                             {
                                 // No source port specified -- randomly find one.
                                 source = GetRandomSource();
@@ -157,6 +159,13 @@ namespace InternetGame
                                 State = LevelPacketSpawnerState.Finished;
                             }
                             EnteredPeriodTime = currentTime;
+                        }
+                        break;
+                    case LevelPacketSpawnerState.Finished:
+                        if (!alertedGameManagerToGameCleared)
+                        {
+                            alertedGameManagerToGameCleared = true;
+                            GameManager.LevelClearead();
                         }
                         break;
                 }

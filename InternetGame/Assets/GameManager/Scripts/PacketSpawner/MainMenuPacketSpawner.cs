@@ -9,19 +9,40 @@ namespace InternetGame
     public class MainMenuPacketSpawner : PacketSpawner
     {
         // TODO
-        public Dictionary<string, string> Levels;
-        public Dictionary<PacketSource, string> PortAssociations;
+        Dictionary<string, MenuOption> Levels;
+        Dictionary<PacketSource, MenuOption> PortAssociations;
+
+        struct MenuOption
+        {
+            public string SceneName;
+            public LevelParameters LevelParameters;
+        }
 
         public override void Initialize(GameManager manager)
         {
             base.Initialize(manager);
 
-            Levels = new Dictionary<string, string>
+            Levels = new Dictionary<string, MenuOption>
             {
-                {"Infinite Mode", "LevelOne"},
-                {"Level One", "WaveLevel" }
+                {
+                    "Infinite Mode", new MenuOption {
+                        SceneName = "LevelOne"
+                    }
+                },
+                {
+                    "Level One",new MenuOption {
+                        SceneName = "WaveLevel",
+                        LevelParameters = LevelParameters.LoadFromFile("level_one")
+                    }
+                },
+                {
+                    "Level Two",new MenuOption {
+                        SceneName = "WaveLevel",
+                        LevelParameters = LevelParameters.LoadFromFile("level_two")
+                    }
+                }
             };
-            PortAssociations = new Dictionary<PacketSource, string>();
+            PortAssociations = new Dictionary<PacketSource, MenuOption>();
 
             AssociatePortsWithLevels();
             SpawnPacketsAtLevelPorts();
@@ -54,7 +75,15 @@ namespace InternetGame
 
         private void OnLinkStarted(Link l)
         {
-            LoadLevel(PortAssociations[l.Source]);
+            MenuOption picked = PortAssociations[l.Source];
+            if (picked.LevelParameters != null)
+            {
+                picked.LevelParameters.transform.parent = null;
+                picked.LevelParameters.name = "LevelParameters";
+
+                DontDestroyOnLoad(picked.LevelParameters.gameObject);
+            }
+            LoadLevel(picked.SceneName);
         }
 
         private void LoadLevel(string levelName)
@@ -64,12 +93,15 @@ namespace InternetGame
 
         private void SpawnPacketsAtLevelPorts()
         {
+            int i = 0;
             foreach (var valuePair in PortAssociations)
             {
                 PacketSource port = valuePair.Key;
-                Packet packet = PacketFactory.CreateEmail(port, Sinks[0]);
+                Packet packet = PacketFactory.CreateEmail(port, Sinks[i % Sinks.Count]);
                 packet.Patience = float.MaxValue;
                 packet.AlertTime = float.MaxValue;
+
+                i++;
             }
         }
 

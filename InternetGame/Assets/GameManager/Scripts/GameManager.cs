@@ -69,9 +69,17 @@ namespace InternetGame
         public void LoadLevelData()
         {
             // TODO
-            LevelParameters = new LevelParameters();
-            LevelParameters.LevelName = LevelName;
-            LevelParameters.LoadFromFile(LevelName);
+            var levelParamsContainer = GameObject.Find("/LevelParameters");
+            if (levelParamsContainer != null)
+            {
+                LevelParameters = levelParamsContainer.GetComponent<LevelParameters>();
+                LevelName = LevelParameters.LevelName;
+            }
+            if (LevelParameters == null)
+            {
+                Debug.LogWarning("No LevelParameter object found in scene, loading one manually.");
+                LevelParameters = LevelParameters.LoadFromFile(LevelName);
+            }
         }
 
         public void LoadPorts()
@@ -224,11 +232,15 @@ namespace InternetGame
             {
                 //Time.timeScale = 0.0f;
                 BackgroundMusic.Pause();
+
+                GameOverOptions.Show();
             }
             else
             {
                 //Time.timeScale = 1.0f;
                 BackgroundMusic.Resume();
+
+                GameOverOptions.Hide();
             }
         }
 
@@ -271,7 +283,12 @@ namespace InternetGame
             Debug.Log("Time: " + Score.Time + "  Number of packets delivered: " + Score.PacketsDelivered);
 
             TogglePause();
-            GameOverOptions.Show();
+        }
+
+        public void LevelClearead()
+        {
+            // TODO
+            GameOver();
         }
 
         public void Quit()
