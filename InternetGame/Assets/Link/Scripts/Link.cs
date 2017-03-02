@@ -438,9 +438,6 @@ namespace InternetGame
                 TransmissionProgress = 0.0f;
                 NeededProgress = 0.0f;
 
-                // Clean up packet.
-                Destroy(Packet.gameObject);
-
                 IsTransmittingPacket = false;
                 Packet = null;
             }

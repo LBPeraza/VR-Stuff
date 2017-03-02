@@ -4,30 +4,6 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public struct LevelPacketSpawnerConfig
-    {
-        public WaveConfig[] Waves;       
-    }
-
-    public struct WaveConfig
-    {
-        public float MarginBefore;
-        public float MarginAfter;
-
-        public PacketConfig[] Packets;
-    }
-
-    public struct PacketConfig
-    {
-        public string Destination;
-        public PacketPayloadType Type;
-        public int Size;
-
-        public string Source;
-
-        public float Offset;
-    }
-
     public enum LevelPacketSpawnerState
     {
         Unset,
@@ -41,7 +17,7 @@ namespace InternetGame
     public class LevelPacketSpawner : PacketSpawner
     {
         [HideInInspector]
-        public LevelPacketSpawnerConfig PacketSpawnerConfig;
+        public PacketSpawnerConfig PacketSpawnerConfig;
         [HideInInspector]
         public IEnumerator WaveEnumerator;
         public WaveConfig CurrentWave;
@@ -58,7 +34,7 @@ namespace InternetGame
 
         public LevelPacketSpawnerState State;
 
-        public virtual void LoadLevelConfig(LevelPacketSpawnerConfig config)
+        public virtual void LoadLevelConfig(PacketSpawnerConfig config)
         {
             PacketSpawnerConfig = config;
 
@@ -112,37 +88,45 @@ namespace InternetGame
                         if (WaveTime > CurrentPacket.Offset)
                         {
                             // Time to spawn this packet.
-                            PacketSource source;
+                            PacketSource source = null;
                             if (CurrentPacket.Source != null)
                             {
                                 // Config specifies a source port.
-                                source = (PacketSource)GameUtils.AddressToSource[CurrentPacket.Source];
+                                var desired = (PacketSource)GameUtils.AddressToSource[CurrentPacket.Source];
+                                if (!desired.IsFull())
+                                {
+                                    source = desired;
+                                }
                             }
                             else
                             {
                                 // No source port specified -- randomly find one.
                                 source = GetRandomSource();
+                            }
 
-                                if (source != null)
+                            if (source != null)
+                            {
+                                PacketSink sink = (PacketSink)GameUtils.AddressToSink[CurrentPacket.Destination];
+
+                                NumActivePackets++;
+
+                                var packet = PacketFactory.CreateLoadedPacket(source, sink, CurrentPacket.Type);
+                                if (CurrentPacket.Size > 0)
                                 {
-                                    PacketSink sink = (PacketSink)GameUtils.AddressToSink[CurrentPacket.Destination];
+                                    packet.Payload.Size = CurrentPacket.Size;
+                                }
+                                packet.Destroyed += OnPacketDestroyed;
 
-                                    NumActivePackets++;
-
-                                    var packet = PacketFactory.CreateLoadedPacket(source, sink, CurrentPacket.Type);
-                                    packet.Destroyed += OnPacketDestroyed;
-
-                                    // Advance iterator.
-                                    if (!PacketConfigEnumerator.MoveNext())
-                                    {
-                                        // Reached end of wave.
-                                        State = LevelPacketSpawnerState.WaitingForWaveClear;
-                                        EnteredPeriodTime = currentTime;
-                                    }
-                                    else
-                                    {
-                                        CurrentPacket = (PacketConfig) PacketConfigEnumerator.Current;
-                                    }
+                                // Advance iterator.
+                                if (!PacketConfigEnumerator.MoveNext())
+                                {
+                                    // Reached end of wave.
+                                    State = LevelPacketSpawnerState.WaitingForWaveClear;
+                                    EnteredPeriodTime = currentTime;
+                                }
+                                else
+                                {
+                                    CurrentPacket = (PacketConfig)PacketConfigEnumerator.Current;
                                 }
                             }
                         }
