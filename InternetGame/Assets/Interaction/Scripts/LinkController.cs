@@ -197,7 +197,7 @@ namespace InternetGame
                     }
 
                     State = LinkControllerState.Inactive;
-                    Cursor.OnExit(cursorEventArgs);
+                    Cursor.OnDrop(cursorEventArgs);
 
                     StopClips();
 
@@ -206,16 +206,21 @@ namespace InternetGame
                 else
                 {
                     // Only finish the link if the destination matches the packet from the source.
+                    if (currentLinkComponent == null)
+                    {
+                        Debug.LogError("current link component is invalid! :(");
+                    }
+
                     if (currentLinkComponent.Packet.Destination == sink.Address)
                     {
                         PlayClip(LinkSoundEffect.LinkCompleted);
 
                         currentLinkComponent.End(sink);
 
-                        DestroyLink();
-
                         State = LinkControllerState.Inactive;
-                        Cursor.OnExit(cursorEventArgs);
+                        Cursor.OnDrop(cursorEventArgs);
+
+                        DestroyLink();
                     }
                 }
             }
@@ -306,7 +311,7 @@ namespace InternetGame
 
                     CurrentLink.GetComponent<Link>().End();
 
-                    Cursor.OnExit(cursorEventArgs);
+                    Cursor.OnDrop(cursorEventArgs);
                     State = LinkControllerState.Inactive;
                 }
 

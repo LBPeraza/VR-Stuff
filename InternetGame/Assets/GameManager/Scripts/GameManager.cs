@@ -17,6 +17,12 @@ namespace InternetGame
         public float Time;
     }
 
+    public enum GameManagerSoundEffect
+    {
+        GameOver,
+        LevelCleared
+    }
+
     public class GameManager : MonoBehaviour, ResourceLoadable
     {
         public GameObject PacketSources;
@@ -36,6 +42,11 @@ namespace InternetGame
         public GameOverOptions GameOverOptions;
         public GameScore Score;
         public Scoreboard Scoreboard;
+
+        public AudioSource GameOverSource;
+        public AudioSource LevelCompletedSource;
+        public AudioClip LevelCompletedClip;
+        public AudioClip GameOverClip;
 
         public string LevelName;
 
@@ -121,6 +132,8 @@ namespace InternetGame
 
         public void LoadResources()
         {
+            GameOverClip = Resources.Load<AudioClip>("Audio/gameover");
+            LevelCompletedClip = Resources.Load<AudioClip>("Audio/level_completed");
         }
 
         public void InitializeFactories()
@@ -205,6 +218,9 @@ namespace InternetGame
                 }
             }
 
+            GameOverSource = AudioMix.Add2DAudioSourceTo(this.gameObject);
+            LevelCompletedSource = AudioMix.Add2DAudioSourceTo(this.gameObject);
+
             if (BackgroundMusic == null)
             {
                 BackgroundMusic = gameObject.AddComponent<BackgroundMusic>();
@@ -225,13 +241,42 @@ namespace InternetGame
             }
         }
 
-        public void TogglePause()
+        public void PlayClip(GameManagerSoundEffect effect)
+        {
+            AudioSource source = GameOverSource;
+            AudioClip clip = GameOverClip;
+            bool loop = false;
+            float volume = 1.0f;
+
+            switch (effect)
+            {
+                case GameManagerSoundEffect.GameOver:
+                    clip = GameOverClip;
+                    source = GameOverSource;
+                    volume = 1.0f;
+                    break;
+                case GameManagerSoundEffect.LevelCleared:
+                    clip = LevelCompletedClip;
+                    source = LevelCompletedSource;
+                    volume = 1.0f;
+                    break;
+            }
+
+            source.clip = clip;
+            source.volume = volume;
+            source.loop = loop;
+            source.Play();
+        }
+
+        public void TogglePause(bool pauseMusic = true)
         {
             IsPaused = !IsPaused;
             if (IsPaused)
             {
-                //Time.timeScale = 0.0f;
-                BackgroundMusic.Pause();
+                if (pauseMusic)
+                {
+                    BackgroundMusic.Pause();
+                }
 
                 GameOverOptions.Show();
             }
@@ -282,13 +327,18 @@ namespace InternetGame
             IsGameOver = true;
             Debug.Log("Time: " + Score.Time + "  Number of packets delivered: " + Score.PacketsDelivered);
 
-            TogglePause();
+            PlayClip(GameManagerSoundEffect.GameOver);
+
+            BackgroundMusic.SetBackgroundSoundtrack(Soundtrack.Gameover);
+            TogglePause(false /* pause music */);
         }
 
-        public void LevelClearead()
+        public void LevelCleared()
         {
             // TODO
-            GameOver();
+            PlayClip(GameManagerSoundEffect.LevelCleared);
+
+            TogglePause();
         }
 
         public void Quit()
@@ -298,7 +348,7 @@ namespace InternetGame
 
         public void Retry()
         {
-            SceneLoader.TransitionToScene("LevelOne");
+            SceneLoader.TransitionToScene(SceneManager.GetActiveScene().name);
         }
 
         public float GameTime()

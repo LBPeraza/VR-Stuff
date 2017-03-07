@@ -35,5 +35,14 @@ namespace InternetGame
 
             return audioSource;
         }
+
+        public static AudioSource Add2DAudioSourceTo(GameObject parent)
+        {
+            var audioSource = parent.AddComponent<AudioSource>();
+            audioSource.spatialBlend = 0.0f;
+            audioSource.spatialize = false;
+
+            return audioSource;
+        }
     }
 }

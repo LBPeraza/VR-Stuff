@@ -165,7 +165,7 @@ namespace InternetGame
                         if (!alertedGameManagerToGameCleared)
                         {
                             alertedGameManagerToGameCleared = true;
-                            GameManager.LevelClearead();
+                            GameManager.LevelCleared();
                         }
                         break;
                 }

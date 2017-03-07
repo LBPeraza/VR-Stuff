@@ -8,7 +8,8 @@ namespace InternetGame
     {
         DeepDreamMachine,
         EtherealColosseum,
-        WelcomeToTheSimulation
+        WelcomeToTheSimulation,
+        Gameover
     }
 
     public class BackgroundMusic : MonoBehaviour, ResourceLoadable
@@ -18,6 +19,7 @@ namespace InternetGame
         public AudioClip DeepDreamMachine;
         public AudioClip EtherealColosseum;
         public AudioClip WelcomeToTheSimulation;
+        public AudioClip Gameover;
 
         public void Initialize()
         {
@@ -34,6 +36,7 @@ namespace InternetGame
             DeepDreamMachine = Resources.Load<AudioClip>("deep_dream_machine");
             EtherealColosseum = Resources.Load<AudioClip>("ethereal_colosseum");
             WelcomeToTheSimulation = Resources.Load<AudioClip>("welcome_to_the_simulation");
+            Gameover = Resources.Load<AudioClip>("gameover_track");
         }
 
         public void Pause()
@@ -49,6 +52,7 @@ namespace InternetGame
         public void SetBackgroundSoundtrack(Soundtrack track)
         {
             AudioClip soundtrack = DeepDreamMachine;
+            float delay = 0.0f;
 
             switch (track)
             {
@@ -61,11 +65,15 @@ namespace InternetGame
                 case Soundtrack.WelcomeToTheSimulation:
                     soundtrack = WelcomeToTheSimulation;
                     break;
+                case Soundtrack.Gameover:
+                    soundtrack = Gameover;
+                    delay = 2.0f;
+                    break;
             }
 
             BackgroundMusicSource.Stop();
             BackgroundMusicSource.clip = soundtrack;
-            BackgroundMusicSource.Play();
+            BackgroundMusicSource.PlayDelayed(delay);
         }
     }
 }

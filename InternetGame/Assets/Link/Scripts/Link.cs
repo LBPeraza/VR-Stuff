@@ -422,7 +422,8 @@ namespace InternetGame
                     SeverCause.VirusTransmitted : 
                     SeverCause.TransmissionFinished;
 
-                if (cause == SeverCause.TransmissionFinished)
+                if (cause == SeverCause.TransmissionFinished 
+                    || cause == SeverCause.VirusTransmitted)
                 {
                     if (TransmissionCompleted != null)
                     {
