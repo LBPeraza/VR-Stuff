@@ -25,41 +25,51 @@ namespace InternetGame
 
     public class GameManager : MonoBehaviour, ResourceLoadable
     {
+        [Header("Port Configuration")]
         public GameObject PacketSources;
         public GameObject PacketSinks;
+        public PortLoader PortLoader;
 
-        public static List<PacketSource> AllPacketSources;
-        public static List<PacketSink> AllPacketSinks;
-
-        public SceneLoader SceneLoader;
-        public PacketSpawner PacketSpawner;
+        [Header("Player Configuration")]
         public Player Player;
-        public GameObject HeadCamera;
-        public InputManager InputManager;
-		public PortLoader PortLoader;
-        public BackgroundMusic BackgroundMusic;
+
+        [Header("Room Configuration")]
         public Room Room;
+
+        [Header("Game Options")]
         public GameOverOptions GameOverOptions;
-        public GameScore Score;
-        public Scoreboard Scoreboard;
-
-        public AudioSource GameOverSource;
-        public AudioSource LevelCompletedSource;
-        public AudioClip LevelCompletedClip;
-        public AudioClip GameOverClip;
-
         public string LevelName;
 
         [HideInInspector]
         public LevelParameters LevelParameters;
 
+        [HideInInspector]
         public bool IsGameOver;
+        [HideInInspector]
         public bool IsPaused;
+        [HideInInspector]
+        public SceneLoader SceneLoader;
+        [HideInInspector]
+        public GameObject HeadCamera;
+
+        public static List<PacketSource> AllPacketSources;
+        public static List<PacketSink> AllPacketSinks;
 
         public static string PacketSinksPath = "/Sinks";
         public static string PacketSourcesPath = "/Sources";
 
         protected static GameManager instance;
+
+        protected PacketSpawner PacketSpawner;
+
+        protected GameScore Score;
+        protected Scoreboard Scoreboard;
+
+        protected BackgroundMusic BackgroundMusic;
+        protected AudioSource GameOverSource;
+        protected AudioSource LevelCompletedSource;
+        protected AudioClip LevelCompletedClip;
+        protected AudioClip GameOverClip;
 
         private void Start()
         {
@@ -160,15 +170,6 @@ namespace InternetGame
             {
                 SceneLoader = gameObject.AddComponent<SceneLoader>();
                 SceneLoader.Initialize();
-            }
-
-            if (InputManager != null)
-            {
-                InputManager.Initialize();
-            }
-            else
-            {
-                Debug.Log("No InputManager found. Skipping initialization.");
             }
 
             LoadPorts();

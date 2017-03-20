@@ -12,22 +12,23 @@ namespace InternetGame
 
     public class DoorPacketSource : PacketSource
     {
+        [Header("Backlight Settings")]
         public GameObject Backlight;
+        public Color BacklightOffColor = Color.black;
+
+        [Header("Shutter Settings")]
         public GameObject Shutter;
         public float DoorOpenRate;
-        public bool EnableConnector = true;
 
+        [Header("Particle Settings")]
 		public DoorPacketSourceParticles Particles;
-
+        
+        [Header("Connector Settings")]
+        public bool EnableConnector = true;
         public Transform ConnectorHidden;
         public Transform ConnectorExposed;
 
-        public Color BacklightOffColor = Color.black;
-
-        public AudioSource DoorSounds;
-        public AudioClip DoorOpenedSoundEffect;
-        public AudioClip DoorClosedSoundEffect;
-
+        [Header("Warning Light Settings")]
         public Light WarningLight;
         public float WarningLightMaxIntensity = 5.0f;
         public float WarningLightMinIntensity = 1.0f;
@@ -35,8 +36,11 @@ namespace InternetGame
         public GameObject WarningBulb;
         public float FlashRate = 2.0f;
 
-        public bool IsOpen = false;
-        public bool IsFlashing = false;
+        protected bool IsOpen = false;
+        protected bool IsFlashing = false;
+        protected AudioSource DoorSounds;
+        protected AudioClip DoorOpenedSoundEffect;
+        protected AudioClip DoorClosedSoundEffect;
 
         private float currentDoorSetting;
 
@@ -48,8 +52,6 @@ namespace InternetGame
             base.InitializeAudio();
 
             DoorSounds = AudioMix.AddAudioSourceTo(this.gameObject);
-
-            Particles.Initialize();
         }
 
         private void InstantiateConnector()
@@ -69,6 +71,8 @@ namespace InternetGame
         public override void Initialize()
         {
             base.Initialize();
+
+            Particles.Initialize();
 
             currentDoorSetting = 100.0f; // Completely closed.
             SetApertureClose(currentDoorSetting);

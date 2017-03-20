@@ -11,14 +11,23 @@ namespace InternetGame
         Expired
     }
 
+    public enum PacketState
+    {
+        Unset,
+        WaitingAtPort,
+        OnDeck,
+        Transmitting,
+        Transmitted,
+        Expired
+    }
+
     public abstract class Packet : MonoBehaviour
     {
         public PacketPayload Payload;
         public Color Color;
         public string Destination;
 
-        public bool IsWaitingAtPort;
-        public bool IsOnDeck;
+        public PacketState State;
         public float OnDeckTime;
         public float EnqueuedTime;
         public float DequeuedTime;
@@ -49,6 +58,7 @@ namespace InternetGame
         
         public virtual void Initialize()
         {
+            State = PacketState.Unset;
             Color = (Color)GameUtils.AddressToColor[Destination];
 
             Payload.Initialize(Color);
@@ -56,12 +66,13 @@ namespace InternetGame
 
         public virtual void OnDeckAtPort(PacketSource p)
         {
-            IsOnDeck = true;
+            State = PacketState.OnDeck;
             OnDeckTime = GameManager.GetInstance().GameTime();
         }
 
         public virtual void OnEnqueuedToPort(PacketSource p)
         {
+            State = PacketState.WaitingAtPort;
             EnqueuedTime = GameManager.GetInstance().GameTime();
 
             Source = p;
@@ -70,8 +81,6 @@ namespace InternetGame
         public virtual void OnDequeuedFromPort(PacketSource p, Link l)
         {
             DequeuedTime = GameManager.GetInstance().GameTime();
-            IsWaitingAtPort = false;
-            IsOnDeck = false;
 
             if (HasAlerted && Saved != null)
             {
@@ -83,6 +92,8 @@ namespace InternetGame
 
         public virtual void OnDequeuedFromLink(Link l, PacketSink p)
         {
+            State = PacketState.Transmitted;
+
             Payload.OnDequeuedFromLink(l, p);
 
             // Don't put anything critical in here -- Virus overrides this without calling base.
@@ -91,6 +102,8 @@ namespace InternetGame
 
         public virtual void OnTransmissionStarted(Link l, Packet p)
         {
+            State = PacketState.Transmitting;
+
             Payload.OnTransmissionStarted(l, p);
 
             TransmittingLink = l;
@@ -143,11 +156,16 @@ namespace InternetGame
 
         protected virtual void Expire()
         {
-            // Dequeue packet.
-            Source.DequeuePacket(Source.QueuedPackets.FindIndex(
-                packet => packet.GetInstanceID() == this.GetInstanceID()));
+            State = PacketState.Expired;
 
-            Source.OnPacketHasExpired(this);
+            if (Source != null)
+            {
+                // Dequeue packet.
+                Source.DequeuePacket(Source.QueuedPackets.FindIndex(
+                    packet => packet.GetInstanceID() == this.GetInstanceID()));
+
+                Source.OnPacketHasExpired(this);
+            }
 
             this.OnDropped(PacketDroppedCause.Expired);
         }

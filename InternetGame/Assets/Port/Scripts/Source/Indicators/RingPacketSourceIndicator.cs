@@ -13,7 +13,6 @@ namespace InternetGame
         public Material NeutralMaterialCopy;
         public Material ActiveMaterialCopy;
 
-        public int NumRings;
         public List<Hexagon> Rings;
         public int NumPackets;
         public int NumInnerPacketsToExclude = 1; 
@@ -36,14 +35,13 @@ namespace InternetGame
             }
         }
 
-        public override void Initialize(PacketSource source)
+        public override void Initialize(PacketProcessor processor)
         {
-            base.Initialize(source);
+            base.Initialize(processor);
 
             NeutralMaterialCopy = new Material(NeutralMaterial);
             ActiveMaterialCopy = new Material(ActiveMaterial);
 
-            NumRings = Source.Capacity;
             NumPackets = 0;
 
             Rings = new List<Hexagon>();
@@ -97,9 +95,9 @@ namespace InternetGame
             Rings.RemoveAt(0);
         }
 
-        public override void OnPacketExpired(Packet p)
+        public override void OnPacketExpired(object sender, PacketEventArgs p)
         {
-            base.OnPacketDequeued(p);
+            base.OnPacketDequeued(sender, p);
 
             if (NumPackets > NumInnerPacketsToExclude)
             {
@@ -108,21 +106,21 @@ namespace InternetGame
             NumPackets--;
         }
 
-        public override void OnPacketEnqueued(Packet p)
+        public override void OnPacketEnqueued(object sender, PacketEventArgs p)
         {
-            base.OnPacketEnqueued(p);
+            base.OnPacketEnqueued(sender, p);
 
             NumPackets++;
 
             if (NumPackets > NumInnerPacketsToExclude)
             {
-                AddAndActivateNewRing(p);
+                AddAndActivateNewRing(p.Packet);
             }
         }
 
-        public override void OnLinkStarted(Link l)
+        public override void OnLinkStarted(object sender, LinkEventArgs l)
         {
-            base.OnLinkStarted(l);
+            base.OnLinkStarted(sender, l);
 
             if (NumPackets > NumInnerPacketsToExclude)
             {

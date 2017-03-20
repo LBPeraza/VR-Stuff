@@ -8,7 +8,7 @@ namespace InternetGame
     {
         public override void Update()
         {
-            if (IsOnDeck)
+            if (State == PacketState.OnDeck)
             {
                 float currentTime = GameManager.GetInstance().GameTime();
                 if (!HasAlerted && currentTime > OnDeckTime + AlertTime)
@@ -24,7 +24,6 @@ namespace InternetGame
                     Expire();
 
                     HasDropped = true;
-                    IsOnDeck = false;
                 }
             }
         }

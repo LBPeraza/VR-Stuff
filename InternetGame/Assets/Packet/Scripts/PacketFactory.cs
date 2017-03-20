@@ -22,7 +22,7 @@ namespace InternetGame
         public static float DEFAULT_PACKET_PATIENCE = 17.0f; // Seconds.
         public static float DEFAULT_PACKET_ALERT_TIME = 10.0f; // Seconds
 
-        public static PacketMode Mode = PacketMode.TimedOnDeck;
+        public static PacketMode Mode = PacketMode.FallingPackets;
 
         public static void LoadResources()
         {

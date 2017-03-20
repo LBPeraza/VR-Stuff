@@ -5,16 +5,15 @@ using UnityEditor;
 
 namespace InternetGame {
 
-	[CustomEditor(typeof(LightbarIndicator))]
+	[CustomEditor(typeof(Lightbar))]
 	public class LightbarEditor : Editor {
 		public override void OnInspectorGUI() {
 			DrawDefaultInspector ();
 
 			if (GUILayout.Button ("AddPacket")) {
 
-				LightbarIndicator lightbar = (LightbarIndicator)target;
+				Lightbar lightbar = (Lightbar)target;
 				lightbar.AddLight (lightbar.NextPacketColor, 1, 15.0f);
-
 			}
 		}
 	}

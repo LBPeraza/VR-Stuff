@@ -6,29 +6,45 @@ namespace InternetGame
 {
     public class FallingPacket : Packet
     {
-        public float FallDuration = 10.0f; // Seconds
         public float AlertPercentage = 0.75f;
+
+        public delegate void OnReachedPortHandler(FallingPacket p);
+        public OnReachedPortHandler ReachedPort;
 
         public override void Update()
         {
-            if (!IsOnDeck)
+            if (State == PacketState.Unset)
             {
                 float fallTime = GameManager.GetInstance().GameTime() - EnqueuedTime;
-                if (!HasAlerted && fallTime > AlertPercentage * FallDuration)
+                if (!HasAlerted && fallTime > AlertPercentage * Patience)
                 {
+                    Debug.Log("packet is alerting");
                     // Alert player to expiring packet.
                     OnExpireWarning();
 
                     HasAlerted = true;
                 }
-                if (!HasDropped && fallTime >= FallDuration)
+                if (!HasDropped && fallTime >= Patience)
                 {
+                    Debug.Log("Packet is expiring");
                     // Drop packet.
-                    Expire();
+                    OnReachedPort();
 
                     HasDropped = true;
-                    IsOnDeck = false;
                 }
+            }
+        }
+
+        public void ForceExpire()
+        {
+            Expire();
+        }
+
+        protected void OnReachedPort()
+        {
+            if (ReachedPort != null)
+            {
+                ReachedPort.Invoke(this);
             }
         }
     }

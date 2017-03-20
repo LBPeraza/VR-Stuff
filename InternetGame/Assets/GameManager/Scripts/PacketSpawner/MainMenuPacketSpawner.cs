@@ -73,9 +73,9 @@ namespace InternetGame
             }
         }
 
-        private void OnLinkStarted(Link l)
+        private void OnLinkStarted(object sender, LinkEventArgs l)
         {
-            MenuOption picked = PortAssociations[l.Source];
+            MenuOption picked = PortAssociations[l.Link.Source];
             if (picked.LevelParameters != null)
             {
                 picked.LevelParameters.transform.parent = null;

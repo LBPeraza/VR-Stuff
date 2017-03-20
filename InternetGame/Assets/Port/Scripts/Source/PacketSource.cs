@@ -21,35 +21,41 @@ namespace InternetGame
         }
     }
 
-    public class PacketSource : MonoBehaviour, ResourceLoadable
+    public class PacketSource : MonoBehaviour, ResourceLoadable, PacketProcessor
     {
-        public GameObject PacketContainer;
-        public List<Packet> QueuedPackets;
-        public List<Link> ActiveLinks;
-        public GameObject IndicatorPrefab;
+        [Header("Indicator Settings")]
+        [Tooltip("The indicator for this port. This takes priority over the prefab field.")]
         public PacketSourceIndicator Indicator;
+        public PacketSourceIndicator IndicatorPrefab;
+
+        [Header("Source Settings")]
         public string Address;
-        public int Capacity = 5;
-        public PacketSourceInfo Info;
+        public int Capacity { get; set; }
         public Transform LinkConnectionPoint;
-        public Connector Connector;
 
-        public delegate void OnPacketEnqueuedHandler(Packet p);
-        public event OnPacketEnqueuedHandler OnPacketEnqueued;
-        public delegate void OnPacketDequeuedHandler(Packet p);
-        public event OnPacketDequeuedHandler OnPacketDequeued;
-        public delegate void OnLinkStartedHandler(Link l);
-        public event OnLinkStartedHandler OnPendingLinkStarted;
-        public delegate void OnPacketExpiredHandler(Packet p);
-        public event OnPacketExpiredHandler OnPacketExpired;
+        [HideInInspector]
+        public GameObject PacketContainer;
+        [HideInInspector]
+        public List<Packet> QueuedPackets;
+        [HideInInspector]
+        public List<Link> ActiveLinks;
+        [HideInInspector]
+        public PacketSourceInfo Info;
 
-        public AudioSource EnqueuedAudioSource;
-        public AudioSource PacketDroppedAudioSource;
-        public AudioSource PacketWarningAudioSource;
+        public event EventHandler<PacketEventArgs> OnPacketEnqueued;
+        public event EventHandler<PacketEventArgs> OnPacketDequeued;
+        public event EventHandler<LinkEventArgs> OnPendingLinkStarted;
+        public event EventHandler<PacketEventArgs> OnPacketExpired;
 
-        public AudioClip PacketWarningClip;
-        public AudioClip PacketDroppedClip;
-        public AudioClip PacketEnqueuedClip;
+        protected Connector Connector;
+
+        protected AudioSource EnqueuedAudioSource;
+        protected AudioSource PacketDroppedAudioSource;
+        protected AudioSource PacketWarningAudioSource;
+
+        protected AudioClip PacketWarningClip;
+        protected AudioClip PacketDroppedClip;
+        protected AudioClip PacketEnqueuedClip;
 
         private SourceInfo info;
 
@@ -75,7 +81,10 @@ namespace InternetGame
                 PacketEnqueuedClip = Resources.Load<AudioClip>("Audio/packet_enqueued");
             }
 
-            IndicatorPrefab = Resources.Load<GameObject>("Prefabs/RingIndicator");
+            if (Indicator == null && IndicatorPrefab == null)
+            {
+                IndicatorPrefab = Resources.Load<PacketSourceIndicator>("Prefabs/RingIndicator");
+            }
 
             Hexagon.LoadResources();
         }
@@ -84,8 +93,15 @@ namespace InternetGame
         {
             LoadResources();
 
+            InitializeAudio();
+
             ActiveLinks = new List<Link>();
             QueuedPackets = new List<Packet>();
+
+            if (Capacity <= 0)
+            {
+                Capacity = 5;
+            }
 
             Info.Capacity = Capacity;
             Info.QueuedPackets = QueuedPackets;
@@ -108,9 +124,10 @@ namespace InternetGame
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
 
-            InitializeAudio();
-
-            Indicator.Initialize(this);
+            if (Indicator != null)
+            {
+                Indicator.Initialize(this);
+            }
         }
 
         public virtual void InitializeAudio()
@@ -244,7 +261,7 @@ namespace InternetGame
 
             if (OnPendingLinkStarted != null)
             {
-                OnPendingLinkStarted.Invoke(l);
+                OnPendingLinkStarted.Invoke(this, new LinkEventArgs { Link = l });
             }
         }
 
@@ -264,7 +281,7 @@ namespace InternetGame
 
             if (OnPacketExpired != null)
             {
-                OnPacketExpired.Invoke(p);
+                OnPacketExpired.Invoke(this, new PacketEventArgs { Packet = p });
             }
 
             GameManager.GetInstance().ReportPacketDropped(p);
@@ -293,7 +310,7 @@ namespace InternetGame
         {
             if (OnPacketDequeued != null)
             {
-                OnPacketDequeued.Invoke(p);
+                OnPacketDequeued.Invoke(this, new PacketEventArgs { Packet = p });
             }
         }
 
@@ -307,7 +324,7 @@ namespace InternetGame
 
             if (OnPacketEnqueued != null)
             {
-                OnPacketEnqueued.Invoke(p);
+                OnPacketEnqueued.Invoke(this, new PacketEventArgs { Packet = p });
             }
         }
 
