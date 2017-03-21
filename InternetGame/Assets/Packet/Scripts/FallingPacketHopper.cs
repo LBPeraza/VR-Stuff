@@ -8,15 +8,12 @@ namespace InternetGame
     {
         // Since Source does not get subscribed to packet events,
         // we need to control the light manually.
-        FlashingLight Light;
-        Dictionary<FallingPacket, LightChunk> PacketLightChunks;
-        float FastPacketTotalDuration = 1.0f; // Seconds
+        protected FlashingLight Light;
+        protected float FastPacketTotalDuration = 1.0f; // Seconds
 
         public override void Initialize(PacketSource source, PacketSourceIndicator Indicator = null)
         {
             base.Initialize(source, Indicator);
-
-            PacketLightChunks = new Dictionary<FallingPacket, LightChunk>();
 
             Source.OnPendingLinkStarted += OnLinkStarted;
             Light = source.gameObject.GetComponent<FlashingLight>();
@@ -52,6 +49,7 @@ namespace InternetGame
 
             if (p is FallingPacket)
             {
+
                 // If the packet is a Falling Packet, store it and wait for it to fall.
                 FallingPacket fp = p as FallingPacket;
 

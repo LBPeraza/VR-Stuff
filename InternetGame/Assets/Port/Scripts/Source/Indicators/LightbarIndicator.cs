@@ -10,13 +10,15 @@ namespace InternetGame
         public Material NeutralMaterial;
         public Material ActiveMaterial;
 
+        public Lightbar Lightbar;
+
         public bool EnableEmission;
 
         protected Material NeutralMaterialCopy;
         protected Material ActiveMaterialCopy;
 
-        protected Lightbar Lightbar;
-        
+        private Dictionary<FallingPacket, LightChunk> PacketLightChunks;
+
         void Start()
         {
             if (!Application.isPlaying && Lightbar == null)
@@ -47,6 +49,8 @@ namespace InternetGame
             NeutralMaterialCopy = new Material(NeutralMaterial);
             ActiveMaterialCopy = new Material(ActiveMaterial);
 
+            PacketLightChunks = new Dictionary<FallingPacket, LightChunk>();
+
             Lightbar = GetComponent<Lightbar>();
             if (Lightbar == null)
             {
@@ -64,14 +68,18 @@ namespace InternetGame
         {
             base.OnPacketEnqueued(sender, p);
 
+            // PacketLightChunks[p] = 
             Lightbar.AddLight(p.Packet.Color, 1, p.Packet.Patience);
         }
 
         public override void OnLinkStarted(object sender, LinkEventArgs l)
         {
             base.OnLinkStarted(sender, l);
-
         }
 
+        public LightChunk GetLightChunkFor(Packet p)
+        {
+            return PacketLightChunks[p];
+        }
     }
 }
