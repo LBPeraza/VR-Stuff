@@ -16,8 +16,7 @@ namespace InternetGame
         protected Material ActiveMaterialCopy;
 
         protected Lightbar Lightbar;
-
-        // Use this for initialization
+        
         void Start()
         {
             if (!Application.isPlaying && Lightbar == null)
@@ -58,23 +57,14 @@ namespace InternetGame
 
         public override void OnPacketExpired(object sender, PacketEventArgs p)
         {
-            base.OnPacketDequeued(sender, p);
+            base.OnPacketExpired(sender, p);
         }
 
         public override void OnPacketEnqueued(object sender, PacketEventArgs p)
         {
             base.OnPacketEnqueued(sender, p);
 
-            //if (Source.QueuedPackets.Count == 1 && Source.Peek() == p)
-            //{
-            //    Debug.Log("fast light bar");
-            //    Lightbar.AddLight(p.Color, 1, 1.5f);
-            //}
-            //else
-            //{
-            //    Debug.Log("slow light bar");
-            //    Lightbar.AddLight(p.Color, 1, p.Patience);
-            //}
+            Lightbar.AddLight(p.Packet.Color, 1, p.Packet.Patience);
         }
 
         public override void OnLinkStarted(object sender, LinkEventArgs l)

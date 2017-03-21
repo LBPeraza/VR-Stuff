@@ -16,6 +16,9 @@ namespace InternetGame
         public GameObject Backlight;
         public Color BacklightOffColor = Color.black;
 
+        [Header("Warning Light")]
+        public FlashingLight WarningLight;
+
         [Header("Shutter Settings")]
         public GameObject Shutter;
         public float DoorOpenRate;
@@ -28,16 +31,7 @@ namespace InternetGame
         public Transform ConnectorHidden;
         public Transform ConnectorExposed;
 
-        [Header("Warning Light Settings")]
-        public Light WarningLight;
-        public float WarningLightMaxIntensity = 5.0f;
-        public float WarningLightMinIntensity = 1.0f;
-        public Color WarningLightColor = Color.red;
-        public GameObject WarningBulb;
-        public float FlashRate = 2.0f;
-
         protected bool IsOpen = false;
-        protected bool IsFlashing = false;
         protected AudioSource DoorSounds;
         protected AudioClip DoorOpenedSoundEffect;
         protected AudioClip DoorClosedSoundEffect;
@@ -45,7 +39,6 @@ namespace InternetGame
         private float currentDoorSetting;
 
         Coroutine doorAnimation;
-        Coroutine flashingAnimation;
 
         public override void InitializeAudio()
         {
@@ -73,15 +66,10 @@ namespace InternetGame
             base.Initialize();
 
             Particles.Initialize();
+            WarningLight.Initialize();
 
             currentDoorSetting = 100.0f; // Completely closed.
             SetApertureClose(currentDoorSetting);
-
-            if (WarningBulb != null)
-            {
-                Material copy = new Material(WarningBulb.GetComponent<Renderer>().material);
-                WarningBulb.GetComponent<Renderer>().material = copy;
-            }
 
             DisableBacklight();
         }
@@ -133,6 +121,11 @@ namespace InternetGame
         public void OnPacketSaved(Packet p)
         {
             SetFlashing(false);
+        }
+
+        protected void SetFlashing(bool flashing)
+        {
+            WarningLight.SetFlashing(flashing);
         }
 
         protected override void OnTransmissionSevered(SeverCause cause, Link severedLink)
@@ -243,46 +236,6 @@ namespace InternetGame
             source.volume = volume;
             source.time = offset;
             source.Play();
-        }
-
-        private void SetFlashing(bool flashing)
-        {
-            if (flashing != IsFlashing)
-            {
-                if (flashing)
-                {
-                    flashingAnimation = StartCoroutine(Flash(WarningLightColor));
-
-                    IsFlashing = true;
-                }
-                else
-                {
-                    StopCoroutine(flashingAnimation);
-                    SetBulb(Color.black, 0.0f);
-
-                    IsFlashing = false;
-                }
-            }
-        }
-        
-        private void SetBulb(Color c, float intensity)
-        {
-            WarningLight.intensity = intensity;
-            WarningBulb.GetComponent<Renderer>().material.SetColor("_EmissionColor", c);
-        }
-
-        private IEnumerator Flash(Color c)
-        {
-            while (true)
-            {
-                float t = 0.5f * Mathf.Cos(Time.fixedTime * FlashRate) + 0.5f;
-                Color toSet = Color.Lerp(Color.black, c, t);
-                float intensity = WarningLightMinIntensity + (t * (WarningLightMaxIntensity - WarningLightMinIntensity));
-
-                SetBulb(toSet, intensity);
-
-                yield return null;
-            }
         }
 
         private void SetBacklight(Color c)

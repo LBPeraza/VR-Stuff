@@ -163,9 +163,14 @@ namespace InternetGame
 
             if (Source != null)
             {
-                // Dequeue packet.
-                Source.DequeuePacket(Source.QueuedPackets.FindIndex(
-                    packet => packet.GetInstanceID() == this.GetInstanceID()));
+                var indexOfSelf = Source.QueuedPackets.FindIndex(
+                    packet => packet.GetInstanceID() == this.GetInstanceID());
+
+                if (indexOfSelf >= 0)
+                {
+                    // Dequeue packet.
+                    Source.DequeuePacket();
+                }
 
                 Source.OnPacketHasExpired(this);
             }

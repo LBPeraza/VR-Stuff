@@ -40,6 +40,8 @@ namespace InternetGame
             {
                 OnPacketEnqueued.Invoke(this, new PacketEventArgs { Packet = p });
             }
+
+            p.OnEnqueuedToPort(Source);
         }
     }
 }

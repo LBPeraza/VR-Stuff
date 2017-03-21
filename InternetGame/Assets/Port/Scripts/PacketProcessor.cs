@@ -22,6 +22,8 @@ namespace InternetGame
         event EventHandler<LinkEventArgs> OnPendingLinkStarted;
         event EventHandler<PacketEventArgs> OnPacketExpired;
 
+        void EnqueuePacket(Packet p);
+
         int Capacity { get; set; }
     }
 }

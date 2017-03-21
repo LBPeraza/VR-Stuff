@@ -12,6 +12,12 @@ namespace InternetGame
         PacketEnqueued
     }
 
+    public enum MethodOfEntry
+    {
+        Self,
+        FallingPacketHopper
+    }
+
     [Serializable]
     public class SourceInfo : PortInfo
     {
@@ -23,6 +29,9 @@ namespace InternetGame
 
     public class PacketSource : MonoBehaviour, ResourceLoadable, PacketProcessor
     {
+        [Header("Packet Spawning")]
+        public MethodOfEntry MethodOfEntry;
+
         [Header("Indicator Settings")]
         [Tooltip("The indicator for this port. This takes priority over the prefab field.")]
         public PacketSourceIndicator Indicator;
@@ -46,6 +55,9 @@ namespace InternetGame
         public event EventHandler<PacketEventArgs> OnPacketDequeued;
         public event EventHandler<LinkEventArgs> OnPendingLinkStarted;
         public event EventHandler<PacketEventArgs> OnPacketExpired;
+
+        [HideInInspector]
+        public PacketProcessor EntryPoint;
 
         protected Connector Connector;
 
@@ -122,6 +134,19 @@ namespace InternetGame
             {
                 var indicator = Instantiate(IndicatorPrefab, this.transform, false);
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
+            }
+
+            switch (MethodOfEntry)
+            {
+                case MethodOfEntry.Self:
+                    EntryPoint = this;
+                    break;
+                case MethodOfEntry.FallingPacketHopper:
+                    var packetHopper = new FallingPacketHopper();
+                    packetHopper.Initialize(this, Indicator);
+                    Indicator = null;
+                    EntryPoint = packetHopper;
+                    break;
             }
 
             if (Indicator != null)

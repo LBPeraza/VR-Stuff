@@ -11,25 +11,38 @@ namespace InternetGame
         public delegate void OnReachedPortHandler(FallingPacket p);
         public OnReachedPortHandler ReachedPort;
 
+        public bool Silent { get; set; }
+
+        bool reachedPort = false;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            Silent = false;
+        }
+
         public override void Update()
         {
-            if (State == PacketState.Unset)
+            if (!reachedPort)
             {
                 float fallTime = GameManager.GetInstance().GameTime() - EnqueuedTime;
                 if (!HasAlerted && fallTime > AlertPercentage * Patience)
                 {
-                    Debug.Log("packet is alerting");
-                    // Alert player to expiring packet.
-                    OnExpireWarning();
+                    if (!Silent)
+                    {
+                        // Alert player to expiring packet.
+                        OnExpireWarning();
+                    }
 
                     HasAlerted = true;
                 }
                 if (!HasDropped && fallTime >= Patience)
                 {
-                    Debug.Log("Packet is expiring");
                     // Drop packet.
                     OnReachedPort();
 
+                    reachedPort = true;
                     HasDropped = true;
                 }
             }
