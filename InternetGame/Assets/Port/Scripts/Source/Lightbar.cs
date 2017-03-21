@@ -15,6 +15,7 @@ namespace InternetGame {
 			this.size = size;
 			this.startTime = startTime;
 			this.duration = duration;
+            this.timeLeft = duration;
 		}
 
 		public void ChangeTimeLeft (float timeLeft) {
@@ -42,18 +43,19 @@ namespace InternetGame {
 		public Color NextPacketColor;
 
 		private List<GameObject> LightbarSegments;
-		private List<LightChunk> Lights;
+		public List<LightChunk> Lights;
 
 		private bool Dirty = false;
         private bool initialized = false;
 
-		// Use this for initialization
-		void Start () {
-			//if (!Application.isPlaying)
-            //{
+        // Use this for initialization
+        void Start()
+        {
+            if (!Application.isPlaying)
+            {
                 Initialize();
-            //}
-		}
+            }
+        }
 
         public void LoadResources()
         {

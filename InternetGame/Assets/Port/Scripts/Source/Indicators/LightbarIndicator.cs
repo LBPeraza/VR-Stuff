@@ -17,15 +17,15 @@ namespace InternetGame
         protected Material NeutralMaterialCopy;
         protected Material ActiveMaterialCopy;
 
-        private Dictionary<FallingPacket, LightChunk> PacketLightChunks;
+        private Dictionary<Packet, LightChunk> PacketLightChunks;
 
         void Start()
         {
-            if (!Application.isPlaying && Lightbar == null)
-            {
-                Lightbar = gameObject.AddComponent<Lightbar>();
-                Lightbar.Initialize();
-            }
+            //if (!Application.isPlaying && Lightbar == null)
+            //{
+            //    Lightbar = gameObject.AddComponent<Lightbar>();
+            //    Lightbar.Initialize();
+            //}
         }
 
         public override void LoadResources()
@@ -49,7 +49,7 @@ namespace InternetGame
             NeutralMaterialCopy = new Material(NeutralMaterial);
             ActiveMaterialCopy = new Material(ActiveMaterial);
 
-            PacketLightChunks = new Dictionary<FallingPacket, LightChunk>();
+            PacketLightChunks = new Dictionary<Packet, LightChunk>();
 
             Lightbar = GetComponent<Lightbar>();
             if (Lightbar == null)
@@ -68,8 +68,7 @@ namespace InternetGame
         {
             base.OnPacketEnqueued(sender, p);
 
-            // PacketLightChunks[p] = 
-            Lightbar.AddLight(p.Packet.Color, 1, p.Packet.Patience);
+            PacketLightChunks[p.Packet] = Lightbar.AddLight(p.Packet.Color, 1, p.Packet.Patience);
         }
 
         public override void OnLinkStarted(object sender, LinkEventArgs l)

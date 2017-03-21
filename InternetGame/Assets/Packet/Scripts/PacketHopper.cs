@@ -22,12 +22,13 @@ namespace InternetGame
         public event EventHandler<PacketEventArgs> OnPacketExpired;
         public event EventHandler<LinkEventArgs> OnPendingLinkStarted;
 
-        public virtual void Initialize(PacketSource source, PacketSourceIndicator Indicator = null)
+        public virtual void Initialize(PacketSource source, PacketSourceIndicator indicator = null)
         {
             Source = source;
 
             Queue = new List<Packet>();
 
+            Indicator = indicator;
             if (Indicator != null)
             {
                 Indicator.Initialize(this);

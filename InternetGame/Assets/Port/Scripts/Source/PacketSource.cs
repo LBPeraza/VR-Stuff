@@ -56,6 +56,8 @@ namespace InternetGame
         public event EventHandler<LinkEventArgs> OnPendingLinkStarted;
         public event EventHandler<PacketEventArgs> OnPacketExpired;
 
+        public event EventHandler<EstablishedLinkEventArgs> LinkEstablished;
+
         [HideInInspector]
         public PacketProcessor EntryPoint;
 
@@ -292,7 +294,15 @@ namespace InternetGame
 
         public virtual void OnLinkEstablished(Link l, PacketSink t)
         {
-
+            if (LinkEstablished != null)
+            {
+                LinkEstablished.Invoke(this, new EstablishedLinkEventArgs
+                {
+                    Packet = l.Packet,
+                    Source = this,
+                    Sink = t
+                });
+            }
         }
 
         public virtual void OnPacketWarning(Packet p)

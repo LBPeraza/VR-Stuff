@@ -15,6 +15,13 @@ namespace InternetGame
         public Link Link;
     }
 
+    public class EstablishedLinkEventArgs : EventArgs
+    {
+        public Packet Packet;
+        public PacketSource Source;
+        public PacketSink Sink;
+    }
+
     public interface PacketProcessor
     {
         event EventHandler<PacketEventArgs> OnPacketEnqueued;

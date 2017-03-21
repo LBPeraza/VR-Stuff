@@ -15,8 +15,18 @@ namespace InternetGame
         {
             base.Initialize(source, Indicator);
 
-            Source.OnPendingLinkStarted += OnLinkStarted;
+            Source.LinkEstablished += LinkEstablished; ;
             Light = source.gameObject.GetComponent<FlashingLight>();
+        }
+
+        private void LinkEstablished(object sender, EstablishedLinkEventArgs e)
+        {
+            if (Queue.Count > 0 && Source.IsEmpty())
+            {
+                // Fast forward the closest packet.
+                FallingPacket p = Queue[0] as FallingPacket;
+                FastForwardPacket(p);
+            }
         }
 
         private void OnLinkStarted(object sender, LinkEventArgs e)
@@ -35,10 +45,15 @@ namespace InternetGame
             float progress = elapsedTime / p.Patience;
             float timeLeft = (1.0f - progress) * FastPacketTotalDuration;
 
-            LightChunk lc = PacketLightChunks[p];
-            // lc.ChangeTimeLeft(timeLeft);
             p.Patience = elapsedTime + timeLeft;
             p.Silent = true;
+
+            if (Indicator is LightbarIndicator)
+            {
+                var lightbarIndicator = Indicator as LightbarIndicator;
+                LightChunk lc = lightbarIndicator.GetLightChunkFor(p);
+                lc.ChangeTimeLeft(timeLeft);
+            }
         }
 
         public override void EnqueuePacket(Packet p)
@@ -49,14 +64,13 @@ namespace InternetGame
 
             if (p is FallingPacket)
             {
-
                 // If the packet is a Falling Packet, store it and wait for it to fall.
                 FallingPacket fp = p as FallingPacket;
 
                 fp.ReachedPort += PacketReachedPort;
                 fp.ExpireWarning += PacketAlerted;
 
-                if (Queue.Count == 0 && Source.IsEmpty())
+                if (Queue.Count == 1 && Source.IsEmpty())
                 {
                     FastForwardPacket(fp);
                 }
