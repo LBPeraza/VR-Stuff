@@ -16,6 +16,7 @@ namespace InternetGame
         Unset,
         WaitingAtPort,
         OnDeck,
+        WaitingOnLink,
         Transmitting,
         Transmitted,
         Expired
@@ -81,6 +82,8 @@ namespace InternetGame
         public virtual void OnDequeuedFromPort(PacketSource p, Link l)
         {
             DequeuedTime = GameManager.GetInstance().GameTime();
+
+            State = PacketState.WaitingOnLink;
 
             if (HasAlerted && Saved != null)
             {
