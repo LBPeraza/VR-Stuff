@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace InternetGame {
-	struct LightChunk {
+	public class LightChunk {
 		public Color color;
 		public int size;
 		public float startTime;
+		public float timeLeft;
 		public float duration;
 
 		public LightChunk (Color color, int size, float startTime, float duration) {
@@ -14,6 +15,17 @@ namespace InternetGame {
 			this.size = size;
 			this.startTime = startTime;
 			this.duration = duration;
+		}
+
+		public void ChangeTimeLeft (float timeLeft) {
+			float currentTime = GameManager.GetInstance ().GameTime ();
+			float percentRemaining = this.timeLeft / this.duration;
+			float newDuration = timeLeft / percentRemaining;
+			float newStartTime = currentTime + timeLeft - newDuration;
+
+			this.startTime = newStartTime;
+			this.duration = newDuration;
+			this.timeLeft = timeLeft;
 		}
 	}
 
@@ -37,10 +49,10 @@ namespace InternetGame {
 
 		// Use this for initialization
 		void Start () {
-			if (!Application.isPlaying)
-            {
+			//if (!Application.isPlaying)
+            //{
                 Initialize();
-            }
+            //}
 		}
 
         public void LoadResources()
@@ -119,6 +131,7 @@ namespace InternetGame {
                         float timeLeft = chunk.duration - (currentTime - chunk.startTime);
                         if (timeLeft > 0.0f)
                         {
+							chunk.timeLeft = timeLeft;
                             newChunks.Add(chunk);
                             int i = Mathf.CeilToInt(Mathf.Lerp(-1, NumLights - 1, timeLeft / chunk.duration));
                             LightbarSegments[i].GetComponentInChildren<SkinnedMeshRenderer>().materials[1].color = chunk.color;
@@ -129,10 +142,20 @@ namespace InternetGame {
 			}
 		}
 
-		public void AddLight(Color lightColor, int lightLength, float duration) {
+		public LightChunk AddLight(Color lightColor, int lightLength, float duration) {
 			float currentTime = GameManager.GetInstance().GameTime();
-            Lights.Add (new LightChunk (
-				lightColor, lightLength, currentTime, duration));
+			LightChunk newChunk = new LightChunk (
+				lightColor, lightLength, currentTime, duration);
+			Lights.Add (newChunk);
+			return newChunk;
+		}
+
+		public bool ZoomLight(float scale = 2.0f) {
+			if (Lights.Count > 0) {
+				Lights [0].ChangeTimeLeft (Lights [0].timeLeft / scale);
+				return true;
+			}
+			return false;
 		}
 	}
 }
