@@ -375,13 +375,18 @@ namespace InternetGame
             return TotalLength;
         }
 
+        public void SetPacket(Packet p)
+        {
+            Packet = p;
+        }
+
         /// <summary>
         /// Adds a packet to the link, but does not start transmission.
         /// </summary>
         /// <param name="p">The Packet to add.</param>
         public void EnqueuePacket(Packet p)
         {
-            Packet = p;
+            SetPacket(p);
         }
 
         /// <summary>

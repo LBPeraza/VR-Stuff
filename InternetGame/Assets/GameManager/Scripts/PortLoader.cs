@@ -46,6 +46,7 @@ namespace InternetGame {
 
 		public void Initialize(LevelParameters levelParams) {
             LoadResources();
+            PacketSourceFactory.Initialize();
 
 			if (SaveOnRun)
 				SavePorts ();
@@ -64,9 +65,6 @@ namespace InternetGame {
 				SinkHolder = GameObject.Find ("Sinks");
 			}
 
-			if (SourcePrefab == null) {
-				SourcePrefab = Resources.Load<PacketSource> ("Prefabs/Source");
-			}
 			if (SinkPrefab == null) {
 				SinkPrefab = Resources.Load<PacketSink> ("Prefabs/Sink");
 			}
@@ -150,10 +148,9 @@ namespace InternetGame {
 		}
 
 		void LoadSource(SourceInfo info) {
-			PacketSource src = Instantiate<PacketSource> (SourcePrefab, SourceHolder.transform);
-			src.transform.localPosition = info.location;
-			src.transform.localRotation = info.orientation;
-		}
+            PacketSourceFactory.CreatePacketSource(
+                SourceHolder.transform, info.location, info.orientation);
+        }
 
 		void LoadSink(SinkInfo info) {
 			PacketSink sink = Instantiate<PacketSink> (SinkPrefab, SinkHolder.transform);

@@ -14,8 +14,16 @@ namespace InternetGame
 
     public enum MethodOfEntry
     {
+        Unset,
         Self,
         FallingPacketHopper
+    }
+
+    public enum PacketLoadingBehavior
+    {
+        Unset,
+        PutPacketOnLinkWhenLinkStarted,
+        PutPacketOnLinkWhenLinkEstablished
     }
 
     [Serializable]
@@ -41,6 +49,7 @@ namespace InternetGame
         public string Address;
         public int Capacity { get; set; }
         public Transform LinkConnectionPoint;
+        public PacketLoadingBehavior PacketLoadingBehavior;
 
         [HideInInspector]
         public GameObject PacketContainer;
@@ -136,6 +145,17 @@ namespace InternetGame
             {
                 var indicator = Instantiate(IndicatorPrefab, this.transform, false);
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
+            }
+
+            if (PacketLoadingBehavior == PacketLoadingBehavior.Unset)
+            {
+                Debug.LogWarning("Packet Loading Behavior is not set -- defaulting to PacketSourceFactory setting.");
+                PacketLoadingBehavior = PacketSourceFactory.PacketLoadingBehavior;
+            }
+            if (MethodOfEntry == MethodOfEntry.Unset)
+            {
+                Debug.LogWarning("Method of Entry is not set -- defaulting to PacketSourceFactory setting.");
+                MethodOfEntry = PacketSourceFactory.PacketMethodOfEntry;
             }
 
             switch (MethodOfEntry)
@@ -265,10 +285,8 @@ namespace InternetGame
             return null;
         }
 
-        public virtual void OnLinkStarted(Link l)
+        private void PutPacketOnLink(Link l)
         {
-            ActiveLinks.Add(l);
-
             if (!IsEmpty())
             {
                 // Dequeue packet and load it onto link.
@@ -276,6 +294,22 @@ namespace InternetGame
                 l.EnqueuePacket(packet);
 
                 packet.OnDequeuedFromPort(this, l);
+            }
+        }
+
+        public virtual void OnLinkStarted(Link l)
+        {
+            ActiveLinks.Add(l);
+
+            if (PacketLoadingBehavior == PacketLoadingBehavior.PutPacketOnLinkWhenLinkStarted)
+            {
+                PutPacketOnLink(l);
+            }
+            else
+            {
+                // If we don't move the packet to the link now, we still need
+                // to inform the link of what sort of packet is running on it.
+                l.SetPacket(Peek());
             }
 
             // Listen for sever events.
@@ -294,6 +328,11 @@ namespace InternetGame
 
         public virtual void OnLinkEstablished(Link l, PacketSink t)
         {
+            if (PacketLoadingBehavior == PacketLoadingBehavior.PutPacketOnLinkWhenLinkEstablished)
+            {
+                PutPacketOnLink(l);
+            }
+
             if (LinkEstablished != null)
             {
                 LinkEstablished.Invoke(this, new EstablishedLinkEventArgs

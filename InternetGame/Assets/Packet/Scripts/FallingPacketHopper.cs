@@ -15,27 +15,17 @@ namespace InternetGame
         {
             base.Initialize(source, Indicator);
 
-            Source.LinkEstablished += LinkEstablished; ;
+            source.OnPacketDequeued += OnPacketDequeuedFromSource;
             Light = source.gameObject.GetComponent<FlashingLight>();
         }
 
-        private void LinkEstablished(object sender, EstablishedLinkEventArgs e)
+        private void OnPacketDequeuedFromSource(object sender, PacketEventArgs p)
         {
             if (Queue.Count > 0 && Source.IsEmpty())
             {
                 // Fast forward the closest packet.
-                FallingPacket p = Queue[0] as FallingPacket;
-                FastForwardPacket(p);
-            }
-        }
-
-        private void OnLinkStarted(object sender, LinkEventArgs e)
-        {
-            if (Queue.Count > 0 && Source.IsEmpty())
-            {
-                // Fast forward the closest packet.
-                FallingPacket p = Queue[0] as FallingPacket;
-                FastForwardPacket(p);
+                FallingPacket fp = Queue[0] as FallingPacket;
+                FastForwardPacket(fp);
             }
         }
 

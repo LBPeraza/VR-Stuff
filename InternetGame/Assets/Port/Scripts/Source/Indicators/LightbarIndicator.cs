@@ -68,7 +68,10 @@ namespace InternetGame
         {
             base.OnPacketEnqueued(sender, p);
 
-            PacketLightChunks[p.Packet] = Lightbar.AddLight(p.Packet.Color, 1, p.Packet.Patience);
+            PacketLightChunks[p.Packet] = Lightbar.AddLight(
+                p.Packet.Color, 
+                1 /* light bar width */,
+                p.Packet.Patience /* duration of packet drop */);
         }
 
         public override void OnLinkStarted(object sender, LinkEventArgs l)
