@@ -10,6 +10,7 @@ namespace InternetGame
         public VRTK.VRTK_Button QuitButton;
 
         bool handlingButton = false;
+        bool shown = false;
 
         public void LoadResources()
         {
@@ -44,7 +45,7 @@ namespace InternetGame
             object sender, 
             VRTK.Control3DEventArgs e)
         {
-            if (!handlingButton)
+            if (!handlingButton && shown)
             {
                 GameManager.GetInstance().Retry();
 
@@ -55,11 +56,13 @@ namespace InternetGame
         public void Hide()
         {
             this.gameObject.SetActive(false);
+            shown = false;
         }
 
         public void Show()
         {
             this.gameObject.SetActive(true);
+            shown = true;
         }
         
     }

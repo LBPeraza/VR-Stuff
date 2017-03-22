@@ -349,7 +349,10 @@ namespace InternetGame
 
                     Sink = t;
 
-                    MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
+                    if (!(Packet.Payload is Virus))
+                    {
+                        MakeEndsUnseverable(Segments, UnseverableSegmentThreshold);
+                    }
 
                     Source.OnLinkEstablished(this, Sink);
                     Sink.OnLinkEstablished(this, Source);
@@ -419,9 +422,6 @@ namespace InternetGame
             if (State == LinkState.TransmittingPacket)
             {
                 Packet.OnDequeuedFromLink(this, Sink);
-
-                // Desaturate all segments.
-                DesaturateSegments(0, Segments.Count, Packet);
 
                 var cause = Packet.Payload is Virus ?
                     SeverCause.VirusTransmitted : 
