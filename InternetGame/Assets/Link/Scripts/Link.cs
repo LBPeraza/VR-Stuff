@@ -280,7 +280,7 @@ namespace InternetGame
                 LinkSegment linkSegment = MakeSegmentBetween(lastSegmentEnd, nextPosition);
 
                 // Set initial color to be desaturated.
-                linkSegment.Desaturate(Packet.Payload.Destaturated);
+                linkSegment.Desaturate(Packet.Payload.Desaturated);
 
                 Segments.Add(linkSegment);
 
@@ -461,7 +461,7 @@ namespace InternetGame
         {
             for (int i = start; i < end; i++)
             {
-                Segments[i].Desaturate(p.Payload.Destaturated);
+                Segments[i].Desaturate(p.Payload.Desaturated);
             }
         }
 

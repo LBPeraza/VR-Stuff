@@ -11,11 +11,18 @@ namespace InternetGame
         public Color Color;
 
         public Material Saturated;
-        public Material Destaturated;
+        public Material Desaturated;
+
+        protected int DefaultSize = Email.DefaultEmailSize;
 
         public virtual void Initialize(Color c)
         {
             Color = c;
+
+            if (Size <= 0)
+            {
+                Size = DefaultSize;
+            }
         }
 
         protected float saturationPenalty = 0.0f;
@@ -31,11 +38,21 @@ namespace InternetGame
             return newColor;
         }
 
+        public void SetColors(Color c)
+        {
+            SetSaturatedColor(c);
+            SetDesaturatedColor(MakeLighter(c));
+        }
+
         public void SetSaturatedColor(Color c)
         {
             Saturated.SetColor("_EmissionColor", c);
             Saturated.color = c;
-            Destaturated.color = MakeLighter(c);
+        }
+
+        public void SetDesaturatedColor(Color c)
+        {
+            Desaturated.color = c;
         }
 
         public virtual void OnTransmissionStarted(Link l, Packet p)

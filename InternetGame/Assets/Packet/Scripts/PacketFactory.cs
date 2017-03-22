@@ -13,8 +13,9 @@ namespace InternetGame
     public enum PacketPayloadType
     {
         Email,
+        Netflix,
+        SimpleVirus,
         ChameleonVirus,
-        Netflix
     }
 
     public class PacketFactory
@@ -29,6 +30,7 @@ namespace InternetGame
             Email.LoadResources();
             Netflix.LoadResources();
             Virus.LoadResources();
+            SimpleVirus.LoadResources();
             ChameleonVirus.LoadResources();
         }
 
@@ -97,11 +99,11 @@ namespace InternetGame
 
             switch (payloadType)
             {
+                case PacketPayloadType.SimpleVirus:
+                    p.Payload = p.gameObject.AddComponent<SimpleVirus>();
+                    break;
                 case PacketPayloadType.ChameleonVirus:
                     p.Payload = p.gameObject.AddComponent<ChameleonVirus>();
-                    ChameleonVirus emailVirus = (ChameleonVirus)p.Payload;
-                    emailVirus.ColorChangePercentageOffset = 0.1f; // 10%
-                    emailVirus.VirusAlertPercentage = 0.6f; // 60%
                     break;
                 case PacketPayloadType.Email:
                     p.Payload = p.gameObject.AddComponent<Email>();

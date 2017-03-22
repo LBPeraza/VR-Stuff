@@ -11,8 +11,9 @@ namespace InternetGame
         public Color EndColor = Color.red;
 
         public float ColorChangePercentageOffset;
-        public static float DefaultChameleonVirusDamage = 10.0f;
 
+        public static float DefaultChameleonVirusDamage = 10.0f;
+        public static float DefaultColorChangePercentageOffset = 0.4f;
         public static Material SaturatedMaterial;
 
         public static void LoadResources()
@@ -24,20 +25,17 @@ namespace InternetGame
         {
             base.Initialize(c);
 
-            this.Size = Email.DefaultEmailSize;
-            this.Damage = DefaultChameleonVirusDamage;
+            if (ColorChangePercentageOffset <= 0)
+            {
+                ColorChangePercentageOffset = DefaultColorChangePercentageOffset;
+            }
 
             Saturated = new Material(SaturatedMaterial);
-            Destaturated = new Material(Saturated);
+            Desaturated = new Material(Saturated);
 
-            SetSaturatedColor(Color);
+            SetColors(Color);
 
             StartColor = this.Saturated.color;
-        }
-
-        public override void OnDequeuedFromLink(Link l, PacketSink p)
-        {
-            base.OnDequeuedFromLink(l, p);
         }
 
         public override void OnTransmissionProgress(float percentageDone)
@@ -49,19 +47,6 @@ namespace InternetGame
                 (1.0f - ColorChangePercentageOffset));
             Color currentColor = Color.Lerp(StartColor, EndColor, scaledPercentage);
             this.Saturated.color = currentColor;
-
-            //float distanceDone = percentageDone * TransmittingLink.TotalLength;
-            //float distanceSoFar = 0.0f;
-            //foreach (LinkSegment segment in TransmittingLink.Segments)
-            //{
-            //    distanceSoFar += segment.Length;
-            //    if (distanceSoFar > distanceDone)
-            //    {
-            //        break;
-            //    }
-
-            //    segment.Saturate(Saturated);
-            //}
         }
     }
 }

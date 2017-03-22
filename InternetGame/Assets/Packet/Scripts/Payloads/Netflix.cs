@@ -20,9 +20,9 @@ namespace InternetGame
             base.Initialize(c);
 
             Saturated = new Material(SaturatedMaterial);
-            Destaturated = new Material(Saturated);
+            Desaturated = new Material(Saturated);
 
-            SetSaturatedColor(Color);
+            SetColors(Color);
 
             if (Size <= 0)
             {
