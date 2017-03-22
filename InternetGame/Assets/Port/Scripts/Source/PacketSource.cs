@@ -285,7 +285,7 @@ namespace InternetGame
             return null;
         }
 
-        private void PutPacketOnLink(Link l)
+        protected virtual void PutPacketOnLink(Link l)
         {
             if (!IsEmpty())
             {

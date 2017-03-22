@@ -7,8 +7,8 @@ namespace InternetGame
     public class PacketSourceFactory : MonoBehaviour
     {
         public static PacketSource SourcePrefab;
-        public static PacketLoadingBehavior PacketLoadingBehavior = 
-            PacketLoadingBehavior.PutPacketOnLinkWhenLinkEstablished;
+        public static PacketLoadingBehavior PacketLoadingBehavior =
+            PacketLoadingBehavior.PutPacketOnLinkWhenLinkStarted;
         public static MethodOfEntry PacketMethodOfEntry = 
             MethodOfEntry.FallingPacketHopper;
 

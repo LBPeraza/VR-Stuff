@@ -47,10 +47,13 @@ namespace InternetGame
             DoorSounds = AudioMix.AddAudioSourceTo(this.gameObject);
         }
 
-        private void InstantiateConnector()
+        private void TryInstantiateConnector()
         {
-            Connector = ConnectorFactory.CreateDefaultConnector(this, transform);
-            Connector.transform.localPosition = ConnectorHidden.localPosition;
+            if (Connector == null)
+            {
+                Connector = ConnectorFactory.CreateDefaultConnector(this, transform);
+                Connector.transform.localPosition = ConnectorHidden.localPosition;
+            }
         }
 
         public override void LoadResources()
@@ -79,25 +82,22 @@ namespace InternetGame
             base.OnNewPacketOnDeck(p);
 
             p.Saved += OnPacketSaved;
-
-            if (!HasUnfinishedLink())
+            
+            if (EnableConnector)
             {
-                if (EnableConnector)
-                {
-                    if (Connector == null)
-                    {
-                        // Create a new connector.
-                        InstantiateConnector();
-                    }
-                    else
-                    {
-                        // Update the color of the connector.
-                        Connector.SetColor(Peek().Color);
-                    }
-                }
-
-                SetBacklight(p.Color);
+                TryInstantiateConnector();         
             }
+            
+            UpdateBacklight();
+        }
+
+        protected override void OnEmptied()
+        {
+            base.OnEmptied();
+
+            SetFlashing(false);
+
+            UpdateBacklight();
         }
 
         public override void OnPacketWarning(Packet p)
@@ -105,17 +105,6 @@ namespace InternetGame
             base.OnPacketWarning(p);
 
             SetFlashing(true);
-        }
-
-        public override void OnPacketHasExpired(Packet p)
-        {
-            base.OnPacketHasExpired(p);
-
-            if (IsEmpty())
-            {
-                DisableBacklight();
-            }
-            SetFlashing(false);
         }
 
         public void OnPacketSaved(Packet p)
@@ -134,15 +123,12 @@ namespace InternetGame
 
             if (cause == SeverCause.UnfinishedLink)
             {
-                // When the player doesnt finish a link, we need to stop flashing, or
-                // start flashing the next packet's color.
                 if (!HasUnfinishedLink() && !IsEmpty())
                 {
                     if (EnableConnector)
                     {
-                        InstantiateConnector();
+                        TryInstantiateConnector();
                     }
-                    SetBacklight(Peek().Color);
                 } else
                 {
                     DisableBacklight();
@@ -155,24 +141,6 @@ namespace InternetGame
             base.OnLinkStarted(l);
 
             Connector = null;
-        }
-
-        protected override void OnTransmissionStarted(Link l, Packet p)
-        {
-            base.OnTransmissionStarted(l, p);
-
-            if (IsEmpty())
-            {
-                DisableBacklight();
-            }
-            else
-            {
-                if (EnableConnector)
-                {
-                    InstantiateConnector();
-                }
-                SetBacklight((Color)GameUtils.AddressToColor[Peek().Destination]);
-            }
         }
 
         public void OnTriggerEnter(Collider other)
@@ -236,6 +204,18 @@ namespace InternetGame
             source.volume = volume;
             source.time = offset;
             source.Play();
+        }
+
+        private void UpdateBacklight()
+        {
+            if (IsEmpty())
+            {
+                DisableBacklight();
+            }
+            else
+            {
+                SetBacklight((Color)GameUtils.AddressToColor[Peek().Destination]);
+            }
         }
 
         private void SetBacklight(Color c)
