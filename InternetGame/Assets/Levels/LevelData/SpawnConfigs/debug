@@ -1,1 +1,1 @@
-{"Name":"debug","Waves":[{"MarginBefore":2.0,"MarginAfter":2.0,"Packets":[{"Destination":"A","Type":0,"Size":2000,"Source":"SourceA","Offset":0.0},{"Destination":"A","Type":0,"Size":2000,"Source":"SourceA","Offset":6.0}]}]}
+{"Name":"debug","Waves":[{"MarginBefore":2.0,"MarginAfter":2.0,"Packets":[{"Destination":"A","Type":0,"Size":2000,"Source":"SourceA","Offset":0.0},{"Destination":"A","Type":0,"Size":2000,"Source":"SourceA","Offset":2.0}]}]}

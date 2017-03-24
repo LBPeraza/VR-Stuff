@@ -112,6 +112,13 @@ namespace InternetGame
             SetFlashing(false);
         }
 
+        public override void OnLevelCleared()
+        {
+            base.OnLevelCleared();
+
+            WarningLight.FlashRainbow();
+        }
+
         protected void SetFlashing(bool flashing)
         {
             WarningLight.SetFlashing(flashing);

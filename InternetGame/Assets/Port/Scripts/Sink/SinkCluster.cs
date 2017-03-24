@@ -21,16 +21,14 @@ namespace InternetGame
 	[Serializable]
 	public class ClusterInfo : PortInfo
 	{
-		public string address;
 		public List<PortInfo> ports;
 
 		public List<BackingInfo> backings;
 
 		public ClusterInfo (Vector3 location, Quaternion orientation,
 			string address, List<PortInfo> ports, List<BackingInfo> backings)
-			: base(location, orientation)
+			: base(address, location, orientation)
 		{
-			this.address = address;
 			this.ports = ports;
 			this.backings = backings;
 		}
@@ -81,7 +79,7 @@ namespace InternetGame
 				List<PortInfo> ports = new List<PortInfo> ();
 				foreach (GameObject port in Ports) {
 					Transform t = port.transform;
-					ports.Add (new PortInfo (t.localPosition, t.localRotation));
+					ports.Add (new PortInfo (Address, t.localPosition, t.localRotation));
 				}
 				List<BackingInfo> backings = new List<BackingInfo> ();
 				foreach (GameObject backing in Backings) {

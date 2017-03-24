@@ -332,12 +332,21 @@ namespace InternetGame
 
             BackgroundMusic.SetBackgroundSoundtrack(Soundtrack.Gameover);
             TogglePause(false /* pause music */);
+
+            foreach (PacketSource source in AllPacketSources)
+            {
+                source.OnGameOver();
+            }
         }
 
         public void LevelCleared()
         {
-            // TODO
             PlayClip(GameManagerSoundEffect.LevelCleared);
+
+            foreach (PacketSource source in AllPacketSources)
+            {
+                source.OnLevelCleared();
+            }
 
             TogglePause();
         }

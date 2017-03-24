@@ -6,12 +6,14 @@ namespace InternetGame
 	[Serializable]
 	public class PortInfo
 	{
-		public Vector3 location;
-		public Quaternion orientation;
+		public Vector3 Location;
+		public Quaternion Orientation;
+        public string Address;
 
-		public PortInfo (Vector3 location, Quaternion orientation) {
-			this.location = location;
-			this.orientation = orientation;
+		public PortInfo (string address, Vector3 location, Quaternion orientation) {
+			this.Location = location;
+			this.Orientation = orientation;
+            this.Address = address;
 		}
 	}
 }

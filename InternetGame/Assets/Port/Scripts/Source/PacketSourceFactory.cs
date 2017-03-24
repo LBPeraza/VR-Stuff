@@ -27,6 +27,7 @@ namespace InternetGame
 
         public static PacketSource CreatePacketSource(
             Transform parent, 
+            string address,
             Vector3 localPosition, 
             Quaternion localRotation)
         {
@@ -35,6 +36,7 @@ namespace InternetGame
             src.transform.localPosition = localPosition;
             src.transform.localRotation = localRotation;
 
+            src.Address = address;
             src.PacketLoadingBehavior = PacketLoadingBehavior;
             src.MethodOfEntry = PacketMethodOfEntry;
 
