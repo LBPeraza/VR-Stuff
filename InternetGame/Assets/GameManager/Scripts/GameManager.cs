@@ -38,6 +38,7 @@ namespace InternetGame
 
         [Header("Game Options")]
         public GameOverOptions GameOverOptions;
+        public NameEntry NameEntry;
         public string LevelName;
 
         [HideInInspector]
@@ -62,7 +63,8 @@ namespace InternetGame
 
         protected PacketSpawner PacketSpawner;
 
-        protected GameScore Score;
+        [HideInInspector]
+        public GameScore Score;
         protected Scoreboard Scoreboard;
 
         protected BackgroundMusic BackgroundMusic;
@@ -70,6 +72,7 @@ namespace InternetGame
         protected AudioSource LevelCompletedSource;
         protected AudioClip LevelCompletedClip;
         protected AudioClip GameOverClip;
+        protected NameEntry NameEntryPrefab;
 
         private void Start()
         {
@@ -144,6 +147,8 @@ namespace InternetGame
         {
             GameOverClip = Resources.Load<AudioClip>("Audio/gameover");
             LevelCompletedClip = Resources.Load<AudioClip>("Audio/level_completed");
+
+            NameEntryPrefab = Resources.Load<NameEntry>("Prefabs/NameEntry");
         }
 
         public void InitializeFactories()
@@ -239,6 +244,11 @@ namespace InternetGame
             if (GameOverOptions != null)
             {
                 GameOverOptions.Initialize();
+            }
+
+            if (NameEntry != null)
+            {
+                NameEntry.Initialize();
             }
         }
 
@@ -336,6 +346,11 @@ namespace InternetGame
             foreach (PacketSource source in AllPacketSources)
             {
                 source.OnGameOver();
+            }
+
+            if (NameEntry != null)
+            {
+                NameEntry.Show();
             }
         }
 
