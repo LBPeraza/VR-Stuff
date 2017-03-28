@@ -37,13 +37,18 @@ namespace InternetGame
             SkipButton.Pushed += OnSkip;
 
             shown = false;
-            this.enabled = false;
+            HideSelf();
         }
 
         public void Show()
         {
-            this.enabled = true;
+            this.gameObject.SetActive(true);
             shown = true;
+        }
+
+        protected void HideSelf()
+        {
+            this.gameObject.SetActive(false);
         }
 
         protected void HideButtons()
@@ -54,7 +59,7 @@ namespace InternetGame
 
         private void OnSkip(object sender, VRTK.Control3DEventArgs e)
         {
-            this.gameObject.SetActive(false);
+            HideSelf();
         }
 
         private void OnSubmit(object sender, VRTK.Control3DEventArgs e)
@@ -64,6 +69,8 @@ namespace InternetGame
             {
                 // Save score to file.
                 var score = GameManager.GetInstance().Score.PacketsDelivered;
+
+                ScoreSaver.SaveScore(name, score);
 
                 HideButtons();
             }
