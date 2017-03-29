@@ -16,7 +16,12 @@ namespace InternetGame
             base.Initialize(source, Indicator);
 
             source.OnPacketDequeued += OnPacketDequeuedFromSource;
-            Light = source.gameObject.GetComponent<FlashingLight>();
+
+            var doorSource = source as DoorPacketSource;
+            if (doorSource != null)
+            {
+                Light = doorSource.WarningLight;
+            }
         }
 
         private void OnPacketDequeuedFromSource(object sender, PacketEventArgs p)

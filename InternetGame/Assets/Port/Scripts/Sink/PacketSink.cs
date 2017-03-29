@@ -14,11 +14,8 @@ namespace InternetGame
 
 	[Serializable]
 	public class SinkInfo : PortInfo {
-		public string address;
-
-		public SinkInfo (Vector3 location, Quaternion orientation, string address)
-			: base(location, orientation) {
-			this.address = address;
+		public SinkInfo(string address, Vector3 location, Quaternion orientation)
+			: base(address, location, orientation) {
 		}
 	}
 
@@ -127,9 +124,9 @@ namespace InternetGame
 		public SinkInfo portInfo {
 			get {
 				return new SinkInfo (
-					transform.position,
-					transform.rotation,
-					Address);
+                    Address,
+                    transform.position,
+					transform.rotation);
 			}
 		}
     }

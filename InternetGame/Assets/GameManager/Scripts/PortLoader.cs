@@ -149,21 +149,21 @@ namespace InternetGame {
 
 		void LoadSource(SourceInfo info) {
             PacketSourceFactory.CreatePacketSource(
-                SourceHolder.transform, info.location, info.orientation);
+                SourceHolder.transform, info.Address, info.Location, info.Orientation);
         }
 
 		void LoadSink(SinkInfo info) {
 			PacketSink sink = Instantiate<PacketSink> (SinkPrefab, SinkHolder.transform);
-			sink.transform.localPosition = info.location;
-			sink.transform.localRotation = info.orientation;
-			sink.Address = info.address;
+			sink.transform.localPosition = info.Location;
+			sink.transform.localRotation = info.Orientation;
+			sink.Address = info.Address;
 		}
 
 		void LoadClusterSink(ClusterInfo info) {
 			SinkCluster cluster = Instantiate<SinkCluster> (ClusterPrefab, SinkHolder.transform);
-			cluster.transform.localPosition = info.location;
-			cluster.transform.localRotation = info.orientation;
-			cluster.Address = info.address;
+			cluster.transform.localPosition = info.Location;
+			cluster.transform.localRotation = info.Orientation;
+			cluster.Address = info.Address;
 
 			foreach (BackingInfo backing in info.backings) {
 				GameObject back = Instantiate<GameObject> (BackingPrefab, cluster.transform);
@@ -175,8 +175,8 @@ namespace InternetGame {
 
 			foreach (PortInfo port in info.ports) {
 				GameObject portObj = Instantiate<GameObject> (SinkPortPrefab, cluster.transform);
-				portObj.transform.localPosition = port.location;
-				portObj.transform.localRotation = port.orientation;
+				portObj.transform.localPosition = port.Location;
+				portObj.transform.localRotation = port.Orientation;
 				cluster.Ports.Add (portObj);
 			}
 		}

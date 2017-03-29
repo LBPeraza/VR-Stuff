@@ -29,8 +29,8 @@ namespace InternetGame
     [Serializable]
     public class SourceInfo : PortInfo
     {
-        public SourceInfo(Vector3 location, Quaternion orientation)
-            : base(location, orientation)
+        public SourceInfo(String address, Vector3 location, Quaternion orientation)
+            : base(address, location, orientation)
         {
         }
     }
@@ -361,6 +361,16 @@ namespace InternetGame
             GameManager.GetInstance().ReportPacketDropped(p);
         }
 
+        public virtual void OnGameOver()
+        {
+
+        }
+
+        public virtual void OnLevelCleared()
+        {
+
+        }
+
         protected virtual void OnEmptied()
         {
         }
@@ -412,6 +422,7 @@ namespace InternetGame
             get
             {
                 return new SourceInfo(
+                    Address,
                     transform.position,
                     transform.rotation);
             }

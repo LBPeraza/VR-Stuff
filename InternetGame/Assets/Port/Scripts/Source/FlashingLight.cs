@@ -12,24 +12,44 @@ namespace InternetGame
         public float WarningLightMaxIntensity = 5.0f;
         public float WarningLightMinIntensity = 1.0f;
         public Color WarningLightColor = Color.red;
-        public float FlashRate = 2.0f;
+        public float FlashRate = 1.0f;
+
+        protected Animation Animation;
+        protected AnimationClip Rainbow;
 
         protected bool IsFlashing = false;
         Coroutine flashingAnimation;
 
         public void LoadResources()
         {
+            Rainbow = Resources.Load<AnimationClip>("Animations/RainbowLight");
         }
 
         public void Initialize()
         {
             LoadResources();
 
+            Animation = GetComponent<Animation>();
+
             if (WarningBulb != null)
             {
                 Material copy = new Material(WarningBulb.GetComponent<Renderer>().material);
                 WarningBulb.GetComponent<Renderer>().material = copy;
             }
+
+            if (Animation != null)
+            {
+                Animation.Stop();
+            }
+
+            SetBulb(WarningLightColor, 0.0f);
+        }
+
+        public void FlashRainbow()
+        {
+            Animation.clip = Rainbow;
+            Animation.wrapMode = WrapMode.Loop;
+            Animation.Play();
         }
 
         private void SetBulb(Color c, float intensity)
