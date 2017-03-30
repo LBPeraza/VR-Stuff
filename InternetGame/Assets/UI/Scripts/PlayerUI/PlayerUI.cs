@@ -14,6 +14,7 @@ namespace InternetGame
         public void Initialize(Player p)
         {
             Player = p;
+            p.PrimaryCursorChanged += PrimaryCursorChanged;
 
             if (p.LeftCursor.Input != null)
             {
@@ -21,7 +22,7 @@ namespace InternetGame
             }
             else
             {
-                p.LeftCursor.OnControllerFound += SetUpInputHandlers;
+                p.LeftCursor.ControllerFound += SetUpInputHandlers;
             }
 
             if (p.RightCursor.Input != null)
@@ -30,7 +31,7 @@ namespace InternetGame
             }
             else
             {
-                p.RightCursor.OnControllerFound += SetUpInputHandlers;
+                p.RightCursor.ControllerFound += SetUpInputHandlers;
             }
 
             if (BandwidthDisplay != null)
@@ -42,6 +43,11 @@ namespace InternetGame
             {
                 PauseDisplay.Initialize();
             }
+        }
+
+        private void PrimaryCursorChanged(Cursor primary, Cursor secondary)
+        {
+            BandwidthDisplay.transform.SetParent(secondary.transform, false /* maintain world position */); 
         }
 
         protected void SetUpInputHandlers(VRTK.VRTK_ControllerEvents input)

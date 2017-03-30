@@ -89,12 +89,18 @@ namespace InternetGame
 
             if (Cursor == null)
             {
-                Cursor = p.LinkCursor;
+                Cursor = p.PrimaryCursor;
             }
+            p.PrimaryCursorChanged += OnPrimaryCursorChanged;
 
             State = LinkControllerState.Inactive;
 
-            Cursor.OnControllerFound += InitializeInput;
+            Cursor.ControllerFound += InitializeInput;
+        }
+
+        private void OnPrimaryCursorChanged(Cursor primary, Cursor secondary)
+        {
+            Cursor = primary;
         }
 
         private void LoadAudioClips()

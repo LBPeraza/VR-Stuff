@@ -128,6 +128,20 @@ namespace InternetGame
             }
         }
 
+        public override bool IsValidInteractableController(
+            GameObject actualController, 
+            AllowedController controllerCheck)
+        {
+            Player player = GameManager.GetInstance().Player;
+            if (actualController == player.PrimaryCursor.Controller)
+            {
+                // Only allow interaction if the primary controller is the one grabbing.
+                return true;
+            }
+
+            return false;
+        }
+
         private void OnLinkSever(Link severed, SeverCause cause, float totalLength)
         {
             SetGrabbable(false);

@@ -152,7 +152,9 @@ namespace InternetGame
 
         public void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("Player") && other.name == "FingersHitbox")
+            if (other.CompareTag("Player") 
+                && other.name == "FingersHitbox"
+                && other.GetComponentInParent<Cursor>().IsPrimary)
             {
                 Cursor cursor = other.transform.GetComponentInParent<Cursor>();
 

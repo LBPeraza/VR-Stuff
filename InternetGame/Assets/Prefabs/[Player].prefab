@@ -35,7 +35,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4171639977397584}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -66,7 +66,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4079335268650798}
   - component: {fileID: 82431334629134008}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: Audio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 4460813990319990}
   - component: {fileID: 33975933796441358}
   - component: {fileID: 65017551440701768}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: PalmHitbox
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 224093838144205700}
   - component: {fileID: 222892889063487042}
   - component: {fileID: 114443013894344182}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -168,13 +168,13 @@ GameObject:
   - component: {fileID: 223317658174126332}
   - component: {fileID: 114448800144656408}
   - component: {fileID: 114005300974713004}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: WristUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1173210465111658
 GameObject:
   m_ObjectHideFlags: 1
@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 222807124672166940}
   - component: {fileID: 114108049983669182}
   - component: {fileID: 114245610805858572}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: RemainingBandwidthDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248,7 +248,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4417066074100598}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -282,7 +282,7 @@ GameObject:
   - component: {fileID: 4881552418737610}
   - component: {fileID: 33758346995502442}
   - component: {fileID: 65094894028469750}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: FingersHitbox
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -297,7 +297,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4247610560585384}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: Models
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,6 +315,7 @@ GameObject:
   - component: {fileID: 223822792197242562}
   - component: {fileID: 114471718514855150}
   - component: {fileID: 114977340520747974}
+  - component: {fileID: 114020759749044682}
   m_Layer: 17
   m_Name: WristUI
   m_TagString: Untagged
@@ -381,7 +382,7 @@ GameObject:
   - component: {fileID: 4550148051007168}
   - component: {fileID: 33334508655101866}
   - component: {fileID: 23347857700366452}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -398,7 +399,7 @@ GameObject:
   - component: {fileID: 4376598971104704}
   - component: {fileID: 33432697225857778}
   - component: {fileID: 65258424519664492}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: KnuckleHitbox
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -413,7 +414,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4113180291847712}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -446,6 +447,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4074382800876748}
   - component: {fileID: 114583458384281308}
+  - component: {fileID: 114127064342996346}
   m_Layer: 0
   m_Name: '[PlayerUI]'
   m_TagString: Untagged
@@ -461,7 +463,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4691387732067740}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: scissor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -478,7 +480,7 @@ GameObject:
   - component: {fileID: 4552775454803932}
   - component: {fileID: 33181629916461652}
   - component: {fileID: 23393702972132264}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -493,7 +495,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4465513412845520}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: grab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -510,7 +512,7 @@ GameObject:
   - component: {fileID: 4412563944118360}
   - component: {fileID: 54785224510461020}
   - component: {fileID: 114545812641403660}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: RightCursor
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -527,7 +529,7 @@ GameObject:
   - component: {fileID: 4663515512472918}
   - component: {fileID: 33426990294758508}
   - component: {fileID: 23896731308069082}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -561,7 +563,7 @@ GameObject:
   - component: {fileID: 4035778717830954}
   - component: {fileID: 33688912837131792}
   - component: {fileID: 23530929481447974}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -578,7 +580,6 @@ GameObject:
   - component: {fileID: 224846973145314538}
   - component: {fileID: 222083678797052046}
   - component: {fileID: 114447388183515728}
-  - component: {fileID: 114514179977720632}
   m_Layer: 17
   m_Name: RemainingBandwidthDisplay
   m_TagString: Untagged
@@ -596,7 +597,7 @@ GameObject:
   - component: {fileID: 224637416723444908}
   - component: {fileID: 222958904703334584}
   - component: {fileID: 114891291385308398}
-  m_Layer: 17
+  m_Layer: 22
   m_Name: Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1740,6 +1741,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114020759749044682
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1379697785884838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7dbd70d5aff81b4e8841dcc87e05e7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MAX_NUM_BARS: 50
+  Output: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+  Display: {fileID: 114447388183515728}
 --- !u!114 &114108049983669182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1773,6 +1788,20 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: lllllllllllllllllllllll
+--- !u!114 &114127064342996346
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1642543395687382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0454f0723434fe643ad6e576163584f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PauseDisplayScreenPrefab: {fileID: 1379697785884838}
+  PauseDisplayScreen: {fileID: 0}
+  ScreenOffset: 1
 --- !u!114 &114245610805858572
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1786,6 +1815,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MAX_NUM_BARS: 50
   Output: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+  Display: {fileID: 0}
 --- !u!114 &114443013894344182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1903,26 +1933,12 @@ MonoBehaviour:
   Player: {fileID: 114570033374993850}
   IsRightHand: 0
   ControllerInitialized: 0
-  State: 0
   ArrowModel: {fileID: 1281942151489706}
   HandModel: {fileID: 1944116123161252}
   GrabModel: {fileID: 1895574426704666}
   ScissorsModel: {fileID: 1392894289367168}
   Input: {fileID: 0}
   ControllerActions: {fileID: 0}
---- !u!114 &114514179977720632
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1851292787292820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7dbd70d5aff81b4e8841dcc87e05e7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MAX_NUM_BARS: 50
-  Output: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
 --- !u!114 &114523882127402886
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1969,9 +1985,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Controller: {fileID: 0}
   Player: {fileID: 114570033374993850}
-  IsRightHand: 0
+  IsRightHand: 1
   ControllerInitialized: 0
-  State: 0
   ArrowModel: {fileID: 1486656759117282}
   HandModel: {fileID: 1019282746579146}
   GrabModel: {fileID: 1742579877051368}
@@ -1990,8 +2005,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LeftCursor: {fileID: 114478566614330762}
-  RightCursor: {fileID: 0}
-  LinkCursor: {fileID: 0}
+  RightCursor: {fileID: 114545812641403660}
+  PrimaryCursor: {fileID: 0}
   TotalBandwidth: 0
   MaxBandwidth: 20
   PlayerUI: {fileID: 114583458384281308}
@@ -2006,7 +2021,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9708e441244c22d4ea62384323a65964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BandwidthDisplay: {fileID: 114514179977720632}
+  BandwidthDisplay: {fileID: 114020759749044682}
+  PauseDisplay: {fileID: 114127064342996346}
 --- !u!114 &114891291385308398
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2199,8 +2215,8 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1379697785884838}
-  m_LocalRotation: {x: 0.30907127, y: -0.659662, z: 0.17890349, w: 0.6612976}
-  m_LocalPosition: {x: 0, y: 0, z: -0.1404}
+  m_LocalRotation: {x: 0.42162824, y: -0, z: -0, w: 0.9067688}
+  m_LocalPosition: {x: 0, y: 0, z: -0.1226}
   m_LocalScale: {x: 0.0002500001, y: 0.00025000016, z: 0.00025000013}
   m_Children:
   - {fileID: 224478448365547450}
@@ -2208,10 +2224,10 @@ RectTransform:
   - {fileID: 224846973145314538}
   m_Father: {fileID: 4158286890672806}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 139.849, y: -274.604, z: -192.939}
+  m_LocalEulerAnglesHint: {x: 49.875004, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.0876, y: 0.1328}
+  m_AnchoredPosition: {x: -0.0295, y: 0.1105}
   m_SizeDelta: {x: 800, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224478448365547450
