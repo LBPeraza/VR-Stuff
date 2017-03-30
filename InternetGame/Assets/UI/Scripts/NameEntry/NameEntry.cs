@@ -27,7 +27,7 @@ namespace InternetGame
             KeyboardCreator = gameObject.GetComponentInChildren<KeyboardCreator>();
 
             KeyboardCreator.Initialize();
-            KeyboardCreator.RaycastingSource = GameManager.GetInstance().Player.LinkCursor.transform;
+            KeyboardCreator.RaycastingSource = GameManager.GetInstance().Player.PrimaryCursor.transform;
 
             KeyboardRaycaster.Initialize();
 

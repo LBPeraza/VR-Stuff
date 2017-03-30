@@ -284,7 +284,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1766811661368712}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.6544656, y: 0.26861858, z: -0.99999994}
+  m_LocalPosition: {x: -1.2029151, y: 0.477, z: 0.457}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4205336333201962}
@@ -629,6 +629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 1
+  unhighlightOnDisable: 1
   emissionDarken: 50
   customMaterial: {fileID: 2100000, guid: 0bde525381af9324caad9a18adb9c48e, type: 2}
 --- !u!114 &114253655409603030
@@ -678,6 +679,8 @@ MonoBehaviour:
   FadeRate: 2
   PickUpHitbox: {fileID: 1411738475970530}
   RegularHitbox: {fileID: 1270861481096142}
+  Color: {r: 0, g: 0, b: 0, a: 0}
   Source: {fileID: 0}
   Link: {fileID: 0}
+  Cursor: {fileID: 0}
   IsAtSource: 0

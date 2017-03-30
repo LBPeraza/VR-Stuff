@@ -89,7 +89,7 @@ namespace InternetGame
 
             if (Cursor == null)
             {
-                Cursor = p.LinkCursor;
+                Cursor = p.PrimaryCursor;
             }
 
             State = LinkControllerState.Inactive;

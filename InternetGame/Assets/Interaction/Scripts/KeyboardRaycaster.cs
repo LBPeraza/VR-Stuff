@@ -37,7 +37,7 @@ namespace InternetGame
             int layerNumber = gameObject.layer;
             layer = 1 << layerNumber;
 
-            var linkCursor = GameManager.GetInstance().Player.LinkCursor;
+            var linkCursor = GameManager.GetInstance().Player.PrimaryCursor;
             if (linkCursor.Input != null)
             {
                 input = linkCursor.Input;

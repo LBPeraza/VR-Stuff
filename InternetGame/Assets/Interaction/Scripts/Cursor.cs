@@ -17,6 +17,7 @@ namespace InternetGame
 
         public bool IsRightHand;
         public bool ControllerInitialized;
+        public bool IsPrimary { get; set; }
 
         public CursorStateQueue CursorStates;
 
@@ -65,7 +66,7 @@ namespace InternetGame
             }
         }
 
-        public void Initialize(Player p, bool isRightHand)
+        public void Initialize(Player p, bool isRightHand, bool isPrimary)
         {
             ControllerInitialized = false;
             DefaultCursorEventArgs.preventCursorModelChange = false;
@@ -74,6 +75,7 @@ namespace InternetGame
 
             Player = p;
             IsRightHand = isRightHand;
+            IsPrimary = isPrimary;
 
             TryFindController();
 

@@ -14,7 +14,7 @@ namespace InternetGame
     {
         public Cursor LeftCursor;
         public Cursor RightCursor;
-        public Cursor LinkCursor;
+        public Cursor PrimaryCursor;
 
         public float TotalBandwidth;
         public float MaxBandwidth;
@@ -41,8 +41,8 @@ namespace InternetGame
             }
             if (LeftCursor != null)
             {
-                LeftCursor.Initialize(this, false /* is right hand */);
-                LinkCursor = LeftCursor;
+                LeftCursor.Initialize(this, false /* is right hand */, false /* is primary hand */);
+                PrimaryCursor = LeftCursor;
             }
 
             if (RightCursor == null)
@@ -55,13 +55,17 @@ namespace InternetGame
             }
             if (RightCursor != null)
             {
-                RightCursor.Initialize(this, true /* is right hand */);
-                LinkCursor = RightCursor;
+                RightCursor.Initialize(this, true /* is right hand */, false /* is primary hand */);
+                PrimaryCursor = RightCursor;
             }
 
-            if (LinkCursor == null)
+            if (PrimaryCursor == null)
             {
-                Debug.LogError("LinkCursor property of LinkController is unset.");
+                Debug.LogError("PrimaryCursor property of LinkController is unset.");
+            }
+            else
+            {
+                SetPrimaryCursor(PrimaryCursor);
             }
 
             if (PlayerUI != null)
@@ -91,6 +95,17 @@ namespace InternetGame
         public bool IsOutOfBandwidth()
         {
             return TotalBandwidth <= 0;
+        }
+
+        public void SetPrimaryCursor(Cursor c)
+        {
+            // Set the old cursor to not be primary.
+            PrimaryCursor.IsPrimary = false;
+
+            // Replace old cursor with new one.
+            PrimaryCursor = c;
+            PrimaryCursor.IsPrimary = true;
+            LinkController.GetInstance().Cursor = c;
         }
 
     }
