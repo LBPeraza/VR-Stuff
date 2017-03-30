@@ -10,6 +10,7 @@ namespace InternetGame
     {
         public int MAX_NUM_BARS = 50;
         public string Output = "llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll";
+        public Text Display;
 
         public override void Initialize()
         {
@@ -27,8 +28,7 @@ namespace InternetGame
         {
             if (percentage <= 100.0f && percentage >= 0.0f)
             {
-                Text textDisplay = this.GetComponent<Text>();
-                textDisplay.text = Output.Substring(0, (int)(percentage * MAX_NUM_BARS));
+                Display.text = Output.Substring(0, (int)(percentage * MAX_NUM_BARS));
             }
         }
     }

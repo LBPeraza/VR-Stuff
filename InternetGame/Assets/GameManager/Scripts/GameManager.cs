@@ -40,6 +40,26 @@ namespace InternetGame
         public GameOverOptions GameOverOptions;
         public NameEntry NameEntry;
         public string LevelName;
+        public GameObject DebugOptions;
+        public bool EnableDebug;
+
+        private bool debugDisplayEnabled = false;
+        public bool DebugDisplayEnabled
+        {
+            get { return debugDisplayEnabled; }
+            set
+            {
+                debugDisplayEnabled = value;
+                if (debugDisplayEnabled && DebugOptions)
+                {
+                    DebugOptions.SetActive(true);
+                }
+                else if (!debugDisplayEnabled && DebugOptions)
+                {
+                    DebugOptions.SetActive(false);
+                }
+            }
+        }
 
         [HideInInspector]
         public LevelParameters LevelParameters;
@@ -250,6 +270,8 @@ namespace InternetGame
             {
                 NameEntry.Initialize();
             }
+
+             DebugDisplayEnabled = EnableDebug;
         }
 
         public void PlayClip(GameManagerSoundEffect effect)

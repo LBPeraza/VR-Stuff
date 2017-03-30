@@ -315,6 +315,7 @@ GameObject:
   - component: {fileID: 223822792197242562}
   - component: {fileID: 114471718514855150}
   - component: {fileID: 114977340520747974}
+  - component: {fileID: 114020759749044682}
   m_Layer: 17
   m_Name: WristUI
   m_TagString: Untagged
@@ -579,7 +580,6 @@ GameObject:
   - component: {fileID: 224846973145314538}
   - component: {fileID: 222083678797052046}
   - component: {fileID: 114447388183515728}
-  - component: {fileID: 114514179977720632}
   m_Layer: 17
   m_Name: RemainingBandwidthDisplay
   m_TagString: Untagged
@@ -1741,6 +1741,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114020759749044682
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1379697785884838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7dbd70d5aff81b4e8841dcc87e05e7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MAX_NUM_BARS: 50
+  Output: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+  Display: {fileID: 114447388183515728}
 --- !u!114 &114108049983669182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1785,7 +1799,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0454f0723434fe643ad6e576163584f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PauseDisplayScreenPrefab: {fileID: 0}
+  PauseDisplayScreenPrefab: {fileID: 1379697785884838}
   PauseDisplayScreen: {fileID: 0}
   ScreenOffset: 1
 --- !u!114 &114245610805858572
@@ -1801,6 +1815,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MAX_NUM_BARS: 50
   Output: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+  Display: {fileID: 0}
 --- !u!114 &114443013894344182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1924,19 +1939,6 @@ MonoBehaviour:
   ScissorsModel: {fileID: 1392894289367168}
   Input: {fileID: 0}
   ControllerActions: {fileID: 0}
---- !u!114 &114514179977720632
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1851292787292820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7dbd70d5aff81b4e8841dcc87e05e7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MAX_NUM_BARS: 50
-  Output: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
 --- !u!114 &114523882127402886
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2019,7 +2021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9708e441244c22d4ea62384323a65964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BandwidthDisplay: {fileID: 114514179977720632}
+  BandwidthDisplay: {fileID: 114020759749044682}
   PauseDisplay: {fileID: 114127064342996346}
 --- !u!114 &114891291385308398
 MonoBehaviour:
@@ -2213,8 +2215,8 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1379697785884838}
-  m_LocalRotation: {x: 0.30907127, y: -0.659662, z: 0.17890349, w: 0.6612976}
-  m_LocalPosition: {x: 0, y: 0, z: -0.1404}
+  m_LocalRotation: {x: 0.42162824, y: -0, z: -0, w: 0.9067688}
+  m_LocalPosition: {x: 0, y: 0, z: -0.1226}
   m_LocalScale: {x: 0.0002500001, y: 0.00025000016, z: 0.00025000013}
   m_Children:
   - {fileID: 224478448365547450}
@@ -2222,10 +2224,10 @@ RectTransform:
   - {fileID: 224846973145314538}
   m_Father: {fileID: 4158286890672806}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 139.849, y: -274.604, z: -192.939}
+  m_LocalEulerAnglesHint: {x: 49.875004, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.0876, y: 0.1328}
+  m_AnchoredPosition: {x: -0.0295, y: 0.1105}
   m_SizeDelta: {x: 800, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224478448365547450

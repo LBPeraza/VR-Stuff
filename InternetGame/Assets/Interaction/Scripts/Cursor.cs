@@ -29,7 +29,7 @@ namespace InternetGame
         public VRTK.VRTK_ControllerEvents Input;
         public VRTK.VRTK_ControllerActions ControllerActions;
         public delegate void OnControllerFoundHandler(VRTK.VRTK_ControllerEvents input);
-        public event OnControllerFoundHandler OnControllerFound;
+        public event OnControllerFoundHandler ControllerFound;
 
         public static CursorEventArgs DefaultCursorEventArgs;
 
@@ -58,9 +58,9 @@ namespace InternetGame
                 {
                     ControllerInitialized = true;
 
-                    if (OnControllerFound != null)
+                    if (ControllerFound != null)
                     {
-                        OnControllerFound.Invoke(Input);
+                        ControllerFound.Invoke(Input);
                     }
                 }
             }
@@ -77,9 +77,21 @@ namespace InternetGame
             IsRightHand = isRightHand;
             IsPrimary = isPrimary;
 
+            ControllerFound += OnInputReady;
+
             TryFindController();
 
             UpdateState(CursorState.Inactive);
+        }
+
+        private void OnInputReady(VRTK.VRTK_ControllerEvents input)
+        {
+            input.AliasGrabOff += ControllerSqueezed;
+        }
+
+        private void ControllerSqueezed(object sender, VRTK.ControllerInteractionEventArgs e)
+        {
+            Player.SetPrimaryCursor(this);
         }
 
         public void OnEnterCut(CursorEventArgs args)

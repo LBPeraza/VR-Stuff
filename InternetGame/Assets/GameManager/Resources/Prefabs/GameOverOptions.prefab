@@ -39,8 +39,8 @@ GameObject:
   - component: {fileID: 4946904037617742}
   - component: {fileID: 114672977450747780}
   - component: {fileID: 114132655181394662}
-  - component: {fileID: 54781163550899152}
   - component: {fileID: 65211337384970516}
+  - component: {fileID: 54832253322224074}
   m_Layer: 0
   m_Name: QuitButton
   m_TagString: Untagged
@@ -126,8 +126,8 @@ GameObject:
   - component: {fileID: 4214883128775394}
   - component: {fileID: 114320580873341840}
   - component: {fileID: 114975783656790094}
-  - component: {fileID: 54307764450182216}
   - component: {fileID: 65688691030082680}
+  - component: {fileID: 54475935062795788}
   m_Layer: 0
   m_Name: RetryButton
   m_TagString: Untagged
@@ -318,7 +318,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1169590422557744}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &54307764450182216
+--- !u!54 &54475935062795788
 Rigidbody:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -333,7 +333,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!54 &54781163550899152
+--- !u!54 &54832253322224074
 Rigidbody:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

@@ -15,6 +15,7 @@ namespace InternetGame
         public Cursor LeftCursor;
         public Cursor RightCursor;
         public Cursor PrimaryCursor;
+        public Cursor SecondaryCursor;
 
         public float TotalBandwidth;
         public float MaxBandwidth;
@@ -22,6 +23,9 @@ namespace InternetGame
         public PlayerUI PlayerUI;
 
         public PlayerState CurrentState;
+
+        public delegate void OnPrimaryCursorChange(Cursor primary, Cursor secondary);
+        public event OnPrimaryCursorChange PrimaryCursorChanged;
 
         public void Initialize()
         {
@@ -56,16 +60,20 @@ namespace InternetGame
             if (RightCursor != null)
             {
                 RightCursor.Initialize(this, true /* is right hand */, false /* is primary hand */);
-                PrimaryCursor = RightCursor;
             }
 
-            if (PrimaryCursor == null)
+            if (LeftCursor == null && RightCursor == null)
             {
                 Debug.LogError("PrimaryCursor property of LinkController is unset.");
             }
             else
             {
-                SetPrimaryCursor(PrimaryCursor);
+                Cursor primary = LeftCursor;
+                if (RightCursor)
+                {
+                    primary = RightCursor;
+                }
+                SetPrimaryCursor(primary);
             }
 
             if (PlayerUI != null)
@@ -99,13 +107,26 @@ namespace InternetGame
 
         public void SetPrimaryCursor(Cursor c)
         {
-            // Set the old cursor to not be primary.
-            PrimaryCursor.IsPrimary = false;
+            if (PrimaryCursor != c)
+            {
+                if (SecondaryCursor == null)
+                {
+                    // If we haven't set Secondary Cursor yet, set it now.
+                    SecondaryCursor = c == LeftCursor ? RightCursor : LeftCursor;
+                }
+                // Set the old cursor to not be primary.
+                SecondaryCursor = PrimaryCursor;
+                SecondaryCursor.IsPrimary = false;
 
-            // Replace old cursor with new one.
-            PrimaryCursor = c;
-            PrimaryCursor.IsPrimary = true;
-            LinkController.GetInstance().Cursor = c;
+                // Replace old cursor with new one.
+                PrimaryCursor = c;
+                PrimaryCursor.IsPrimary = true;
+
+                if (PrimaryCursorChanged != null)
+                {
+                    PrimaryCursorChanged.Invoke(PrimaryCursor, SecondaryCursor);
+                }
+            }
         }
 
     }
