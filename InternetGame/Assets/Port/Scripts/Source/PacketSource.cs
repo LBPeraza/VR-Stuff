@@ -175,6 +175,7 @@ namespace InternetGame
             {
                 Indicator.Initialize(this);
             }
+
         }
 
         public virtual void InitializeAudio()
