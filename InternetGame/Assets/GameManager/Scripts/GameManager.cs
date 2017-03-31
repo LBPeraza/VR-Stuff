@@ -76,6 +76,8 @@ namespace InternetGame
         public static List<PacketSource> AllPacketSources;
         public static List<PacketSink> AllPacketSinks;
 
+		public static List<TextSpawner> AllTextSpawners;
+
         public static string PacketSinksPath = "/Sinks";
         public static string PacketSourcesPath = "/Sources";
 
@@ -179,7 +181,8 @@ namespace InternetGame
         }
 
         public void Initialize()
-        {
+		{
+
             LoadResources();
 
             LoadLevelData();
