@@ -51,9 +51,6 @@ namespace InternetGame
         public PacketSourceIndicator Indicator;
         public PacketSourceIndicator IndicatorPrefab;
 
-        [Header("Score Indicator Settings")]
-        public ScoreIndicatorType ScoreIndicatorType;
-
         [Header("Source Settings")]
         public string Address;
         public int Capacity { get; set; }
@@ -88,8 +85,6 @@ namespace InternetGame
         protected AudioClip PacketWarningClip;
         protected AudioClip PacketDroppedClip;
         protected AudioClip PacketEnqueuedClip;
-
-        protected ScoreIndicator ScoreIndicator;
 
         private SourceInfo info;
 
@@ -157,17 +152,6 @@ namespace InternetGame
                 var indicator = Instantiate(IndicatorPrefab, this.transform, false);
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
-
-
-            switch (ScoreIndicatorType) {
-                case ScoreIndicatorType.Disabled:
-                    break;
-                case ScoreIndicatorType.FallingText:
-                    ScoreIndicator = gameObject.AddComponent<ScoreIndicator>();
-                    ScoreIndicator.Initialize(this);
-                    break;
-            }
-            
 
             if (PacketLoadingBehavior == PacketLoadingBehavior.Unset)
             {

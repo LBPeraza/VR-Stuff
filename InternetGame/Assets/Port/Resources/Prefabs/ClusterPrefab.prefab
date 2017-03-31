@@ -52,10 +52,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Address: A
-  ActiveLink: {fileID: 0}
-  VirusStrikesAudioSource: {fileID: 0}
-  VirusStrikesAudioClip: {fileID: 0}
   DropZones: []
+  ScoreIndicatorType: 1
+  ActiveLink: {fileID: 0}
   Backings: []
   Ports: []
   Color: {r: 0, g: 0, b: 0, a: 0}

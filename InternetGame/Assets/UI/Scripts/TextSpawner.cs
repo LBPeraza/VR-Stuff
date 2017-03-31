@@ -29,7 +29,7 @@ namespace InternetGame {
 			if (InitialPosition == null)
 				InitialPosition = transform;
 
-			InitialDirection = Vector3.up + transform.forward;
+			InitialDirection = Vector3.up + transform.TransformDirection(transform.forward);
 
 			InitialDirection.Normalize ();
 

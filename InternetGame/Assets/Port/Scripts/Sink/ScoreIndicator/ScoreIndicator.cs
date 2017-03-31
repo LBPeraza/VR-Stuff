@@ -6,12 +6,12 @@ namespace InternetGame
 {
     public abstract class ScoreIndicator : MonoBehaviour
     {
-        public virtual void Initialize(PacketSource source)
+        public virtual void Initialize(PacketSink sink)
         {
-            source.OnPacketEnqueued += OnPacketEnqueued;
+            sink.LinkEstablished += OnLinkEstablished;
         }
 
-        protected virtual void OnPacketEnqueued(object sender, PacketEventArgs e)
+        protected virtual void OnLinkEstablished(object sender, EstablishedLinkEventArgs e)
         {
             e.Packet.Transmitted += OnPacketTransmitted;
         }
