@@ -57,13 +57,11 @@ namespace InternetGame {
 			Rigidbody rb = TextCanvas.GetComponent<Rigidbody> ();
 			rb.velocity = direction;
 
-			TextCanvasObject tco = new TextCanvasObject ();
-
 			TextCanvases.Add (TextCanvas);
 
 			Animator animator = TextCanvas.GetComponentInChildren<Animator> ();
 			AnimatorClipInfo clipInfo = animator.GetCurrentAnimatorClipInfo (0)[0];
-			clipInfo.clip.
+			Destroy (TextCanvas, clipInfo.clip.length);
 		}
 
 		void Update() {
