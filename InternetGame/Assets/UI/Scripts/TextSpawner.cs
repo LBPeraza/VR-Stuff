@@ -16,11 +16,11 @@ namespace InternetGame {
 
 		[Header("Motion parameters")]
 		public Transform InitialPosition;
-		public float MaxPositionNoise;
+        public float MaxPositionNoise = 0.01f;
 
 		public Vector3 InitialDirection;
-		public float MinVelocity;
-		public float MaxVelocity;
+		public float MinVelocity = 0.5f;
+		public float MaxVelocity = 1.2f;
 
 		public void Initialize() {
 			if (TextCanvasPrefab == null)

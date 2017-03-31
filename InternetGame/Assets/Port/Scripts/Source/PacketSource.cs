@@ -26,6 +26,12 @@ namespace InternetGame
         PutPacketOnLinkWhenLinkEstablished
     }
 
+    public enum ScoreIndicatorType
+    {
+        Disabled,
+        FallingText
+    }
+
     [Serializable]
     public class SourceInfo : PortInfo
     {
@@ -44,6 +50,9 @@ namespace InternetGame
         [Tooltip("The indicator for this port. This takes priority over the prefab field.")]
         public PacketSourceIndicator Indicator;
         public PacketSourceIndicator IndicatorPrefab;
+
+        [Header("Score Indicator Settings")]
+        public ScoreIndicatorType ScoreIndicatorType;
 
         [Header("Source Settings")]
         public string Address;
@@ -79,6 +88,8 @@ namespace InternetGame
         protected AudioClip PacketWarningClip;
         protected AudioClip PacketDroppedClip;
         protected AudioClip PacketEnqueuedClip;
+
+        protected ScoreIndicator ScoreIndicator;
 
         private SourceInfo info;
 
@@ -146,6 +157,17 @@ namespace InternetGame
                 var indicator = Instantiate(IndicatorPrefab, this.transform, false);
                 Indicator = indicator.GetComponent<PacketSourceIndicator>();
             }
+
+
+            switch (ScoreIndicatorType) {
+                case ScoreIndicatorType.Disabled:
+                    break;
+                case ScoreIndicatorType.FallingText:
+                    ScoreIndicator = gameObject.AddComponent<ScoreIndicator>();
+                    ScoreIndicator.Initialize(this);
+                    break;
+            }
+            
 
             if (PacketLoadingBehavior == PacketLoadingBehavior.Unset)
             {
