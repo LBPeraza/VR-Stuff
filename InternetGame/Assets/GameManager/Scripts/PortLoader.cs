@@ -52,10 +52,17 @@ namespace InternetGame {
 				SavePorts ();
 
 			if (LoadFrom == LoadLocation.LevelParams)
-				LoadPorts (levelParams.LevelName);
-			else if (LoadFrom == LoadLocation.LoaderLevel)
-				LoadPorts (levelName);
-		}
+            {
+                var portMapName = levelParams.PortMapName != null ? 
+                    levelParams.PortMapName : 
+                    levelParams.LevelName;
+                LoadPorts(portMapName);
+            }
+            else if (LoadFrom == LoadLocation.LoaderLevel)
+            {
+                LoadPorts(levelName);
+            }
+        }
 
 		public void LoadResources() {
 			if (SourceHolder == null) {

@@ -7,6 +7,7 @@ namespace InternetGame
 {
     public class FallingNumbersIndicator : ScoreIndicator
     {
+        public float TextSpawnerVerticalOffset = 0.08f; // Meters
         public Dictionary<Transform, TextSpawner> TextSpawners;
 
         public override void Initialize(PacketSink sink)
@@ -17,7 +18,9 @@ namespace InternetGame
 
             foreach (var zone in sink.DropZones)
             {
-                var textSpawner = zone.gameObject.AddComponent<TextSpawner>();
+                var textSpawner = TextSpawnerFactory.CreateTextSpawner(
+                    zone.gameObject,
+                    zone.transform.position + (Vector3.up * TextSpawnerVerticalOffset));
                 TextSpawners[zone.transform] = textSpawner;
                 textSpawner.Initialize();
             }

@@ -74,8 +74,11 @@ namespace InternetGame
 
         public void UpdatePlayerState(PlayerState state)
         {
-            float remainingPercentage = (float)state.BandwidthRemaining / state.MaximumBandwidth;
-            BandwidthDisplay.UpdateRemainingBandwidth(remainingPercentage);
+            if (BandwidthDisplay != null)
+            {
+                float remainingPercentage = (float)state.BandwidthRemaining / state.MaximumBandwidth;
+                BandwidthDisplay.UpdateRemainingBandwidth(remainingPercentage);
+            }
         }
     }
 }
