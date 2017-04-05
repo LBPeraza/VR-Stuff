@@ -222,7 +222,7 @@ namespace InternetGame
                         PacketSpawner = gameObject.AddComponent<MainMenuPacketSpawner>();
                         break;
                     case PacketSpawnerType.Wave:
-                        PacketSpawner = gameObject.AddComponent<LevelPacketSpawner>();
+                        PacketSpawner = gameObject.AddComponent<WavePacketSpawner>();
                         break;
                 }
             }
