@@ -136,6 +136,9 @@ namespace InternetGame
                             if (source != null)
                             {
                                 PacketSink sink = (PacketSink)GameUtils.AddressToSink[CurrentPacket.Destination];
+								if (sink == null) {
+									sink = GetRandomSink ();
+								}
 
                                 NumActivePackets++;
 

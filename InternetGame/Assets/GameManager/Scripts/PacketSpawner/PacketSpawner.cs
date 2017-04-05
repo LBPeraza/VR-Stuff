@@ -39,6 +39,11 @@ namespace InternetGame
             return null;
         }
 
+		protected PacketSink GetRandomSink() {
+			int sinkIndex = random.Next (Sinks.Count);
+			return Sinks [sinkIndex];
+		}
+
         // Update is called once per frame
         public virtual void Update()
         {
