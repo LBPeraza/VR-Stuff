@@ -17,5 +17,9 @@ namespace InternetGame {
 			get { return 10.0f; }
 		}
 
+		public override Color PowerupColor {
+			get { return Color.green; }
+		}
+
 	}
 }
