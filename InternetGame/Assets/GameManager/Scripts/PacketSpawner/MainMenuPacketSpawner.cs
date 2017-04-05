@@ -26,7 +26,8 @@ namespace InternetGame
             {
                 {
                     "Infinite Mode", new MenuOption {
-                        SceneName = "LevelOne"
+                        SceneName = "WaveLevel",
+                        LevelParameters = LevelParameters.LoadFromFile("infinite_level")
                     }
                 },
                 {
