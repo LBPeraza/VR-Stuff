@@ -154,7 +154,8 @@ namespace InternetGame
                 ExpireWarning.Invoke(this);
             }
 
-            Source.PlayClip(PacketSourceSoundEffect.PacketWarning);
+			if (Source != null)
+            	Source.PlayClip(PacketSourceSoundEffect.PacketWarning);
         }
 
         protected virtual void Expire()
