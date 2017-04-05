@@ -15,3 +15,5 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
   - enabled: 1
     path: Assets/Scenes/WaveLevel.unity
+  - enabled: 1
+    path: Assets/Scenes/InfiniteLevel.unity
