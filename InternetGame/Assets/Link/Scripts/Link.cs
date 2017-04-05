@@ -40,6 +40,7 @@ namespace InternetGame
         public float TaperedDiameter = 0.01f; // Meters
 		public float UntaperedDiameter = 0.03f;
         public Connector Connector;
+        public Transform SinkEndpoint;
         public int SlopeWindow = 3;
 
         public delegate void SeverHandler(Link severed, SeverCause cause, float totalLength);
@@ -337,8 +338,9 @@ namespace InternetGame
         /// Ends the link, returning the total length of the link.
         /// </summary>
         /// <param name="t">The sink of the link.</param>
+        /// <param name="endpoint">The location at which the link is docked.</param>
         /// <returns>Total length of link used.</returns>
-        public float End(PacketSink t = null)
+        public float End(PacketSink t = null, Transform endpoint = null)
         {
             if (State == LinkState.UnderConstruction)
             {
@@ -348,6 +350,7 @@ namespace InternetGame
                     State = LinkState.AwaitingPacket;
 
                     Sink = t;
+                    SinkEndpoint = endpoint;
 
                     if (!(Packet.Payload is Virus))
                     {

@@ -26,6 +26,12 @@ namespace InternetGame
         PutPacketOnLinkWhenLinkEstablished
     }
 
+    public enum ScoreIndicatorType
+    {
+        Disabled,
+        FallingText
+    }
+
     [Serializable]
     public class SourceInfo : PortInfo
     {

@@ -178,7 +178,7 @@ namespace InternetGame
                 EndLinkRumbleBaseIntensity));
         }
 
-        public void EndLink(PacketSink sink = null)
+        public void EndLink(PacketSink sink = null, Transform endpoint = null)
         {
             if (CurrentLink != null)
             {
@@ -221,7 +221,7 @@ namespace InternetGame
                     {
                         PlayClip(LinkSoundEffect.LinkCompleted);
 
-                        currentLinkComponent.End(sink);
+                        currentLinkComponent.End(sink, endpoint);
 
                         State = LinkControllerState.Inactive;
                         Cursor.OnDrop(cursorEventArgs);

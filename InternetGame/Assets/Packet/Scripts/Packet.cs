@@ -36,6 +36,7 @@ namespace InternetGame
         public float AlertTime;
 
         public PacketSource Source;
+        public Link TransmittingLink;
 
         public delegate void OnExpireWarningHandler(Packet p);
         public OnExpireWarningHandler ExpireWarning;
@@ -54,8 +55,6 @@ namespace InternetGame
 
         protected bool HasAlerted = false;
         protected bool HasDropped = false;
-
-        protected Link TransmittingLink;
         
         public virtual void Initialize()
         {

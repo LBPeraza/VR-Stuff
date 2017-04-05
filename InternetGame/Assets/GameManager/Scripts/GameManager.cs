@@ -114,7 +114,6 @@ namespace InternetGame
 
         public void LoadLevelData()
         {
-            // TODO
             var levelParamsContainer = GameObject.Find("/LevelParameters");
             if (levelParamsContainer != null)
             {
@@ -182,7 +181,6 @@ namespace InternetGame
 
         public void Initialize()
 		{
-
             LoadResources();
 
             LoadLevelData();
@@ -393,7 +391,12 @@ namespace InternetGame
 
         public void Quit()
         {
-            SceneLoader.TransitionToScene("MainMenu");
+            if (LevelParameters.gameObject)
+            {
+                DestroyImmediate(LevelParameters.gameObject);
+
+                SceneLoader.TransitionToScene("MainMenu");
+            }
         }
 
         public void Retry()

@@ -21,15 +21,23 @@ namespace InternetGame
 
     public class PacketSink : MonoBehaviour
 	{
+        [Header("General Settings")]
         public string Address;
-        public Link ActiveLink;
-
-        public AudioSource VirusStrikesAudioSource;
-		public AudioClip VirusStrikesAudioClip;
-
         public List<VRTK_SnapDropZone> DropZones;
 
-		private PortInfo info;
+        [Header("Score Indicator Settings")]
+        public ScoreIndicatorType ScoreIndicatorType;
+
+        public event EventHandler<EstablishedLinkEventArgs> LinkEstablished;
+
+        protected AudioSource VirusStrikesAudioSource;
+        protected AudioClip VirusStrikesAudioClip;
+
+        [HideInInspector]
+        public Link ActiveLink;
+
+        protected ScoreIndicator scoreIndicator;
+        protected PortInfo info;
 
         public virtual void LoadResources()
         {
@@ -50,6 +58,16 @@ namespace InternetGame
                 dropZone.ObjectSnappedToDropZone += ConnectorSnappedToDropZone;
                 dropZone.ObjectEnteredSnapDropZone += ConnectorEnteredDropZone;
             }
+
+            switch (ScoreIndicatorType)
+            {
+                case ScoreIndicatorType.Disabled:
+                    break;
+                case ScoreIndicatorType.FallingText:
+                    scoreIndicator = gameObject.AddComponent<FallingNumbersIndicator>();
+                    scoreIndicator.Initialize(this);
+                    break;
+            }
         }
 
         private void ConnectorEnteredDropZone(object sender, SnapDropZoneEventArgs e)
@@ -59,7 +77,7 @@ namespace InternetGame
 
         private void ConnectorSnappedToDropZone(object sender, SnapDropZoneEventArgs e)
         {
-            LinkController.GetInstance().EndLink(this);
+            LinkController.GetInstance().EndLink(this, ((VRTK.PacketDropZone) sender).transform);
         }
 
         public void PlayAudioClip(PacketSinkSoundEffect effect)
@@ -102,6 +120,15 @@ namespace InternetGame
 
             // Inform the connector that it has been snapped into a port.
             l.Connector.OnSnappedToPort(this);
+
+            if (LinkEstablished != null)
+            {
+                LinkEstablished.Invoke(this, new EstablishedLinkEventArgs {
+                    Packet = l.Packet,
+                    Sink = this,
+                    Source = s
+                });
+            }
         }
 
         public virtual void OnTransmissionStarted(Link l, Packet p)

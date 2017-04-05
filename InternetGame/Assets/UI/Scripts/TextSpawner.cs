@@ -15,37 +15,39 @@ namespace InternetGame {
 		private List<GameObject> TextCanvases;
 
 		[Header("Motion parameters")]
-		public Transform InitialPosition;
-		public float MaxPositionNoise;
+		public Vector3 InitialPosition;
+        public float MaxPositionNoise = 0.01f;
 
 		public Vector3 InitialDirection;
-		public float MinVelocity;
-		public float MaxVelocity;
+		public float MinVelocity = 0.5f;
+		public float MaxVelocity = 1.2f;
 
 		public void Initialize() {
 			if (TextCanvasPrefab == null)
 				TextCanvasPrefab = Resources.Load<GameObject> ("Prefabs/PopupTextCanvas");
 
 			if (InitialPosition == null)
-				InitialPosition = transform;
+				InitialPosition = transform.position;
 
-			InitialDirection = Vector3.up + transform.forward;
+            if (InitialDirection == null)
+            {
+                InitialDirection = Vector3.up + transform.TransformDirection(transform.forward);
+                InitialDirection.Normalize();
+            }
 
-			InitialDirection.Normalize ();
-
-			TextCanvases = new List<GameObject> ();
+            TextCanvases = new List<GameObject> ();
 
 		}
 
 		public void AddText(string text, Color color) {
-			GameObject TextCanvas = Instantiate (TextCanvasPrefab, InitialPosition);
+			GameObject TextCanvas = Instantiate (TextCanvasPrefab, InitialPosition, Quaternion.identity);
 
 			Text textObject = TextCanvas.GetComponentInChildren<Text> ();
 			textObject.text = text;
 			textObject.color = color;
 
 			Vector3 textPosition = Random.onUnitSphere * MaxPositionNoise;
-			TextCanvas.transform.localPosition = textPosition;
+			TextCanvas.transform.localPosition += textPosition;
 
 			Vector3 direction;
 			do {

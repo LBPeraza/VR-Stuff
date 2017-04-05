@@ -17,7 +17,7 @@ namespace InternetGame
     public class LevelParameters : MonoBehaviour
     {
         public string LevelName;
-
+        public string PortMapName;
         public int NumDroppedPacketsAllowed;
         public Soundtrack BackgroundSoundtrack;
         public PacketSpawnerType PacketSpawner;
