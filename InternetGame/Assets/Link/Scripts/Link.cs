@@ -59,6 +59,7 @@ namespace InternetGame
         public event OnTransmissionCompletedHandler TransmissionCompleted;
 
         public float Bandwidth; // Meters/second.
+        public float CurrentBandwidth;
         public PacketSource Source;
         public PacketSink Sink;
 
@@ -115,6 +116,8 @@ namespace InternetGame
             lastSegmentEnd = source.LinkConnectionPoint.position;
 
             RecentSlope = Vector3.zero;
+
+            CurrentBandwidth = Bandwidth;
 
             source.OnLinkStarted(this);
             
@@ -418,6 +421,23 @@ namespace InternetGame
         }
 
         /// <summary>
+        /// Increases the bandwidth of the link until SetFastForward(false)
+        /// is called.
+        /// <param name="on">Whether to turn Fast Forward on or off</param>
+        /// </summary>
+        public void SetFastForward(bool on)
+        {
+            if (on)
+            {
+                CurrentBandwidth = Bandwidth * LinkFactory.LINK_FASTFORWARD_FACTOR;
+            }
+            else
+            {
+                CurrentBandwidth = Bandwidth;
+            }
+        }
+
+        /// <summary>
         /// Clears link of transmission.
         /// </summary>
         public void EndTransmission()
@@ -519,7 +539,7 @@ namespace InternetGame
                         int oldEnd = PacketEnd;
 
                         // Incrememnt progress
-                        TransmissionProgress += Bandwidth * Time.deltaTime;
+                        TransmissionProgress += CurrentBandwidth * Time.deltaTime;
 
                         float percentageProgress = TransmissionProgress / NeededProgress;
                         percentageProgress = percentageProgress > 1.0f ? 1.0f : percentageProgress;

@@ -152,12 +152,11 @@ namespace InternetGame
 
         public void OnTriggerEnter(Collider other)
         {
+            var cursor = GameManager.GetInstance().Player.GetCursorFromCollider(other);
             if (other.CompareTag("Player") 
                 && other.name == "FingersHitbox"
-                && other.GetComponentInParent<Cursor>().IsPrimary)
+                && cursor.IsPrimary)
             {
-                Cursor cursor = other.transform.GetComponentInParent<Cursor>();
-
                 // Don't open if the player is drawing a link.
                 bool cursorIsDrawingLink = LinkController.GetInstance().State == LinkControllerState.DrawingLink;
                 if (!cursorIsDrawingLink && !IsOpen && !IsEmpty())
@@ -177,7 +176,7 @@ namespace InternetGame
             {
                 if (IsOpen)
                 {
-                    Cursor cursor = other.transform.GetComponentInParent<Cursor>();
+                    Cursor cursor = GameManager.GetInstance().Player.GetCursorFromCollider(other);
                     cursor.OnExit(Cursor.DefaultCursorEventArgs);
 
                     StartCloseDoor();

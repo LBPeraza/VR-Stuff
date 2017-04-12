@@ -30,11 +30,10 @@ namespace InternetGame
 
         public event EventHandler<EstablishedLinkEventArgs> LinkEstablished;
 
+        protected List<Link> ActiveLinks;
+
         protected AudioSource VirusStrikesAudioSource;
         protected AudioClip VirusStrikesAudioClip;
-
-        [HideInInspector]
-        public Link ActiveLink;
 
         protected ScoreIndicator scoreIndicator;
         protected PortInfo info;
@@ -59,6 +58,8 @@ namespace InternetGame
                 dropZone.ObjectEnteredSnapDropZone += ConnectorEnteredDropZone;
             }
 
+            ActiveLinks = new List<Link>();
+
             switch (ScoreIndicatorType)
             {
                 case ScoreIndicatorType.Disabled:
@@ -68,16 +69,6 @@ namespace InternetGame
                     scoreIndicator.Initialize(this);
                     break;
             }
-        }
-
-        private void ConnectorEnteredDropZone(object sender, SnapDropZoneEventArgs e)
-        {
-            Connector connector = e.snappedObject.GetComponent<Connector>();
-        }
-
-        private void ConnectorSnappedToDropZone(object sender, SnapDropZoneEventArgs e)
-        {
-            LinkController.GetInstance().EndLink(this, ((VRTK.PacketDropZone) sender).transform);
         }
 
         public void PlayAudioClip(PacketSinkSoundEffect effect)
@@ -103,6 +94,14 @@ namespace InternetGame
             source.Play();
         }
 
+        public virtual void SetFastForward(bool on)
+        {
+            foreach (Link l in ActiveLinks)
+            {
+                l.SetFastForward(on);
+            }
+        }
+
         public virtual void OnBecameOptionForLink(Link l)
         {
 
@@ -117,6 +116,8 @@ namespace InternetGame
         {
             l.TransmissionStarted += OnTransmissionStarted;
             l.OnSever += OnLinkSevered;
+
+            ActiveLinks.Add(l);
 
             // Inform the connector that it has been snapped into a port.
             l.Connector.OnSnappedToPort(this);
@@ -138,17 +139,27 @@ namespace InternetGame
 
         protected virtual void OnLinkSevered(Link severedLink, SeverCause cause, float totalLength)
         {
-            ActiveLink = null;
-
             var dropZone = severedLink.Connector.GetStoredSnapDropZone();
             if (dropZone != null)
             {
                 // Free up the port.
                 dropZone.ForceUnsnap();
             }
+
+            ActiveLinks.Remove(severedLink);
         }
 
-		public SinkInfo portInfo {
+        private void ConnectorEnteredDropZone(object sender, SnapDropZoneEventArgs e)
+        {
+            Connector connector = e.snappedObject.GetComponent<Connector>();
+        }
+
+        private void ConnectorSnappedToDropZone(object sender, SnapDropZoneEventArgs e)
+        {
+            LinkController.GetInstance().EndLink(this, ((VRTK.PacketDropZone)sender).transform);
+        }
+
+        public SinkInfo portInfo {
 			get {
 				return new SinkInfo (
                     Address,

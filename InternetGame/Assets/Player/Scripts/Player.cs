@@ -89,6 +89,16 @@ namespace InternetGame
             LinkController.GetInstance().Initialize(this);
         }
 
+        public Cursor GetCursorFromCollider(Collider collider)
+        {
+            if (collider.transform.parent.parent == PrimaryCursor.Controller.transform)
+            {
+                return PrimaryCursor;
+            }
+
+            return SecondaryCursor;
+        }
+
         public void Update()
         {
             CurrentState.BandwidthRemaining = TotalBandwidth;

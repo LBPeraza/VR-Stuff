@@ -58,11 +58,33 @@ namespace InternetGame
 
             var packetColor = (Color)GameUtils.AddressToColor[this.Address];
 
-			foreach (GameObject Backing in Backings) {
-				if (Backing != null) {
-					var originalColor = Backing.GetComponent<Renderer> ().material.color;
-					Color = Blend (packetColor, originalColor);
-					Backing.GetComponent<Renderer> ().material.color = Color;
+			foreach (GameObject backing in Backings) {
+				if (backing != null) {
+                    if (backing.transform.FindChild("FastForwardButton"))
+                    {
+                        var fastFowardButton = backing.transform.FindChild("FastForwardButton").GetComponent<VRTK.VRTK_Button>();
+                        if (fastFowardButton)
+                        {
+                            fastFowardButton.ValueChanged += FastFowardButtonChanged; 
+                        }
+                    }
+
+                    List<Renderer> renderers = new List<Renderer>();
+                    if (backing.GetComponent<Renderer>())
+                    {
+                        renderers.Add(backing.GetComponent<Renderer>());
+                    }
+                    else if (backing.transform.FindChild("Model"))
+                    {
+                        renderers = new List<Renderer>(backing.transform.FindChild("Model").GetComponentsInChildren<Renderer>()); 
+                    }
+
+                    foreach (Renderer r in renderers)
+                    {
+                        var originalColor = r.material.color;
+                        Color = Blend(packetColor, originalColor);
+                        r.material.color = Color;
+                    }                
 				}
 			}
 
@@ -74,7 +96,12 @@ namespace InternetGame
             }
         }
 
-		public ClusterInfo clusterInfo {
+        private void FastFowardButtonChanged(object sender, VRTK.Control3DEventArgs e)
+        {
+            SetFastForward(e.value == 1);
+        }
+
+        public ClusterInfo clusterInfo {
 			get {
 				List<PortInfo> ports = new List<PortInfo> ();
 				foreach (GameObject port in Ports) {

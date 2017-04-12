@@ -173,11 +173,13 @@ namespace InternetGame {
 			cluster.Address = info.Address;
 
 			foreach (BackingInfo backing in info.backings) {
-				GameObject back = Instantiate<GameObject> (BackingPrefab, cluster.transform);
-				back.transform.localPosition = backing.location;
-				back.transform.localRotation = backing.orientation;
-				back.transform.localScale = backing.scale;
-				cluster.Backings.Add (back);
+                GameObject backingContainer = new GameObject("BackingContainer");
+                backingContainer.transform.SetParent(cluster.transform);
+                backingContainer.transform.localPosition = backing.location;
+                backingContainer.transform.localRotation = backing.orientation;
+                //backingContainer.transform.localScale = backing.scale;
+                GameObject back = Instantiate<GameObject>(BackingPrefab, backingContainer.transform, false);
+                cluster.Backings.Add (back);
 			}
 
 			foreach (PortInfo port in info.ports) {
