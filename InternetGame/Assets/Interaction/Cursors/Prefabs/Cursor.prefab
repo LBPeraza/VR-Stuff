@@ -877,6 +877,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MAX_NUM_BARS: 50
   Output: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+  Display: {fileID: 0}
 --- !u!114 &114662973448396142
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -908,7 +909,6 @@ MonoBehaviour:
   Player: {fileID: 0}
   IsRightHand: 0
   ControllerInitialized: 0
-  State: 0
   ArrowModel: {fileID: 1478693445908458}
   HandModel: {fileID: 1659599423450340}
   GrabModel: {fileID: 1982394448152226}

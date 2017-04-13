@@ -69,4 +69,12 @@ namespace InternetGame
 
         public float Offset;
     }
+
+	[Serializable]
+	public class PowerupConfig
+	{
+		public PowerupType PowerupType;
+		public Vector3? Location;
+		public float Offset;
+	}
 }
