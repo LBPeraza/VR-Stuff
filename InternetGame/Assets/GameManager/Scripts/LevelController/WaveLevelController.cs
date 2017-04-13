@@ -14,6 +14,13 @@ namespace InternetGame
         Finished
     }
 
+	public enum PowerupSpawnState
+	{
+		Unset,
+		InWave,
+		WaitingForNextWave
+	}
+
     public class WaveLevelController : LevelController
     {
         [HideInInspector]
@@ -23,16 +30,23 @@ namespace InternetGame
         public WaveConfig CurrentWave;
         [HideInInspector]
         public IEnumerator PacketConfigEnumerator;
+		public IEnumerator PowerupConfigEnumerator;
         public PacketConfig CurrentPacket;
+		public PowerupConfig CurrentPowerup;
 
         [HideInInspector]
-        public float LastSpawnTime;
+        public float LastPacketSpawnTime;
+		[HideInInspector]
+		public float LastPowerupSpawnTime;
         [HideInInspector]
-        public float EnteredPeriodTime;
+        public float PacketEnteredPeriodTime;
+		[HideInInspector]
+		public float PowerupEnteredPeriodTime;
         public float WaveTime;
         public int NumActivePackets;
 
-        public WaveLevelControllerState State;
+        public WaveLevelControllerState WaveState;
+		public PowerupSpawnState PowerupState;
 
         public delegate void OnWaveCleared(int currentWave);
         public event OnWaveCleared WaveCleared;
@@ -49,13 +63,14 @@ namespace InternetGame
             CurrentWave = (WaveConfig) WaveEnumerator.Current;
 
             PacketConfigEnumerator = CurrentWave.Packets.GetEnumerator();
+			PowerupConfigEnumerator = CurrentWave.Powerups.GetEnumerator();
 
-            LastSpawnTime = GameManager.GetInstance().GameTime();
+            LastPacketSpawnTime = GameManager.GetInstance().GameTime();
             NumActivePackets = 0;
             WaveTime = 0.0f;
-            EnteredPeriodTime = LastSpawnTime;
+            PacketEnteredPeriodTime = LastPacketSpawnTime;
 
-            State = WaveLevelControllerState.InWavePrefix;
+            WaveState = WaveLevelControllerState.InWavePrefix;
         }
 
         public override void Initialize(GameManager manager)
@@ -83,8 +98,8 @@ namespace InternetGame
             if (!PacketConfigEnumerator.MoveNext())
             {
                 // Reached end of wave.
-                State = WaveLevelControllerState.WaitingForWaveClear;
-                EnteredPeriodTime = GameManager.GetInstance().GameTime();
+                WaveState = WaveLevelControllerState.WaitingForWaveClear;
+                PacketEnteredPeriodTime = GameManager.GetInstance().GameTime();
             }
             else
             {
@@ -92,27 +107,60 @@ namespace InternetGame
             }
         }
 
+		private void TrySpawnPowerup(float currentTime) {
+			switch (PowerupState) {
+			case PowerupSpawnState.InWave:
+				float timeDiff = currentTime - PowerupEnteredPeriodTime;
+				if (timeDiff > CurrentPowerup.Offset) {
+
+					// TODO: PowerupFactory.SpawnPowerup(config);
+					TryAdvancePowerup();
+
+				}
+				break;
+			case PowerupSpawnState.WaitingForNextWave:
+				break;
+			default:
+				break;
+			}
+		}
+
+		private void TryAdvancePowerup()
+		{
+			if (!PowerupConfigEnumerator.MoveNext ()) {
+				PowerupState = PowerupSpawnState.WaitingForNextWave;
+				PowerupEnteredPeriodTime = GameManager.GetInstance ().GameTime ();
+			} else {
+				CurrentPowerup = (Powerup)PowerupConfigEnumerator.Current;
+			}
+		}
+
         public override void Update()
         {
             base.Update();
 
             if (!GameManager.GetInstance().IsPaused)
             {
-                float currentTime = GameManager.GetInstance().GameTime();
+				float currentTime = GameManager.GetInstance().GameTime();
+				TrySpawnPowerup (currentTime);
 
-                switch (State)
+                switch (WaveState)
                 {
                     case WaveLevelControllerState.InWavePrefix:
-                        if (currentTime - EnteredPeriodTime > CurrentWave.MarginBefore)
+                        if (currentTime - PacketEnteredPeriodTime > CurrentWave.MarginBefore)
                         {
-                            State = WaveLevelControllerState.InWave;
-                            EnteredPeriodTime = currentTime;
+                            WaveState = WaveLevelControllerState.InWave;
+							PacketEnteredPeriodTime = currentTime;
+
+							PowerupState = PowerupSpawnState.InWave;
+							PowerupEnteredPeriodTime = currentTime;
 
                             TryAdvancePacket();
+							TryAdvancePowerup ();
                         }
                         break;
-                    case WaveLevelControllerState.InWave:
-                        WaveTime = currentTime - EnteredPeriodTime; 
+					case WaveLevelControllerState.InWave:
+                        WaveTime = currentTime - PacketEnteredPeriodTime; 
                         if (WaveTime > CurrentPacket.Offset)
                         {
                             // Time to spawn this packet.
@@ -157,20 +205,22 @@ namespace InternetGame
                         if (NumActivePackets == 0)
                         {
                             // Wave is cleared!
-                            State = WaveLevelControllerState.InWaveSuffix;
-                            EnteredPeriodTime = currentTime;
+                            WaveState = WaveLevelControllerState.InWaveSuffix;
+                            PacketEnteredPeriodTime = currentTime;
                         }
                         break;
                     case WaveLevelControllerState.InWaveSuffix:
-                        if (currentTime - EnteredPeriodTime > CurrentWave.MarginAfter)
+                        if (currentTime - PacketEnteredPeriodTime > CurrentWave.MarginAfter)
                         {
                             if (WaveEnumerator.MoveNext())
                             {
                                 // Next wave.
                                 CurrentWave = (WaveConfig) WaveEnumerator.Current;
                                 PacketConfigEnumerator = CurrentWave.Packets.GetEnumerator();
+								PowerupConfigEnumerator = CurrentWave.Powerups.GetEnumerator ();
 
-                                State = WaveLevelControllerState.InWavePrefix;
+								WaveState = WaveLevelControllerState.InWavePrefix;
+								PowerupState = PowerupSpawnState.WaitingForNextWave;
 
                                 currentWaveNumber++;
                                 if (WaveCleared != null)
@@ -181,9 +231,9 @@ namespace InternetGame
                             else
                             {
                                 // Ran out of waves.
-                                State = WaveLevelControllerState.Finished;
+                                WaveState = WaveLevelControllerState.Finished;
                             }
-                            EnteredPeriodTime = currentTime;
+                            PacketEnteredPeriodTime = currentTime;
                         }
                         break;
                     case WaveLevelControllerState.Finished:

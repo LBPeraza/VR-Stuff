@@ -56,6 +56,7 @@ namespace InternetGame
         public float MarginAfter;
 
         public PacketConfig[] Packets;
+		public PowerupConfig[] Powerups;
     }
 
     [Serializable]
@@ -75,6 +76,7 @@ namespace InternetGame
 	{
 		public PowerupType PowerupType;
 		public Vector3? Location;
+
 		public float Offset;
 	}
 }
