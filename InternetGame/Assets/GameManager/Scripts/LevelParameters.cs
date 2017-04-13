@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public enum PacketSpawnerType
+    public enum LevelControllerType
     {
         Infinite,
         MainMenu,
@@ -20,10 +20,10 @@ namespace InternetGame
         public string PortMapName;
         public int NumDroppedPacketsAllowed;
         public Soundtrack BackgroundSoundtrack;
-        public PacketSpawnerType PacketSpawner;
+        public LevelControllerType LevelController;
 
         [NonSerialized]
-        public PacketSpawnerConfig PacketSpawnerConfig;
+        public LevelControllerConfig LevelControllerConfig;
 
         public static string path = "Assets/Levels/LevelData/";
 
@@ -43,12 +43,12 @@ namespace InternetGame
                 }
             }
 
-            switch (levelParams.PacketSpawner)
+            switch (levelParams.LevelController)
             {
-                case PacketSpawnerType.Wave:
+                case LevelControllerType.Wave:
                     // Load wave config from file.
-                    levelParams.PacketSpawnerConfig = new PacketSpawnerConfig();
-                    levelParams.PacketSpawnerConfig.LoadFromFile(fileName);
+                    levelParams.LevelControllerConfig = new LevelControllerConfig();
+                    levelParams.LevelControllerConfig.LoadFromFile(fileName);
                     break;
             }
             return levelParams;
@@ -68,9 +68,9 @@ namespace InternetGame
                 }
             }
 
-            if (PacketSpawnerConfig != null)
+            if (LevelControllerConfig != null)
             {
-                PacketSpawnerConfig.SaveToFile(LevelName);
+                LevelControllerConfig.SaveToFile(LevelName);
             }
         }
     }

@@ -83,7 +83,7 @@ namespace InternetGame
 
         protected static GameManager instance;
 
-        protected PacketSpawner PacketSpawner;
+        protected LevelController LevelController;
 
         [HideInInspector]
         public GameScore Score;
@@ -211,22 +211,22 @@ namespace InternetGame
                 Debug.Log("No Player found. Skipping initialization.");
             }
 
-            if (PacketSpawner == null)
+            if (LevelController == null)
             {
-                switch (LevelParameters.PacketSpawner)
+                switch (LevelParameters.LevelController)
                 {
-                    case PacketSpawnerType.Infinite:
-                        PacketSpawner = gameObject.AddComponent<InfinitePacketSpawner>();
+                    case LevelControllerType.Infinite:
+                        LevelController = gameObject.AddComponent<InfiniteLevelController>();
                         break;
-                    case PacketSpawnerType.MainMenu:
-                        PacketSpawner = gameObject.AddComponent<MainMenuPacketSpawner>();
+                    case LevelControllerType.MainMenu:
+                        LevelController = gameObject.AddComponent<MainMenuLevelController>();
                         break;
-                    case PacketSpawnerType.Wave:
-                        PacketSpawner = gameObject.AddComponent<WavePacketSpawner>();
+                    case LevelControllerType.Wave:
+                        LevelController = gameObject.AddComponent<WaveLevelController>();
                         break;
                 }
             }
-            PacketSpawner.Initialize(this);
+            LevelController.Initialize(this);
 
             foreach (PacketSink sink in AllPacketSinks)
             {

@@ -17,9 +17,9 @@ namespace InternetGame
             FlashText = Resources.Load<AnimationClip>("Animations/FlashText");
         }
 
-        public override void Initialize(WavePacketSpawner wavePacketSpawner)
+        public override void Initialize(WaveLevelController waveLevelController)
         {
-            base.Initialize(wavePacketSpawner);
+            base.Initialize(waveLevelController);
 
             LoadResources();
 

@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace InternetGame
 {
-    public class MainMenuPacketSpawner : PacketSpawner
+    public class MainMenuLevelController : LevelController
     {
         // TODO
         Dictionary<string, MenuOption> Levels;
@@ -56,7 +56,7 @@ namespace InternetGame
             {
                 if (i > Sources.Count - 1)
                 {
-                    Debug.Log("Ran out of ports in MainMenuPacketSpawner");
+                    Debug.Log("Ran out of ports in MainMenuLevelController");
                     break;
                 }
 
