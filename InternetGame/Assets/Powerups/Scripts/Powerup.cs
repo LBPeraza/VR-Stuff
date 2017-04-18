@@ -5,6 +5,7 @@ using UnityEngine;
 namespace InternetGame {
 	
 	public enum PowerupType {
+		Unset,
 		Invincibility,
 		TimeFreeze
 	}

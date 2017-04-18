@@ -6,9 +6,9 @@ namespace InternetGame
 {
     public abstract class WaveDisplay : MonoBehaviour
     {
-        public virtual void Initialize(WavePacketSpawner wavePacketSpawner)
+        public virtual void Initialize(WaveLevelController waveLevelController)
         {
-            wavePacketSpawner.WaveCleared += OnWaveCleared;
+            waveLevelController.WaveCleared += OnWaveCleared;
         }
 
         protected abstract void OnWaveCleared(int currentWave);

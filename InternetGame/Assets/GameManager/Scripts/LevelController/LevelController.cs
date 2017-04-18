@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    public class PacketSpawner : MonoBehaviour
+    public class LevelController : MonoBehaviour
     {
         public List<PacketSource> Sources;
         public List<PacketSink> Sinks;

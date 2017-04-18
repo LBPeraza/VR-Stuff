@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace InternetGame
 {
-    [CustomEditor(typeof(PacketSpawnerConfig))]
-    public class PacketSpawnerConfigEditor : Editor
+    [CustomEditor(typeof(LevelControllerConfig))]
+    public class LevelControllerConfigEditor : Editor
     {
         public override void OnInspectorGUI()
         {
@@ -14,13 +14,13 @@ namespace InternetGame
 
             if (GUILayout.Button("Save spawn config (check config name!)"))
             {
-                PacketSpawnerConfig config = (PacketSpawnerConfig) target;
+                LevelControllerConfig config = (LevelControllerConfig) target;
                 config.SaveToFile(config.Name);
             }
 
             if (GUILayout.Button("Load spawn config (check config name!)"))
             {
-                PacketSpawnerConfig config = (PacketSpawnerConfig)target;
+                LevelControllerConfig config = (LevelControllerConfig)target;
                 config.LoadFromFile(config.Name);
             }
         }
