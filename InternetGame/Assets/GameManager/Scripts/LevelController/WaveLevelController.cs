@@ -131,7 +131,7 @@ namespace InternetGame
 				PowerupState = PowerupSpawnState.WaitingForNextWave;
 				PowerupEnteredPeriodTime = GameManager.GetInstance ().GameTime ();
 			} else {
-				CurrentPowerup = (Powerup)PowerupConfigEnumerator.Current;
+				CurrentPowerup = (PowerupConfig)PowerupConfigEnumerator.Current;
 			}
 		}
 
