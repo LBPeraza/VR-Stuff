@@ -45,9 +45,9 @@ namespace InternetGame
 
             switch (levelParams.LevelController)
             {
-                case LevelControllerType.Wave:
+				case LevelControllerType.Wave:
                     // Load wave config from file.
-                    levelParams.LevelControllerConfig = new LevelControllerConfig();
+					levelParams.LevelControllerConfig = new LevelControllerConfig ();
                     levelParams.LevelControllerConfig.LoadFromFile(fileName);
                     break;
             }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace InternetGame
 {
@@ -42,6 +43,17 @@ namespace InternetGame
 		protected PacketSink GetRandomSink() {
 			int sinkIndex = random.Next (Sinks.Count);
 			return Sinks [sinkIndex];
+		}
+
+		protected PowerupType GetRandomPowerupType() {
+			Array types = Enum.GetValues (typeof(PowerupType));
+			int length = types.Length;
+			int i; PowerupType type;
+			do {
+				i = random.Next (length);
+				type = (PowerupType) i;
+			} while (type == PowerupType.Unset);
+			return type;
 		}
 
         // Update is called once per frame

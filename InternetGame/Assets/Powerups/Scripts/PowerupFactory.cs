@@ -27,18 +27,19 @@ namespace InternetGame
             Powerup powerup;
             switch (powerupType)
             {
-                case PowerupType.Invincibility:
-                    powerup = Instantiate<InvincibilityPowerup>(InvincibilityPowerupPrefab);
-                    powerup.transform.position = position;
-                    return powerup;
-                case PowerupType.TimeFreeze:
-                    powerup = Instantiate<TimeFreezePowerup>(TimeFreezePowerupPrefab);
-                    powerup.transform.position = position;
-                    return powerup;
+				case PowerupType.Invincibility:
+					powerup = Instantiate<InvincibilityPowerup> (InvincibilityPowerupPrefab);
+					break;
+				case PowerupType.TimeFreeze:
+					powerup = Instantiate<TimeFreezePowerup> (TimeFreezePowerupPrefab);
+					break;
                 default:
                     Debug.LogError("Trying to instantiate a generic Powerup.");
                     return null;
-            }
+			}
+			powerup.transform.position = position;
+			powerup.Initialize ();
+			return powerup;
         }
     }
 }
