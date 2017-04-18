@@ -134,11 +134,9 @@ namespace InternetGame
 		private void TryAdvancePowerup()
 		{
 			if (!PowerupConfigEnumerator.MoveNext ()) {
-				Debug.Log (1);
 				PowerupState = PowerupSpawnState.WaitingForNextWave;
 				PowerupEnteredPeriodTime = GameManager.GetInstance ().GameTime ();
 			} else {
-				Debug.Log (2);
 				CurrentPowerup = (PowerupConfig)PowerupConfigEnumerator.Current;
 			}
 		}
