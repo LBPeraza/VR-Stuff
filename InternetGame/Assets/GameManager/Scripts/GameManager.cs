@@ -177,6 +177,7 @@ namespace InternetGame
             PacketFactory.Initialize();
             ConnectorFactory.Initialize();
             LinkFactory.Initialize();
+            PowerupFactory.Initialize();
         }
 
         public void Initialize()

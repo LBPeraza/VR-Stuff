@@ -12,6 +12,7 @@ namespace InternetGame {
 	enum PowerupState {
 		NotPickedUp,
 		Stored,
+        Presenting,
 		Held
 	}
 
@@ -30,25 +31,13 @@ namespace InternetGame {
 		public abstract int MaxCount { get; }
 		public abstract Color PowerupColor { get; }
 
-		public virtual float FloatAmplitude { get { return 0.1f; } }
+        public virtual float FloatAmplitude { get { return 0.1f; } }
 		public virtual float FloatPeriod { get { return 6.0f; } }
 
 		public virtual float RotatePeriod { get { return 6.5f; } }
 
 		public virtual float FlashDuration { get { return 5.0f; } }
 		public virtual float TimeToPickUp { get { return 10.0f; } }
-
-		public static Powerup MakePowerup(PowerupType powerupType) {
-			switch (powerupType) {
-			case PowerupType.Invincibility:
-				return new InvincibilityPowerup ();
-			case PowerupType.TimeFreeze:
-				return new TimeFreezePowerup ();
-			default:
-				Debug.Log ("This is theoretically impossible.");
-				return null;
-			}
-		}
 
 		public virtual void Initialize() {
 			manager = GameManager.GetInstance ();
@@ -67,9 +56,25 @@ namespace InternetGame {
 			}
 		}
 
-		void Start() {
-			Initialize ();
-		}
+        public virtual void Pickup(PowerupInventory inventory)
+        {
+            inventory.Add(this);
+
+            Stow();
+        }
+
+        public virtual void Present()
+        {
+            transform.rotation = Quaternion.identity;
+            state = PowerupState.Presenting;
+        }
+
+        public virtual void Stow()
+        {
+            // Rotate onto its side.
+            transform.rotation = Quaternion.Euler(0, 0, 90.0f);
+            state = PowerupState.Stored;
+        }
 
 		private void SetAlpha(float liveTime) {
 			float alpha;

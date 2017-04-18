@@ -8,7 +8,6 @@ namespace InternetGame
     {
         public float BandwidthRemaining;
         public float MaximumBandwidth;
-		public PowerupInventory Powerups;
     }
 
     public class Player : MonoBehaviour
@@ -22,6 +21,7 @@ namespace InternetGame
         public float MaxBandwidth;
 
         public PlayerUI PlayerUI;
+        public PowerupInventory PowerupInventory;
 
         public PlayerState CurrentState;
 
@@ -35,8 +35,8 @@ namespace InternetGame
             CurrentState = new PlayerState();
             CurrentState.MaximumBandwidth = MaxBandwidth;
             CurrentState.BandwidthRemaining = TotalBandwidth;
-			CurrentState.Powerups = new PowerupInventory ();
-			CurrentState.Powerups.Initialize ();
+            PowerupInventory = gameObject.AddComponent<PowerupInventory>();
+			PowerupInventory.Initialize ();
 
             if (LeftCursor == null)
             {
