@@ -313,14 +313,18 @@ namespace InternetGame
                     BackgroundMusic.Pause();
                 }
 
-                GameOverOptions.Show();
+				if (GameOverOptions != null) {
+					GameOverOptions.Show ();
+				}
             }
             else
             {
                 //Time.timeScale = 1.0f;
                 BackgroundMusic.Resume();
 
-                GameOverOptions.Hide();
+				if (GameOverOptions != null) {
+					GameOverOptions.Hide ();
+				}
             }
         }
 

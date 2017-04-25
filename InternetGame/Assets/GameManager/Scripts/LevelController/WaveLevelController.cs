@@ -71,6 +71,7 @@ namespace InternetGame
             PacketEnteredPeriodTime = LastPacketSpawnTime;
 
             WaveState = WaveLevelControllerState.InWavePrefix;
+			PowerupState = PowerupSpawnState.WaitingForNextWave;
         }
 
         public override void Initialize(GameManager manager)
@@ -113,7 +114,12 @@ namespace InternetGame
 				float timeDiff = currentTime - PowerupEnteredPeriodTime;
 				if (timeDiff > CurrentPowerup.Offset) {
 
-					// TODO: PowerupFactory.SpawnPowerup(config);
+					PowerupType type = CurrentPowerup.PowerupType;
+					if (type == PowerupType.Unset) {
+						type = GetRandomPowerupType ();
+					}
+					PowerupFactory.CreatePowerup (CurrentPowerup.PowerupType, CurrentPowerup.Location);
+
 					TryAdvancePowerup();
 
 				}
@@ -142,7 +148,6 @@ namespace InternetGame
             if (!GameManager.GetInstance().IsPaused)
             {
 				float currentTime = GameManager.GetInstance().GameTime();
-				TrySpawnPowerup (currentTime);
 
                 switch (WaveState)
                 {
@@ -160,6 +165,7 @@ namespace InternetGame
                         }
                         break;
 					case WaveLevelControllerState.InWave:
+						TrySpawnPowerup (currentTime);
                         WaveTime = currentTime - PacketEnteredPeriodTime; 
                         if (WaveTime > CurrentPacket.Offset)
                         {
