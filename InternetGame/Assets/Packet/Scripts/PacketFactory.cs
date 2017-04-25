@@ -42,7 +42,7 @@ namespace InternetGame
         public static Packet CreatePacket(PacketSource s, PacketSink t)
         {
             GameObject emailContainer = new GameObject("Packet");
-            emailContainer.transform.parent = s.PacketContainer.transform;
+            emailContainer.transform.SetParent(s.PacketContainer.transform);
 
             Packet packet = null;
             switch (Mode)

@@ -6,13 +6,13 @@ namespace InternetGame
 {
     public class PowerupFactory : MonoBehaviour
     {
-        static InvincibilityPowerup InvincibilityPowerupPrefab;
-        static TimeFreezePowerup TimeFreezePowerupPrefab;
+        static GameObject InvincibilityPowerupPrefab;
+        static GameObject TimeFreezePowerupPrefab;
 
         public static void LoadResources()
         {
-            InvincibilityPowerupPrefab = Resources.Load<InvincibilityPowerup>("Prefabs/InvincibilityPowerup");
-            TimeFreezePowerupPrefab = Resources.Load<TimeFreezePowerup>("Prefabs/TimeFreezePowerup");
+            InvincibilityPowerupPrefab = Resources.Load<GameObject>("Prefabs/CD");
+            TimeFreezePowerupPrefab = Resources.Load<GameObject>("Prefabs/CD");
 
             SplittingLink.LoadResources();
         }
@@ -24,21 +24,30 @@ namespace InternetGame
 
         public static Powerup CreatePowerup(PowerupType powerupType, Vector3 position)
         {
-            Powerup powerup;
+            GameObject container = null; 
+            Powerup powerup = null;
             switch (powerupType)
             {
                 case PowerupType.Invincibility:
-                    powerup = Instantiate<InvincibilityPowerup>(InvincibilityPowerupPrefab);
+                    container = Instantiate<GameObject>(InvincibilityPowerupPrefab);
+                    powerup = container.AddComponent<InvincibilityPowerup>();
                     powerup.transform.position = position;
-                    return powerup;
+                    break;
                 case PowerupType.TimeFreeze:
-                    powerup = Instantiate<TimeFreezePowerup>(TimeFreezePowerupPrefab);
+                    container = Instantiate<GameObject>(TimeFreezePowerupPrefab);
+                    powerup = container.AddComponent<TimeFreezePowerup>();
                     powerup.transform.position = position;
-                    return powerup;
+                    break;
                 default:
                     Debug.LogError("Trying to instantiate a generic Powerup.");
-                    return null;
+                    break;
             }
+
+            if (powerup)
+            {
+                powerup.Initialize();
+            }
+            return powerup;
         }
     }
 }

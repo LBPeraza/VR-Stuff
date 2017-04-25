@@ -19,6 +19,8 @@ namespace InternetGame
         public bool ControllerInitialized;
         public bool IsPrimary { get; set; }
 
+        public Transform InventoryTransform;
+
         public CursorStateQueue CursorStates;
 
         public GameObject ArrowModel;

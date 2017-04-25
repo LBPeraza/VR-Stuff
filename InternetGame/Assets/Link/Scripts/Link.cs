@@ -97,7 +97,7 @@ namespace InternetGame
 
             // Make container for link segments.
             linkSegmentContainer = new GameObject("Segments");
-            linkSegmentContainer.transform.parent = this.transform;
+            linkSegmentContainer.transform.SetParent(this.transform);
 
             Connector = connector;
 

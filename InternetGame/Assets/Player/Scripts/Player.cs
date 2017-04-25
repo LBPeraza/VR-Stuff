@@ -21,7 +21,7 @@ namespace InternetGame
         public float MaxBandwidth;
 
         public PlayerUI PlayerUI;
-        public PowerupInventory PowerupInventory;
+        public InventoryController InventoryController;
 
         public PlayerState CurrentState;
 
@@ -35,8 +35,6 @@ namespace InternetGame
             CurrentState = new PlayerState();
             CurrentState.MaximumBandwidth = MaxBandwidth;
             CurrentState.BandwidthRemaining = TotalBandwidth;
-            PowerupInventory = gameObject.AddComponent<PowerupInventory>();
-			PowerupInventory.Initialize ();
 
             if (LeftCursor == null)
             {
@@ -87,6 +85,9 @@ namespace InternetGame
             // Clear out any residual instance, and initialize a new one.
             LinkController.ResetInstance();
             LinkController.GetInstance().Initialize(this);
+
+            InventoryController = gameObject.AddComponent<InventoryController>();
+            InventoryController.Initialize(this);
         }
 
         public Cursor GetCursorFromCollider(Collider collider)

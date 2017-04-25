@@ -19,39 +19,36 @@ namespace InternetGame {
         public Powerup Powerup;
     }
 
-	public class PowerupInventory : MonoBehaviour {
-        public PowerupCarousel Carousel;
-
+	public abstract class PowerupInventory : MonoBehaviour {
         public event EventHandler<PowerupEventArgs> PowerupAdded;
         public event EventHandler<PowerupEventArgs> PowerupRemoved;
 
         public PowerupDict Powerups;
         protected PowerUpInventoryState state;
 
-		public void Initialize() {
+		public virtual void Initialize() {
 			Powerups = new PowerupDict ();
             state = PowerUpInventoryState.Stowed;
 
-            GameObject carouselContainer = new GameObject("PowerupCarousel");
-            carouselContainer.transform.SetParent(this.transform);
-            carouselContainer.transform.localPosition = Vector3.zero;
-            Carousel = carouselContainer.AddComponent<PowerupCarousel>();
-            Carousel.Initialize(this);
+            Seed();
+
+            HidePowerups();
 		}
 
-        public void Start()
+        public void Seed()
         {
-            Initialize();
             PowerupFactory.CreatePowerup(PowerupType.Invincibility, Vector3.zero).Pickup(this);
-            PowerupFactory.CreatePowerup(PowerupType.Invincibility, Vector3.zero).Pickup(this);
-            PowerupFactory.CreatePowerup(PowerupType.Invincibility, Vector3.zero).Pickup(this);
+            //PowerupFactory.CreatePowerup(PowerupType.Invincibility, Vector3.zero).Pickup(this);
+            //PowerupFactory.CreatePowerup(PowerupType.Invincibility, Vector3.zero).Pickup(this);
 
-            PowerupFactory.CreatePowerup(PowerupType.TimeFreeze, Vector3.zero).Pickup(this);
-            PowerupFactory.CreatePowerup(PowerupType.TimeFreeze, Vector3.zero).Pickup(this);
-            PowerupFactory.CreatePowerup(PowerupType.Invincibility, Vector3.zero).Pickup(this);
-
-            Carousel.Unstow();
+            //PowerupFactory.CreatePowerup(PowerupType.TimeFreeze, Vector3.zero).Pickup(this);
+            //PowerupFactory.CreatePowerup(PowerupType.TimeFreeze, Vector3.zero).Pickup(this);
+            //PowerupFactory.CreatePowerup(PowerupType.Invincibility, Vector3.zero).Pickup(this);
         }
+
+        public abstract void PresentPowerups();
+
+        public abstract void HidePowerups();
 
         private List<Powerup> GetPowerups(PowerupType powerupType) {
 			List<Powerup> powerups;
@@ -68,7 +65,7 @@ namespace InternetGame {
 			return powerups.Count;
 		}
 
-		public bool Add(Powerup powerup) {
+		public virtual bool Add(Powerup powerup) {
 			List<Powerup> powerups = GetPowerups(powerup.Type);
 			if (powerups.Count < powerup.MaxCount) {
 				powerups.Add (powerup);
@@ -83,12 +80,25 @@ namespace InternetGame {
 			return false;
 		}
 
-		public Powerup GetPowerup(PowerupType powerupType) {
+        public virtual bool Remove(Powerup p)
+        {
+            PowerupType powerupType = p.Type;
+
+            List<Powerup> powerupList = Powerups[powerupType];
+            if (powerupList != null)
+            {
+                return powerupList.Remove(p);
+            }
+
+            return false;
+        }
+
+		public virtual Powerup GetPowerup(PowerupType powerupType) {
 			List<Powerup> powerups = GetPowerups (powerupType);
 			int count = powerups.Count;
 			if (count > 0) {
 				Powerup powerup = powerups [0];
-				powerups.RemoveAt (0);
+                Remove(powerup);
 
                 if (PowerupRemoved != null)
                 {
