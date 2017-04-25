@@ -207,11 +207,12 @@ namespace InternetGame
 
         private void SetVisible(bool visible)
         {
-            var renderers = CarouselContainer.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
-            {
-                renderer.enabled = visible;
-            }
+            //var renderers = CarouselContainer.GetComponentsInChildren<Renderer>();
+            //foreach (var renderer in renderers)
+            //{
+            //    renderer.enabled = visible;
+            //}
+            CarouselContainer.SetActive(visible);
         }
 
         private IEnumerator Fade(bool fadeIn, Action callback)
