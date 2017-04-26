@@ -1,26 +1,31 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace InternetGame
 {
     public enum CursorState
     {
-        Unset = 40,
         Inactive = 30,
         Hovering = 20,
         Grabbing = 10,
-        CutHover = 0
+        CutHover = 1,
+        Unset = 0,
     }
 
     public class CursorStateQueue
     {
-        protected List<CursorState> queue;
+        protected Dictionary<CursorState, int> queue;
+        protected CursorState currentValue;
 
         public CursorStateQueue()
         {
-            queue = new List<CursorState>();
-            queue.Add(CursorState.Inactive);
+            queue = new Dictionary<CursorState, int> ();
+            // Never run out of "inactive" states.
+            queue[CursorState.Inactive] = int.MaxValue;
+            currentValue = CursorState.Inactive;
         }
 
         /// <summary>
@@ -29,10 +34,17 @@ namespace InternetGame
         /// <param name="c">The CursorState to enqueue</param>
         public void Enqueue(CursorState c)
         {
-            if (!queue.Contains(c))
+            if (!queue.ContainsKey(c))
             { 
-                queue.Add(c);
-                queue.Sort();
+                queue[c] = 0;
+            }
+            queue[c] += 1;
+
+            if (c < currentValue)
+            {
+                // Update state if the enqueued value is higher priority
+                // than the current state.
+                currentValue = c;
             }
         }
 
@@ -42,9 +54,20 @@ namespace InternetGame
         /// <param name="c">The state to be dequeued.</param>
         public void Dequeue(CursorState c)
         {
-            if (c != CursorState.Inactive && queue.Contains(c))
+            if (queue.ContainsKey(c))
             {
-                queue.Remove(c);
+                queue[c] -= 1;
+
+                if (queue[c] <= 0)
+                {
+                    queue.Remove(c);
+
+                    CursorState[] states = new CursorState[queue.Keys.Count];
+                    queue.Keys.CopyTo(states, 0);
+
+                    // Update current state to the new minimum.
+                    currentValue = states.Min();
+                }
             }
         }
 
@@ -54,7 +77,7 @@ namespace InternetGame
         /// <returns></returns>
         public CursorState Peek()
         {
-            return (CursorState) queue[0];
+            return currentValue;
         }
     }
 }
