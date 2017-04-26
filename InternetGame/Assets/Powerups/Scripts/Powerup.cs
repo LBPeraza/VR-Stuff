@@ -119,6 +119,9 @@ namespace InternetGame {
         {
             state = PowerupState.Held;
 
+            // Set completely opaque, if it wasn't already.
+            SetAlpha(1.0f);
+
             inventory.Remove(this);
         }
 
