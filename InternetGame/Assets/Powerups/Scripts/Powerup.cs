@@ -71,7 +71,12 @@ namespace InternetGame {
             initialized = true;
         }
 
-        public virtual void OnCollected(PowerupInventory inventory)
+        public virtual void Apply()
+        {
+
+        }
+
+        protected virtual void OnCollected(PowerupInventory inventory)
         {
 
         }
@@ -115,7 +120,7 @@ namespace InternetGame {
             SetGrabbable(false);
         }
 
-        public virtual void OnHold()
+        protected virtual void OnHold()
         {
             state = PowerupState.Held;
 
@@ -186,7 +191,7 @@ namespace InternetGame {
             interactable.SetGrabbable(grabbable);
         }
 
-        public void SetAlpha(float alpha)
+        protected void SetAlpha(float alpha)
         {
             alpha = Mathf.Clamp01(alpha);
 
